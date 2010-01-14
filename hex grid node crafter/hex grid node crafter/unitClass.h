@@ -281,16 +281,23 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	map->clearMovement();
 	return false;
 }
-bool secondClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
+bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy)
 {
 	for(int k = 0; k < currentArmy.size; k++)
 	{
 		if(currentArmy.armyArray[k].getY()-1 == node->col && currentArmy.armyArray[k].getX()-1 == node->row)
 		{
-			//move unit code here
-			return true;
+			if(map->getMap()[newX][newY].movement>=0)
+			{
+				currentArmy.armyArray[k].setPosition(newY+1,newX+1);
+				map->clearEnemy();
+				map->clearMovement();
+				return true;
+			}
 		}
 	}
+	map->clearEnemy();
+	map->clearMovement();
 	return false;
 }
 void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
