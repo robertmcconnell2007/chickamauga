@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
 	int creekEdge = 34;
 	int bridgeEdge = 33;
 
-	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_FULLSCREEN | SDL_HWSURFACE);//
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_HWSURFACE);//SDL_FULLSCREEN |
 
 	mapSuperClass MapClass("mapData/mapData/customMapData.txt");
 	//mapSuperClass MapClass(25,28);
@@ -80,6 +80,9 @@ int main(int argc, char ** argv)
 
 	bool running = true;
 	bool legendUp = false;
+	bool unitSelected=false;;
+	int selectedX=0;
+	int selectedY=0;
 	while(running)
 	{
 		screenShiftx += xMove*5;
@@ -110,8 +113,22 @@ int main(int argc, char ** argv)
 				{
 					if(actualX >= 0 && actualX < MapClass.width && actualY >= 0 && actualY < MapClass.height && !edgeTool && !brushTool)
 					{
-						if(firstClick(&MapClass, &MapClass.getMap()[actualX][actualY], unionArmy, rebelArmy))
+						if(unitSelected)
 						{
+							if(secondClick(&MapClass,&MapClass.getMap()[selectedX][selectedY],actualX,actualY,unionArmy,rebelArmy))
+							{
+								unitSelected=false;
+							}
+							else
+							{
+								unitSelected=false;
+							}
+						}
+						else if(firstClick(&MapClass, &MapClass.getMap()[actualX][actualY], unionArmy, rebelArmy))
+						{
+							unitSelected=true;
+							selectedX=actualX;
+							selectedY=actualY;
 							//first click was good
 						}
 					}
