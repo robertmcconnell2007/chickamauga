@@ -4,8 +4,18 @@ using namespace std;
 #include "GraphicsLoader.h"
 #include "Game Data Handler.h"
 
+static const int SCREEN_WIDTH = 860;
+static const int SCREEN_HEIGHT = 640;
+static const int SCREEN_BPP = 32;
+
 int main(int argc, char ** argv)
 {
+	int bob = 300;
+	cout << bob << "\n";
+	bob = !bob;
+	cout << bob << "\n";
+	bob = !bob;
+	cout << bob << "\n";
 	if(SDL_Init( SDL_INIT_EVERYTHING) == -1)
 	{
 		return 1;

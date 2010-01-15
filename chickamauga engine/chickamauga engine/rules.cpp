@@ -7,6 +7,20 @@ using namespace std;
 
 void rules::deleteRules()
 {
+	if(RCR)
+		delete RCR;
+	if(NCR)
+		delete NCR;
+	if(UKR)
+		delete UKR;
+	if(UER)
+		delete UER;
+	if(VPR)
+		delete VPR;
+	if(ACR)
+		delete ACR;
+	if(RER)
+		delete RER;
 }
 
 rules::rules()

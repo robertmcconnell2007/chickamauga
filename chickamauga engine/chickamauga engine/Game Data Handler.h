@@ -18,8 +18,14 @@ private:
 	//2 player objects
 	player players[2];
 	//unit handler object
+	SDL_Rect screenSize;
+	int bitsperpixel;
+	bool fullScreen;
 	bool playingMatch;
 	bool runningGame;
+	int screenShiftX, xMove;
+	int screenShiftY, yMove;
+	bool mouseDown;
 
 	SDL_Surface * screen;
 public:
@@ -28,7 +34,7 @@ public:
 	//public functions
 	static IH * Instance();
 
-	void createMatch(string mapName, string rulesName, char player1IP[20], char player2IP[20]);
+	void createMatch(string mapName, char player1IP[20], char player2IP[20]);
 	int endMatch();//returns which player won
 
 	bool isPlayingMatch() {return playingMatch;}
