@@ -61,7 +61,7 @@
 				AdditionalDependencies="SDL.lib SDLmain.lib"
 				AdditionalLibraryDirectories="&quot;C:\Users\Ix\Desktop\chickamauga engine\lib&quot;"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool

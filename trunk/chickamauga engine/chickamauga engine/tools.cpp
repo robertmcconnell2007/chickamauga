@@ -204,22 +204,50 @@ void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, army
 
 void IH::handlePrimaryInput()
 {
+	int actualX, actualY;
 	switch(IH::Instance()->event.type)
 	{
+	case SDLK_ESCAPE:
 	case SDL_QUIT:
-		IH::Instance()->endGame();
-
+		endGame();
 		break;
-
+	case SDL_MOUSEMOTION:
+		actualX = event.motion.x - screenShiftX;
+		actualY = event.motion.y - screenShiftY;
+		actualX = (actualX-6)/38;
+		if(((actualX+1)%2) == 1)
+			actualY = (actualY)/44;
+		else
+			actualY = (actualY-22)/44;
+		if(event.motion.x < 15)
+			xMove = 1;
+		else if(event.motion.x >= screenSize.x - 15)
+			xMove = -1;
+		else
+			xMove = 0;
+		if(event.motion.y < 15)
+			yMove = 1;
+		else if(event.motion.y >= screenSize.y - 15)
+			yMove = -1;
+		else
+			yMove = 0;
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		break;
+	case SDL_MOUSEBUTTONUP:
+		break;
 	case SDL_KEYDOWN:
 		switch(IH::Instance()->event.key.keysym.sym)
 		{
 		case SDLK_ESCAPE:
 			IH::Instance()->endGame();
 			break;
+		//case SDLK_SPACE:
+		//	cout << "OMG\n";
+		//	break;
 		case SDLK_SPACE:
-			cout << "OMG\n";
-			break;
+			cout << "making map\n";
+			createMatch("mapData/mapData/ChickamaugaMapData2.txt", 0,0);
 		default:
 			break;
 		}
@@ -229,6 +257,8 @@ void IH::handlePrimaryInput()
 
 void IH::update(int mspassed)
 {
+	screenShiftX += xMove*5;
+	screenShiftY += yMove*5;
 	if(playingMatch)
 	{
 	}
@@ -239,11 +269,14 @@ void IH::update(int mspassed)
 
 void IH::drawAll()
 {
+	SDL_FillRect(screen,&screenSize,0x000000);
 	if(playingMatch)
 	{
-		
+		map->drawMap(screenShiftX, screenShiftY, screen);
 	}
 	else
 	{
 	}
+	if(SDL_Flip(screen) == -1)
+		return;
 }
