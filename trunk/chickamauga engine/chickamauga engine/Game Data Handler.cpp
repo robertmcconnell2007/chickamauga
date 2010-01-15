@@ -1,4 +1,5 @@
 #include "Game Data Handler.h"
+#include "mapSuperClass.h"
 
 static const int SCREEN_WIDTH = 860;
 static const int SCREEN_HEIGHT = 640;

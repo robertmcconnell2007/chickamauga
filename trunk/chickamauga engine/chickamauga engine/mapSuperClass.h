@@ -6,14 +6,26 @@ using namespace std;
 #include "SDL.h"
 #include "GraphicsLoader.h"
 
-
 struct node_edge;
+class armyClass;
+class unitClass;
+
+enum terrainTypes
+{
+	clear = 0,
+	forest = 1,
+	rough = 2,
+	roughForest = 3,
+	river = 4
+};
 
 struct map_node
 {
 	node_edge *nodeEdges[6];
+	int movement;
 	int col, row;
 	int type;			//0-4
+	int numOfUnits;
 	bool selected;
 	bool enemy;
 	bool town;			//8
@@ -24,6 +36,8 @@ struct map_node
 		col = x;
 		row = y;
 		type = 1;
+		movement = -1;
+		numOfUnits = 0;
 		enemy = false;
 		selected = false;
 		town = false;
@@ -64,8 +78,6 @@ struct node_edge
 class mapSuperClass
 {
 private:
-	int width;
-	int height;
 	string mapName;
 	bool showEnemyControl;
 	bool mapEdit;
@@ -96,21 +108,23 @@ private:
 		hexSize.w = 50;
 	}
 public:
+	void clearMovement();
+	int width;
+	int height;
 	map_node** getMap() { return mapPointer; }
 	mapSuperClass(const char* nameOfInputFile); //fixed map generation
 	bool mapSuperClassIni(const char* nameOfInputFile); //fixed map generation
 	//void mapDraw(SDL_Surface screen,int offsetX, int offsetY); //draws map and all units on the map
-	void selectHex(int nodeX, int nodeY); //highlights the selected hex, if a unit is present, will show the available movement and enemy control area
+	void hilightHex(int nodeX, int nodeY); //highlights the selected hex, if a unit is present, will show the available movement and enemy control area
 	//bool unitMotion(); //will return false if units aren't in the process of moving to show movement rather than instantaneous
 	void drawMap(int screenShiftx, int screenShifty, SDL_Surface * screen);
 	mapSuperClass(int sizeX, int sizeY); //random map generation
-	mapSuperClass() {mapPointer = NULL; width = height = 0;}
 	void exportMap();
 	bool mapSuperClassIni(int sizeX, int sizeY);
 	void setNodeType(int type, int nodeX, int nodeY);
-	void setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y);
+	bool setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y);
+	void setEnemy(int x, int y);
+	void clearEnemy();
 	~mapSuperClass();
 	void deleteMap();
 };
-
-

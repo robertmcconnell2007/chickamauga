@@ -1,6 +1,47 @@
 #include "graphicsloader.h"
 #include "mapSuperClass.h"
 
+void mapSuperClass::clearMovement()
+{
+	for(int i = 0; i < width; i++)
+	{
+		for(int j = 0; j < height; j++)
+		{
+			mapPointer[i][j].movement = -1;
+			mapPointer[i][j].numOfUnits = 0;
+		}
+	}
+}
+void mapSuperClass::setEnemy(int x, int y)
+{
+	showEnemyControl = true;
+	mapPointer[y][x].enemy = true;
+	for(int i = 0; i < 6; i++)
+	{
+		if(mapPointer[y][x].nodeEdges[i] != NULL)
+		{
+			if(i > 2)
+			{
+				mapPointer[y][x].nodeEdges[i]->lowerNode->enemy = true;
+			}
+			else
+			{
+				mapPointer[y][x].nodeEdges[i]->upperNode->enemy = true;
+			}
+		}
+	}
+}
+void mapSuperClass::clearEnemy()
+{
+	showEnemyControl = false;
+	for(int i = 0; i < height; i++)
+	{
+		for(int j = 0; j < width; j++)
+		{
+			mapPointer[j][i].enemy = false;
+		}
+	}
+}
 void mapSuperClass::exportMap()
 {
 	int typeOut;
@@ -47,6 +88,7 @@ void mapSuperClass::exportMap()
 				}
 				outfile << nodeOut << " ";
 			}
+			outfile << "\n";
 		}
 	}
 	outfile.close();
@@ -54,6 +96,7 @@ void mapSuperClass::exportMap()
 mapSuperClass::~mapSuperClass()
 {
 	deleteMap();
+	//delete [] mapPointer;
 }
 
 void mapSuperClass::deleteMap()
@@ -62,10 +105,9 @@ void mapSuperClass::deleteMap()
 	{
 		delete [] mapPointer[i];
 	}
-	delete [] mapPointer;
 }
 
-void mapSuperClass::selectHex(int nodeX, int nodeY)
+void mapSuperClass::hilightHex(int nodeX, int nodeY)
 {
 	for(int i = 0; i < height; i++)
 		for(int j = 0; j < width; j++)
@@ -106,7 +148,7 @@ void mapSuperClass::setNodeType(int type, int nodeX, int nodeY)
 		}
 	}
 }
-void mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y)
+bool mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y)
 {
 	if(mapEdit)
 	{
@@ -128,15 +170,30 @@ void mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2
 			if((type&16) == 16)
 				mapPointer[node1X][node1Y].nodeEdges[connecter]->road_edge = !mapPointer[node1X][node1Y].nodeEdges[connecter]->road_edge;
 			if((type&8) == 8)
+			{
 				mapPointer[node1X][node1Y].nodeEdges[connecter]->ford_edge = !mapPointer[node1X][node1Y].nodeEdges[connecter]->ford_edge;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->creek_edge = false;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->bridge_edge = false;
+			}
 			if((type&4) == 4)
 				mapPointer[node1X][node1Y].nodeEdges[connecter]->trail_edge = !mapPointer[node1X][node1Y].nodeEdges[connecter]->trail_edge;
 			if((type&2) == 2)
+			{
 				mapPointer[node1X][node1Y].nodeEdges[connecter]->creek_edge = !mapPointer[node1X][node1Y].nodeEdges[connecter]->creek_edge;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->ford_edge = false;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->bridge_edge = false;
+			}
 			if((type&1) == 1)
+			{
 				mapPointer[node1X][node1Y].nodeEdges[connecter]->bridge_edge = !mapPointer[node1X][node1Y].nodeEdges[connecter]->bridge_edge;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->ford_edge = false;
+				mapPointer[node1X][node1Y].nodeEdges[connecter]->creek_edge = false;
+			}
+			return true;
 		}
+		return false;
 	}
+	return false;
 }
 mapSuperClass::mapSuperClass(int sizeX, int sizeY)
 {
@@ -165,7 +222,7 @@ mapSuperClass::mapSuperClass(const char* nameOfInputFile)
 bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 {
 	loadData();
-	mapEdit = false;
+	mapEdit = true;
 	ifstream infile;
 	infile.open(nameOfInputFile);
 	if(!infile.is_open())
@@ -174,7 +231,7 @@ bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 	}
 	getline(infile,mapName,'#');
 	infile >> width >> height;
-	infile.ignore();
+	//infile.ignore();
 	createBlankMap(width,height);
 	int nodeData = 0;
 	while(!infile.eof())
@@ -183,8 +240,8 @@ bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 		{
 			for(int i = 0; i < width; i++)
 			{
-				mapPointer[i][j].col = i+1;
-				mapPointer[i][j].row = j+1;
+				mapPointer[i][j].col = i;
+				mapPointer[i][j].row = j;
 				infile >> nodeData;
 				mapPointer[i][j].type = nodeData&7;
 				if((nodeData&8) == 8)
@@ -216,7 +273,7 @@ bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 				}
 			}
 		}
-		infile.ignore();
+		//infile.ignore();
 	}
 	infile.close();
 	return true;
@@ -352,6 +409,10 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 						}
 					}
 				}
+				if(mapPointer[i][k].movement >=  0)
+				{
+					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				}
 				if(mapPointer[i][k].selected)
 				{
 					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
@@ -401,6 +462,10 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 						}
 					}
 				}
+				if(mapPointer[i][k].movement >= 0)
+				{
+					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				}
 				if(mapPointer[i][k].selected)
 				{
 					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
@@ -413,3 +478,4 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 		}
 	}
 }
+
