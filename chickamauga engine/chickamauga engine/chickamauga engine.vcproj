@@ -193,6 +193,10 @@
 				RelativePath=".\tools.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\unitClass.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -221,6 +225,10 @@
 			</File>
 			<File
 				RelativePath=".\tools.h"
+				>
+			</File>
+			<File
+				RelativePath=".\unitClass.h"
 				>
 			</File>
 		</Filter>
