@@ -23,11 +23,15 @@ private:
 	bool fullScreen;
 	bool playingMatch;
 	bool runningGame;
+	bool splashScreen;
+	bool logo;
 	int screenShiftX, xMove;
 	int screenShiftY, yMove;
 	bool mouseDown;
 
 	SDL_Surface * screen;
+	SDL_Surface * ourLogo;
+	SDL_Surface * titleScreen;
 public:
 	//public variables
 	SDL_Event event;
@@ -39,6 +43,8 @@ public:
 
 	bool isPlayingMatch() {return playingMatch;}
 	bool isGameRunning()  {return runningGame;}
+	bool isSplashScreen() {return splashScreen;}
+	bool isLogo()		  {return logo;}
 	void endGame()        {runningGame = false;}
 
 	//these functions are defined in the tools.cpp file!

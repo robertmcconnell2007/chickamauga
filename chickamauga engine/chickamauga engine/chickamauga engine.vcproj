@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Users\Ix\Desktop\chickamauga engine\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Users\Robert McConnell\Desktop\Chickamauga\chickamauga engine\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,7 +59,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL.lib SDLmain.lib"
-				AdditionalLibraryDirectories="&quot;C:\Users\Ix\Desktop\chickamauga engine\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Users\Robert McConnell\Desktop\Chickamauga\chickamauga engine\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
