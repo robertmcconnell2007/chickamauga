@@ -269,7 +269,15 @@ void IH::update(int mspassed)
 
 void IH::drawAll()
 {
-	SDL_FillRect(screen,&screenSize,0x000000);
+	SDL_FillRect(screen,NULL,0x000000);
+	if(logo)
+	{
+		apply_surface(0,0,ourLogo,screen);
+	}
+	if(splashScreen)
+	{
+		apply_surface(0,0,titleScreen,screen);
+	}
 	if(playingMatch)
 	{
 		map->drawMap(screenShiftX, screenShiftY, screen);

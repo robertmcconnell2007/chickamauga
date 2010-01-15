@@ -11,9 +11,16 @@ IH::IH()
 	fullScreen = false;
 	mouseDown = false;
 	playingMatch = false;
+	splashScreen = true;
+	logo = false;
 	runningGame = true;
+	
 	if(!fullScreen)
+	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);
+		titleScreen = load_my_image("TitlePage.bmp");
+		ourLogo = load_my_image("DoubleTappLogo.bmp");
+	}
 	else
 	{
 	}
@@ -45,6 +52,7 @@ IH* IH::Instance()
 
 void IH::createMatch(string mapName, char player1IP[20], char player2IP[20])
 {
+	splashScreen = false;
 	playingMatch = true;
 	gameRules = new rules;
 	//map object = new map(mapName)
