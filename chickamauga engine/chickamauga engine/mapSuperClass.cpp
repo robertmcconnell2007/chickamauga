@@ -105,6 +105,11 @@ void mapSuperClass::deleteMap()
 	{
 		delete [] mapPointer[i];
 	}
+	SDL_FreeSurface(nodeTypes);
+	SDL_FreeSurface(roadsTrails);
+	SDL_FreeSurface(creeksBridgesFords);
+	SDL_FreeSurface(statusTiles);
+	SDL_FreeSurface(townNstratPoint);
 }
 
 void mapSuperClass::hilightHex(int nodeX, int nodeY)

@@ -204,7 +204,6 @@ void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, army
 
 void IH::handlePrimaryInput()
 {
-	int actualX, actualY;
 	switch(IH::Instance()->event.type)
 	{
 	case SDLK_ESCAPE:
@@ -233,8 +232,22 @@ void IH::handlePrimaryInput()
 			yMove = 0;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
+		mouseDown = true;
+		firstX = actualX;
+		firstY = actualY;
 		break;
 	case SDL_MOUSEBUTTONUP:
+		mouseDown = false;
+		if(firstX == actualX && firstY == actualY)
+		{
+			if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
+			{
+				//if(firstClick(map, &map->getMap()[actualX][actualY], unionArmy, rebelArmy))
+				//{
+				//	//first click was good
+				//}
+			}
+		}
 		break;
 	case SDL_KEYDOWN:
 		switch(IH::Instance()->event.key.keysym.sym)
@@ -252,6 +265,14 @@ void IH::handlePrimaryInput()
 			break;
 		}
 		break;
+	}
+	//show what hex the mouse is over
+	if(map)
+	{
+		if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
+		{
+			map->hilightHex(actualX,actualY);
+		}
 	}
 }
 
