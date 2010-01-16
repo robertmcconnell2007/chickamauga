@@ -21,6 +21,7 @@ private:
 	SDL_Rect screenSize;
 	int bitsperpixel;
 	bool fullScreen;
+	
 	bool playingMatch;
 	bool runningGame;
 	bool splashScreen;
@@ -31,6 +32,12 @@ private:
 	int actualX, actualY;
 	int firstX, firstY;
 	bool mouseDown;
+	//for unit movement
+	bool unitSelected;
+	int selectedX;
+	int selectedY;
+
+	//
 
 	SDL_Surface * screen;
 	SDL_Surface * ourLogo;

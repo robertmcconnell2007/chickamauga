@@ -39,8 +39,7 @@ private:
 public:
 	unitClass *armyArray;
 	int size;
-	armyClass(int);
-	armyClass(char * unitFile,char * armyColorFile);
+	void loadArmy(char * unitFile,char * armyColorFile);
 	void drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen);
 };
 

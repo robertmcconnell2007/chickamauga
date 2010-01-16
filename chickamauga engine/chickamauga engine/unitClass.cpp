@@ -38,19 +38,7 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 	}
 }
 
-armyClass::armyClass(int s)
-{
-	size=s;
-	armyArray=new unitClass[size];
-	for(int i=0; i<size; i++)
-	{
-		armyArray[i].setPosition(rand()%24+1,rand()%27+1);
-		armyArray[i].setPower(rand()%6+1);
-	}
-	armyArray[0].setPosition(0,0);
-	armyArray[0].setPower(7);
-}
-armyClass::armyClass(char * fileName, char * armyColorFile)
+void armyClass::loadArmy(char * fileName, char * armyColorFile)
 {
 	int px,py,pow;
 	ifstream infile;

@@ -204,6 +204,7 @@ void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, army
 
 void IH::handlePrimaryInput()
 {
+
 	switch(IH::Instance()->event.type)
 	{
 	case SDLK_ESCAPE:
@@ -242,10 +243,24 @@ void IH::handlePrimaryInput()
 		{
 			if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
 			{
-				//if(firstClick(map, &map->getMap()[actualX][actualY], unionArmy, rebelArmy))
-				//{
-				//	//first click was good
-				//}
+				if(unitSelected)
+				{
+					if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy))
+					{
+						unitSelected=false;
+					}
+					else
+					{
+						unitSelected=false;
+					}
+				}
+				else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy))
+				{
+					unitSelected=true;
+					selectedX=actualX;
+					selectedY=actualY;
+
+				}
 			}
 		}
 		break;
@@ -302,6 +317,8 @@ void IH::drawAll()
 	if(playingMatch)
 	{
 		map->drawMap(screenShiftX, screenShiftY, screen);
+		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
+		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 	}
 	else
 	{

@@ -14,7 +14,8 @@ IH::IH()
 	splashScreen = true;
 	logo = false;
 	runningGame = true;
-	
+	unitSelected=false;
+	selectedX=selectedY=0;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);
@@ -58,6 +59,8 @@ void IH::createMatch(string mapName, char player1IP[20], char player2IP[20])
 	//map object = new map(mapName)
 	map = new mapSuperClass(mapName.c_str());
 	//set up the players ip address, and any other neccessary data for them
+	players[0].playerArmy.loadArmy("unionArmyUnits.txt","unionArmy.bmp");
+	players[1].playerArmy.loadArmy("rebelArmyUnits.txt","rebelArmy.bmp");
 }
 
 int IH::endMatch()
