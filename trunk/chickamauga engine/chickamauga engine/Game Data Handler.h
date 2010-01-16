@@ -27,6 +27,9 @@ private:
 	bool logo;
 	int screenShiftX, xMove;
 	int screenShiftY, yMove;
+	//actual and first used to identify which hex the user clicks on
+	int actualX, actualY;
+	int firstX, firstY;
 	bool mouseDown;
 
 	SDL_Surface * screen;
