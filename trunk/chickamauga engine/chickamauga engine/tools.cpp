@@ -275,7 +275,7 @@ void IH::handlePrimaryInput()
 		//	break;
 		case SDLK_SPACE:
 			cout << "making map\n";
-			createMatch("mapData/mapData/ChickamaugaMapData2.txt", 0,0);
+			createMatch("mapData/mapData/ChickamaugaMapData.txt", 0,0);
 		default:
 			break;
 		}

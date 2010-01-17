@@ -18,7 +18,6 @@ enum terrainTypes
 	roughForest = 3,
 	river = 4
 };
-
 struct map_node
 {
 	node_edge *nodeEdges[6];
@@ -35,7 +34,7 @@ struct map_node
 	{
 		col = x;
 		row = y;
-		type = 1;
+		type = 0;
 		movement = -1;
 		numOfUnits = 0;
 		enemy = false;
@@ -114,9 +113,7 @@ public:
 	map_node** getMap() { return mapPointer; }
 	mapSuperClass(const char* nameOfInputFile); //fixed map generation
 	bool mapSuperClassIni(const char* nameOfInputFile); //fixed map generation
-	//void mapDraw(SDL_Surface screen,int offsetX, int offsetY); //draws map and all units on the map
 	void hilightHex(int nodeX, int nodeY); //highlights the selected hex, if a unit is present, will show the available movement and enemy control area
-	//bool unitMotion(); //will return false if units aren't in the process of moving to show movement rather than instantaneous
 	void drawMap(int screenShiftx, int screenShifty, SDL_Surface * screen);
 	mapSuperClass(int sizeX, int sizeY); //random map generation
 	void exportMap();
@@ -125,6 +122,6 @@ public:
 	bool setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y);
 	void setEnemy(int x, int y);
 	void clearEnemy();
-	~mapSuperClass();
 	void deleteMap();
+	~mapSuperClass();
 };

@@ -64,15 +64,17 @@ int main(int argc, char ** argv)
 	int creekEdge = 34;
 	int bridgeEdge = 33;
 
-	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_HWSURFACE);//SDL_FULLSCREEN |
+	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_FULLSCREEN | SDL_HWSURFACE);//
 
 	mapSuperClass MapClass("mapData/mapData/customMapData.txt");
+	//mapSuperClass MapClass("mapData/mapData/chickamaugaMapData.txt");
 	//mapSuperClass MapClass(25,28);
+
 	armyClass unionArmy("unionArmyUnits.txt","unionArmy.bmp");
 	armyClass rebelArmy("rebelArmyUnits.txt","rebelArmy.bmp");
 	
 
-	Legend = load_my_image("Tile Legend.bmp");
+	//Legend = load_my_image("Tile Legend.bmp");
 	SDL_Rect screenSize;
 	screenSize.x = screenSize.y = 0;
 	screenSize.x = SCREEN_WIDTH;
@@ -80,9 +82,6 @@ int main(int argc, char ** argv)
 
 	bool running = true;
 	bool legendUp = false;
-	bool unitSelected=false;;
-	int selectedX=0;
-	int selectedY=0;
 	while(running)
 	{
 		screenShiftx += xMove*5;
@@ -113,22 +112,8 @@ int main(int argc, char ** argv)
 				{
 					if(actualX >= 0 && actualX < MapClass.width && actualY >= 0 && actualY < MapClass.height && !edgeTool && !brushTool)
 					{
-						if(unitSelected)
+						if(firstClick(&MapClass, &MapClass.getMap()[actualX][actualY], unionArmy, rebelArmy))
 						{
-							if(secondClick(&MapClass,&MapClass.getMap()[selectedX][selectedY],actualX,actualY,unionArmy,rebelArmy))
-							{
-								unitSelected=false;
-							}
-							else
-							{
-								unitSelected=false;
-							}
-						}
-						else if(firstClick(&MapClass, &MapClass.getMap()[actualX][actualY], unionArmy, rebelArmy))
-						{
-							unitSelected=true;
-							selectedX=actualX;
-							selectedY=actualY;
 							//first click was good
 						}
 					}
@@ -282,9 +267,9 @@ int main(int argc, char ** argv)
 					firstEdge = false;
 					if(MapClass.setConnecterType(edgeType,firstCoordX,firstCoordY,actualX,actualY))
 					{
-						firstEdge = true;
-						firstCoordX = actualX;
-						firstCoordY = actualY;
+						//firstEdge = true;
+						//firstCoordX = actualX;
+						//firstCoordY = actualY;
 					}
 				}
 			}
