@@ -2,6 +2,7 @@
 
 unitClass::unitClass()
 {
+	hasMovedThisTurn = false;
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
@@ -41,17 +42,20 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 void armyClass::loadArmy(char * fileName, char * armyColorFile)
 {
 	int px,py,pow;
+	unitClass *temp;
 	ifstream infile;
 	infile.open(fileName);
 	infile>>size;
-	armyArray=new unitClass[size];
+	armyArray=new unitClass*[size];
 	for(int i=0; i<size; i++)
 	{
+		temp = new unitClass;
 		infile>>py;
 		infile>>px;
 		infile>>pow;
-		armyArray[i].setPosition(px,py);
-		armyArray[i].setPower(pow);
+		temp->setPosition(px,py);
+		temp->setPower(pow);
+		armyArray[i] = temp;
 	}
 	infile.close();
 	armyColors=load_my_image(armyColorFile);
@@ -61,6 +65,14 @@ void armyClass::drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_S
 {
 	for(int i=0; i<size; i++)
 	{
-		armyArray[i].drawUnit(xShift,yShift,mapWidth,mapHeight,a_screen,armyColors);
+		armyArray[i]->drawUnit(xShift,yShift,mapWidth,mapHeight,a_screen,armyColors);
+	}
+}
+
+void armyClass::resetMoves()
+{
+	for(int i = 0; i < size; ++i)
+	{
+		armyArray[i]->resetMove();
 	}
 }

@@ -9,6 +9,6 @@ struct player
 	armyClass playerArmy;
 	//something else?
 
-
+	void startTurn();
 	void deletePlayer();
 };
