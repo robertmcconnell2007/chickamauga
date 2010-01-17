@@ -48,11 +48,12 @@ void mapSuperClass::exportMap()
 	int nodeOut;
 	ofstream outfile;
 	outfile.open("mapData/mapData/customMapData.txt",fstream::out);
-	outfile << "Custom Map#" << width << " " << height << " ";
+	outfile << "Custom Map#" << width << " " << height;
 	for(int i = 0; i < height; i++)
 	{
 		for(int j = 0; j < width; j++)
 		{
+			outfile << "\n";
 			typeOut = 0;
 			typeOut = mapPointer[j][i].type;
 			if(mapPointer[j][i].town)
@@ -86,9 +87,11 @@ void mapSuperClass::exportMap()
 					if(mapPointer[j][i].nodeEdges[k]->bridge_edge)
 						nodeOut += 1;
 				}
-				outfile << nodeOut << " ";
+				if(k < 2)
+					outfile << nodeOut << " ";
+				else
+					outfile << nodeOut;
 			}
-			outfile << "\n";
 		}
 	}
 	outfile.close();
@@ -96,22 +99,19 @@ void mapSuperClass::exportMap()
 mapSuperClass::~mapSuperClass()
 {
 	deleteMap();
-	//delete [] mapPointer;
 }
-
 void mapSuperClass::deleteMap()
 {
 	for(int i = 0; i < width; i++)
 	{
 		delete [] mapPointer[i];
 	}
-	SDL_FreeSurface(nodeTypes);
-	SDL_FreeSurface(roadsTrails);
+	SDL_FreeSurface(nodeTypes);	SDL_FreeSurface(roadsTrails);
 	SDL_FreeSurface(creeksBridgesFords);
 	SDL_FreeSurface(statusTiles);
 	SDL_FreeSurface(townNstratPoint);
+	//delete [] mapPointer;
 }
-
 void mapSuperClass::hilightHex(int nodeX, int nodeY)
 {
 	for(int i = 0; i < height; i++)
@@ -124,12 +124,13 @@ void mapSuperClass::setNodeType(int type, int nodeX, int nodeY)
 {
 	if(mapEdit)
 	{
-		if(type <= 4)
+		if((type&7) <= 7)
 			mapPointer[nodeX][nodeY].type = type;
-		if(type == 8)
+		if((type&8) == 8)
 			mapPointer[nodeX][nodeY].town = !mapPointer[nodeX][nodeY].town;
-		if(type == 16)
+		if((type&16) == 16)
 		{
+			mapPointer[nodeX][nodeY].type = 0;
 			if(mapPointer[nodeX][nodeY].control == false)
 			{
 				mapPointer[nodeX][nodeY].control = true;
@@ -138,9 +139,9 @@ void mapSuperClass::setNodeType(int type, int nodeX, int nodeY)
 				mapPointer[nodeX][nodeY].control = false;
 			mapPointer[nodeX][nodeY].controlBlue = false;
 		}
-		if(type == 48)
+		if((type&32) == 32)
 		{
-			if(mapPointer[nodeX][nodeY].control == false)
+			if(mapPointer[nodeX][nodeY].control == true)
 			{
 				mapPointer[nodeX][nodeY].control = true;
 				mapPointer[nodeX][nodeY].controlBlue = true;
@@ -198,7 +199,6 @@ bool mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2
 		}
 		return false;
 	}
-	return false;
 }
 mapSuperClass::mapSuperClass(int sizeX, int sizeY)
 {
@@ -245,18 +245,8 @@ bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 		{
 			for(int i = 0; i < width; i++)
 			{
-				mapPointer[i][j].col = i;
-				mapPointer[i][j].row = j;
 				infile >> nodeData;
-				mapPointer[i][j].type = nodeData&7;
-				if((nodeData&8) == 8)
-					mapPointer[i][j].town = true;
-				if((nodeData&16) == 16)
-					mapPointer[i][j].control = true;
-				if((nodeData&32) == 32)
-					mapPointer[i][j].controlBlue = true;
-				else
-					mapPointer[i][j].controlBlue = false;
+				setNodeType(nodeData,i,j);
 				for(int k = 0; k < 3; k++)
 				{
 					infile >> nodeData;
@@ -483,4 +473,3 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 		}
 	}
 }
-
