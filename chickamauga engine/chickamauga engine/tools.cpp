@@ -79,7 +79,7 @@ int checkEdge(node_edge* edge, int pos)
 void moveTo(map_node* node,int movement)
 {
 	node->movement = movement;
-	if(movement == 0)
+	if(movement == 0 || node->enemy)
 		return;
 	int tempMove;
 	for(int i = 0; i < 6; i++)
@@ -151,50 +151,31 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 		}
 	}
 }
-bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
+void cancelClick(mapSuperClass* map)
+{
+	map->clearEnemy();
+	map->clearMovement();
+}
+bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy, unitClass unitToMove)
 {
 	map->clearMovement();
 	checkUnitStacks(map,currentArmy,enemyArmy);
-	for(int k = 0; k < currentArmy.size; k++)
-	{
-		if(currentArmy.armyArray[k]->getY()-1 == node->col && currentArmy.armyArray[k]->getX()-1 == node->row)
-		{
-			setEnemyNodes(enemyArmy, map);
-			moveTo(node,6);
-			return true;
-		}
-	}
-	map->clearEnemy();
-	map->clearMovement();
-	return false;
+	setEnemyNodes(enemyArmy, map);
+	moveTo(node,6);
+	return true;
 }
-bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy)
-{
-	for(int k = 0; k < currentArmy.size; k++)
-	{
-		if(currentArmy.armyArray[k]->getY()-1 == node->col && currentArmy.armyArray[k]->getX()-1 == node->row)
-		{
-			if(map->getMap()[newX][newY].movement>=0)
-			{
-				currentArmy.armyArray[k]->setPosition(newY+1,newX+1);
-				currentArmy.armyArray[k]->setMoved();
-				map->clearEnemy();
-				map->clearMovement();
-				return true;
-			}
-		}
-	}
-	map->clearEnemy();
-	map->clearMovement();
-	return false;
-}
-void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
+bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass unitMoving)
 {
 	map->clearEnemy();
 	map->clearMovement();
+	if(map->getMap()[newX][newY].movement>=0)
+	{
+		unitMoving.setPosition(newY+1,newX+1);
+		//currentArmy.armyArray[k].hasMoved
+		return true;
+	}
+	return false;
 }
-
-
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 /// main loop functions
@@ -223,7 +204,7 @@ void IH::handlePrimaryInput()
 		case SDL_QUIT:
 			endGame();
 			break;
-		}			
+		}
 		break;
 	case atTitleScreen:
 		break;
@@ -267,54 +248,28 @@ void IH::handlePrimaryInput()
 			mouseDown = false;
 			if(firstX == actualX && firstY == actualY)
 			{
-				if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
-				{
-					if(unitSelected)
-					{
-						if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy))
-						{
-							unitSelected=false;
-						}
-						else
-						{
-							unitSelected=false;
-						}
-					}
-					else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy))
-					{
-						unitSelected=true;
-						selectedX=actualX;
-						selectedY=actualY;
-
-					}
-				}
-			}
-			break;
-		case SDL_KEYDOWN:
-			switch(event.key.keysym.sym)
-			{
-			case SDLK_ESCAPE:
-				IH::Instance()->endGame();
-				break;
-			//case SDLK_SPACE:
-			//	cout << "OMG\n";
-			//	break;
-			case SDLK_SPACE:
-				break;
-			default:
-				break;
-			}
-			break;
-		}
-		//show what hex the mouse is over
-		if(map)
-		{
-			if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
-			{
-				map->hilightHex(actualX,actualY);
+				// needs functionality
+				// selected unit needs to be selected by the player from the UI
+				//
+				//if(unitSelected)
+				//{
+				//	if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, selectedUnit))
+				//	{
+				//		unitSelected=false;
+				//	}
+				//	else
+				//	{
+				//		unitSelected=false;
+				//	}
+				//}
+				//else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy, selectedUnit))
+				//{
+				//	unitSelected=true;
+				//	selectedX=actualX;
+				//	selectedY=actualY;
+				//}
 			}
 		}
-		break;
 	case reviewingMatch:
 		break;
 	}
