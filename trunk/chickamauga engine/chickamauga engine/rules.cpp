@@ -1,5 +1,6 @@
 #include <fstream>
 #include <string>
+#include <sstream>
 using namespace std;
 #include "Game Data Handler.h"
 #include "mapSuperClass.h"
@@ -7,6 +8,8 @@ using namespace std;
 
 void rules::deleteRules()
 {
+	if(DPD)
+		delete DPD;
 	if(RCR)
 		delete RCR;
 	if(NCR)
@@ -25,10 +28,11 @@ void rules::deleteRules()
 
 rules::rules()
 {
-	numRules = 0;
+	numRules = numDependancies = 0;
 	RCRrules = UKRrules = UERrules = 0;
 	VPRrules = ACRrules = NCRrules = 0;
 	RERrules = 0;
+	DPD = NULL;
 	RCR = NULL;
 	NCR = NULL;
 	UKR = NULL;
@@ -47,8 +51,9 @@ void rules::loadRules(string fileName)
 	string tester;
 	bool nextLoopIsControl = false;
 	int dump1 = 0, dump2 = 0;
-	int totRules, totDepend, totRCR, totUKR, totUER, totVPR, totACR, totNCR, totRER;
-	totRules = totDepend = totRCR = totUKR = totUER = totVPR = totACR = totNCR = totRER = 0;
+	char throwAway;
+	int totDepend, totRCR, totUKR, totUER, totVPR, totACR, totNCR, totRER;
+	totDepend = totRCR = totUKR = totUER = totVPR = totACR = totNCR = totRER = 0;
 	infile >> numRules;
 	infile >> numDependancies;
 	infile >> RCRrules;
@@ -75,26 +80,27 @@ void rules::loadRules(string fileName)
 	if(RERrules)
 		RER = new roadExitRule[RERrules];
 
-	
-	for(int i = 0; i < totRules; ++i)
+	infile.ignore(1);
+	for(int i = 0; i < numRules; ++i)
 	{
-		getline(infile, tester, '\n');
+		infile.ignore(1);
+		getline(infile, tester);
 		if(tester == "RER")
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 6;
-				DPD[totDepend].checkRule = totRER;
+				DPD[totDepend].controlRule = &RER[totRER];
+				RER[totRER].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
 			infile >> RER[totRER].playerSpecific;
 			infile >> RER[totRER].howManySpacesToRoad;
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totRER;
-				DPD[totDepend].dependantRuleType = 6;
+				DPD[totDepend].dependantRule = &RER[totRER];
 				nextLoopIsControl = true;
 			}
 			totRER++;
@@ -103,18 +109,18 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 2;
-				DPD[totDepend].checkRule = totUER;
+				DPD[totDepend].controlRule = &UER[totUER];
+				UER[totUER].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
 			infile >> UER[totUER].playerSpecific;
-			infile >> UER[totUER].pointPerStrExited;
+			infile >> UER[totUER].pointValue;
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totUER;
-				DPD[totDepend].dependantRuleType = 2;
+				DPD[totDepend].dependantRule = &UER[totUER];
 				nextLoopIsControl = true;
 			}
 			totUER++;
@@ -123,23 +129,23 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 3;
-				DPD[totDepend].checkRule = totVPR;
+				DPD[totDepend].controlRule = &VPR[totVPR];
+				VPR[totVPR].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
 			infile >> VPR[totVPR].playerSpecific;
+			infile >> VPR[totVPR].unitOwner;
 			infile >> VPR[totVPR].requisiteEffect1;
 			infile >> VPR[totVPR].requisiteEffect2;
 			infile >> VPR[totVPR].requisiteEffect3;
 			infile >> VPR[totVPR].pointValue;
-			infile >> dump1;
 			//ask the army for that unit and set the pointer to it
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totVPR;
-				DPD[totDepend].dependantRuleType = 3;
+				DPD[totDepend].dependantRule = &VPR[totVPR];
 				nextLoopIsControl = true;
 			}
 			totVPR++;
@@ -148,17 +154,25 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 4;
-				DPD[totDepend].checkRule = totACR;
+				DPD[totDepend].controlRule = &ACR[totACR];
+				ACR[totACR].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
+			int tempX, tempY;
+			infile >> ACR[totACR].numNodes;
+			ACR[totACR].nodesToControl = new map_node*[ACR[totACR].numNodes];
+			for(int k = 0; k < ACR[totACR].numNodes; ++k)
+			{
+				infile >> tempX;
+				infile >> tempY;
+				ACR[totACR].nodesToControl[k] = &IH::Instance()->returnMap()[tempX][tempY];
+			}
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totACR;
-				DPD[totDepend].dependantRuleType = 4;
-				nextLoopIsControl = true;
+				DPD[totDepend].dependantRule = &ACR[totACR];
 			}
 			totACR++;
 		}
@@ -166,19 +180,34 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 5;
-				DPD[totDepend].checkRule = totNCR;
+				DPD[totDepend].controlRule = &NCR[totNCR];
+				NCR[totNCR].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
+			int tempX, tempY;
 			infile >> NCR[totNCR].playerSpecific;
 			infile >> NCR[totNCR].pointValue;
-			infile >> dump1;
+			infile >> NCR[totNCR].lastController;
+			infile >> (bool)NCR[totNCR].needUnitOn;
+			infile >> tempX;
+			infile >> tempY;
+			NCR[totNCR].nodeToControl = &IH::Instance()->returnMap()[tempX][tempY];
+			if(NCR[totNCR].lastController == blue)
+			{
+				NCR[totNCR].nodeToControl->control = true;
+				NCR[totNCR].nodeToControl->controlBlue = true;
+			}
+			if(NCR[totNCR].lastController == gray)
+			{
+				NCR[totNCR].nodeToControl->control = true;
+				NCR[totNCR].nodeToControl->controlBlue = false;
+			}
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totNCR;
-				DPD[totDepend].dependantRuleType = 5;
+				DPD[totDepend].dependantRule = &NCR[totNCR];
 				nextLoopIsControl = true;
 			}
 			totNCR++;
@@ -187,17 +216,34 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 0;
-				DPD[totDepend].checkRule = totRCR;
+				DPD[totDepend].controlRule = &RCR[totRCR];
+				RCR[totRCR].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
-
+			int tempX, tempY;
+			infile >> RCR[totRCR].playerSpecific;
+			infile >> RCR[totRCR].numEnterNodes;
+			infile >> RCR[totRCR].numExitNodes;
+			RCR[totRCR].enterNodes = new map_node*[RCR[totRCR].numEnterNodes];
+			RCR[totRCR].exitNodes  = new map_node*[RCR[totRCR].numExitNodes];
+			for(int k = 0; k < RCR[totRCR].numEnterNodes; ++k)
+			{
+				infile >> tempX;
+				infile >> tempY;
+				RCR[totRCR].enterNodes[k] = &IH::Instance()->returnMap()[tempX][tempY];
+			}
+			for(int k = 0; k < RCR[totRCR].numExitNodes; ++k)
+			{
+				infile >> tempX;
+				infile >> tempY;
+				RCR[totRCR].exitNodes[k] = &IH::Instance()->returnMap()[tempX][tempY];
+			}
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totRCR;
-				DPD[totDepend].dependantRuleType = 0;
+				DPD[totDepend].dependantRule = &RCR[totRCR];
 				nextLoopIsControl = true;
 			}
 			totRCR++;
@@ -206,20 +252,325 @@ void rules::loadRules(string fileName)
 		{
 			if(nextLoopIsControl)
 			{
-				DPD[totDepend].checkRuleType = 1;
-				DPD[totDepend].checkRule = totUKR;
+				DPD[totDepend].controlRule = &UKR[totUKR];
+				UKR[totUKR].controlRule = true;
 				totDepend++;
 				nextLoopIsControl = false;
 			}
-
+			infile >> UKR[totUKR].playerSpecific;
+			infile >> UKR[totUKR].pointValue;
+			infile.ignore(1);
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
-				DPD[totDepend].dependantRule = totUKR;
-				DPD[totDepend].dependantRuleType = 1;
+				DPD[totDepend].dependantRule = &UKR[totUKR];
 				nextLoopIsControl = true;
 			}
 			totUKR++;
 		}
 	}
 }
+
+void rules::coutRules()
+{
+	cout << "Game Rules:\n\n";
+	for(int i = 0; i < 	RCRrules; ++i)
+	{
+		if(!RCR[i].controlRule)
+		{
+			cout << RCR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&RCR[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i <  UKRrules; ++i)
+	{
+		if(!UKR[i].controlRule)
+		{
+			cout << UKR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&UKR[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i <  RERrules; ++i)
+	{
+		if(!RER[i].controlRule)
+		{
+			cout << RER[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&RER[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	UERrules; ++i)
+	{
+		if(!UER[i].controlRule)
+		{
+			cout << UER[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&UER[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	//for(int i = 0; i < 	VPRrules; ++i)
+	//{
+	//	if(!VPR[i].controlRule)
+	//	{
+	//		cout << VPR[i].returnRule() << "\n";
+	//		for(int k = 0; k < numDependancies; ++k)
+	//		{
+	//			if(&VPR[i] == DPD[k].dependantRule)
+	//			{
+	//				cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+	//			}
+	//		}
+	//	}
+	//}
+	for(int i = 0; i < 	ACRrules; ++i)
+	{
+		if(!ACR[i].controlRule)
+		{
+			cout << ACR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&ACR[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	NCRrules; ++i)
+	{
+		if(!NCR[i].controlRule)
+		{
+			cout << NCR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&NCR[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+}
+
+
+string roadControlRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players.\n";
+		break;
+	case blue:
+		oss << "the union player.\n";
+		break;
+	case gray:
+		oss << "the confederate player.\n";
+	}
+	if(controlRule)
+	{
+		oss << "Player must control an unblocked road between start nodes:\n";
+		for(int i = 0; i < numEnterNodes; ++i)
+			oss << "X: " << enterNodes[i]->col << ", Y: " << enterNodes[i]->row << ", ";
+		oss << "\nAnd these end nodes:\n";
+		for(int i = 0; i < numExitNodes; ++i)
+			oss << "X: " << exitNodes[i]->col << ", Y: " << exitNodes[i]->row << ", ";
+	}
+	else
+	{
+		oss << pointValue << " points will be awarded for control of an\nunblocked road between start nodes:\n";
+		for(int i = 0; i < numEnterNodes; ++i)
+			oss << "X: " << enterNodes[i]->col << ", Y: " << enterNodes[i]->row << ", ";
+		oss << "\nAnd these end nodes:\n";
+		for(int i = 0; i < numExitNodes; ++i)
+			oss << "X: " << exitNodes[i]->col << ", Y: " << exitNodes[i]->row << ", ";
+	}
+	oss << "\n";
+	return oss.str();
+}
+
+string unitKillRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << "It confers " << pointValue << " points per enemy strength point killed.\n";
+	return oss.str();
+}
+
+string unitExitRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << pointValue << " points will be awarded for each strength point\nexited from the map.\n";
+	return oss.str();
+}
+
+string VIPRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << pointValue << " points will be awarded if the unit " << specialUnit->getName() << " is:\n";
+	switch(requisiteEffect1)
+	{
+	case killed:
+		oss << "Killed";
+		break;
+	case exited:
+		oss << "Exited";
+		break;
+	case alive:
+		oss << "Alive";
+		break;
+	}
+	switch(requisiteEffect2)
+	{
+	case killed:
+		oss << " and/or killed";
+		break;
+	case exited:
+		oss << " and/or exited";
+		break;
+	case alive:
+		oss << " and/or alive";
+		break;
+	}
+	switch(requisiteEffect3)
+	{
+	case killed:
+		oss << " and/or killed";
+		break;
+	case exited:
+		oss << " and/or exited";
+		break;
+	case alive:
+		oss << " and/or alive";
+		break;
+	}
+	oss << " at end of match";
+	return oss.str();
+}
+
+string areaControlRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << pointValue << " points will be awarded if each of the following\n";
+	oss << "nodes have one of your units on it:\n";
+	for(int i = 0; i < numNodes; ++i)
+		oss << "X: " << nodesToControl[i]->col << ", Y: " << nodesToControl[i]->row << "; ";
+	oss << "\n";
+	return oss.str();
+}
+
+string nodeControlRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << pointValue << " points will be awarded if space\n";
+	oss << nodeToControl->col << ", " << nodeToControl->row << " is controlled at end of game.\n";
+	if(needUnitOn)
+		oss << "A unit is required to be on this space at end of game.\n";
+	else
+		oss << "A unit is not required to be on this space at end of game.\n";
+	return oss.str();
+}
+
+string roadExitRule::returnRule()
+{
+	ostringstream oss;
+	oss << "This rule applies to ";
+	switch(playerSpecific)
+	{
+	case none:
+		oss << "all players\n";
+		break;
+	case blue:
+		oss << "the union player\n";
+		break;
+	case gray:
+		oss << "the confederate player\n";
+	}
+	oss << "If units are not within ";
+	oss << howManySpacesToRoad;
+	oss << " spaces of an unblocked road, \nthey will be killed at match end.\n";
+	return oss.str();
+}
+

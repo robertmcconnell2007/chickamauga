@@ -3,3 +3,8 @@
 void player::deletePlayer()
 {
 }
+
+void player::startTurn()
+{
+	playerArmy.resetMoves();
+}

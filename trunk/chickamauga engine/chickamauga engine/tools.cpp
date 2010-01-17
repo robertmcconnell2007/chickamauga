@@ -124,7 +124,7 @@ void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 {
 	for(int k = 0; k < enemyArmy.size; k++)
 	{
-		map->setEnemy(enemyArmy.armyArray[k].getX()-1,enemyArmy.armyArray[k].getY()-1);
+		map->setEnemy(enemyArmy.armyArray[k]->getX()-1,enemyArmy.armyArray[k]->getY()-1);
 	}
 }
 void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
@@ -136,14 +136,14 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 		{
 			for(int f = 0; f < first.size; f++)
 			{
-				if(first.armyArray[f].getX()-1 == j && first.armyArray[f].getY()-1 == i)
+				if(first.armyArray[f]->getX()-1 == j && first.armyArray[f]->getY()-1 == i)
 				{
 					mapPointer[i][j].numOfUnits += 1;
 				}
 			}
 			for(int s = 0; s < second.size; s++)
 			{
-				if(second.armyArray[s].getX()-1 == j && second.armyArray[s].getY()-1 == i)
+				if(second.armyArray[s]->getX()-1 == j && second.armyArray[s]->getY()-1 == i)
 				{
 					mapPointer[i][j].numOfUnits += 1;
 				}
@@ -157,7 +157,7 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	checkUnitStacks(map,currentArmy,enemyArmy);
 	for(int k = 0; k < currentArmy.size; k++)
 	{
-		if(currentArmy.armyArray[k].getY()-1 == node->col && currentArmy.armyArray[k].getX()-1 == node->row)
+		if(currentArmy.armyArray[k]->getY()-1 == node->col && currentArmy.armyArray[k]->getX()-1 == node->row)
 		{
 			setEnemyNodes(enemyArmy, map);
 			moveTo(node,6);
@@ -172,11 +172,12 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 {
 	for(int k = 0; k < currentArmy.size; k++)
 	{
-		if(currentArmy.armyArray[k].getY()-1 == node->col && currentArmy.armyArray[k].getX()-1 == node->row)
+		if(currentArmy.armyArray[k]->getY()-1 == node->col && currentArmy.armyArray[k]->getX()-1 == node->row)
 		{
 			if(map->getMap()[newX][newY].movement>=0)
 			{
-				currentArmy.armyArray[k].setPosition(newY+1,newX+1);
+				currentArmy.armyArray[k]->setPosition(newY+1,newX+1);
+				currentArmy.armyArray[k]->setMoved();
 				map->clearEnemy();
 				map->clearMovement();
 				return true;
@@ -204,90 +205,118 @@ void cancelClick(mapSuperClass* map, map_node* node, armyClass currentArmy, army
 
 void IH::handlePrimaryInput()
 {
-
-	switch(IH::Instance()->event.type)
+	switch(gameState)
 	{
-	case SDLK_ESCAPE:
-	case SDL_QUIT:
-		endGame();
+	case atLogo:
+		switch(event.type)
+		{
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.sym)
+			{
+			case SDLK_RETURN:
+				cout << "making map\n";
+				createMatch("mapData/mapData/ChickamaugaMapData.txt", 0,0);
+				gameState = playingMatch;//gameState = atTitleScreen;
+				break;
+			}
+			break;
+		case SDL_QUIT:
+			endGame();
+			break;
+		}			
 		break;
-	case SDL_MOUSEMOTION:
-		actualX = event.motion.x - screenShiftX;
-		actualY = event.motion.y - screenShiftY;
-		actualX = (actualX-6)/38;
-		if(((actualX+1)%2) == 1)
-			actualY = (actualY)/44;
-		else
-			actualY = (actualY-22)/44;
-		if(event.motion.x < 15)
-			xMove = 1;
-		else if(event.motion.x >= screenSize.x - 15)
-			xMove = -1;
-		else
-			xMove = 0;
-		if(event.motion.y < 15)
-			yMove = 1;
-		else if(event.motion.y >= screenSize.y - 15)
-			yMove = -1;
-		else
-			yMove = 0;
+	case atTitleScreen:
 		break;
-	case SDL_MOUSEBUTTONDOWN:
-		mouseDown = true;
-		firstX = actualX;
-		firstY = actualY;
+	case atMatchPrep:
 		break;
-	case SDL_MOUSEBUTTONUP:
-		mouseDown = false;
-		if(firstX == actualX && firstY == actualY)
+	case playingMatch:
+		switch(event.type)
+		{
+		case SDLK_ESCAPE:
+			break;
+		case SDL_QUIT:
+			endGame();
+			break;
+		case SDL_MOUSEMOTION:
+			actualX = event.motion.x - screenShiftX;
+			actualY = event.motion.y - screenShiftY;
+			actualX = (actualX-6)/38;
+			if(((actualX+1)%2) == 1)
+				actualY = (actualY)/44;
+			else
+				actualY = (actualY-22)/44;
+			if(event.motion.x < 15)
+				xMove = 1;
+			else if(event.motion.x >= screenSize.x - 15)
+				xMove = -1;
+			else
+				xMove = 0;
+			if(event.motion.y < 15)
+				yMove = 1;
+			else if(event.motion.y >= screenSize.y - 15)
+				yMove = -1;
+			else
+				yMove = 0;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			mouseDown = true;
+			firstX = actualX;
+			firstY = actualY;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			mouseDown = false;
+			if(firstX == actualX && firstY == actualY)
+			{
+				if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
+				{
+					if(unitSelected)
+					{
+						if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy))
+						{
+							unitSelected=false;
+						}
+						else
+						{
+							unitSelected=false;
+						}
+					}
+					else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy))
+					{
+						unitSelected=true;
+						selectedX=actualX;
+						selectedY=actualY;
+
+					}
+				}
+			}
+			break;
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.sym)
+			{
+			case SDLK_ESCAPE:
+				IH::Instance()->endGame();
+				break;
+			//case SDLK_SPACE:
+			//	cout << "OMG\n";
+			//	break;
+			case SDLK_SPACE:
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		//show what hex the mouse is over
+		if(map)
 		{
 			if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
 			{
-				if(unitSelected)
-				{
-					if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy))
-					{
-						unitSelected=false;
-					}
-					else
-					{
-						unitSelected=false;
-					}
-				}
-				else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy))
-				{
-					unitSelected=true;
-					selectedX=actualX;
-					selectedY=actualY;
-
-				}
+				map->hilightHex(actualX,actualY);
 			}
 		}
 		break;
-	case SDL_KEYDOWN:
-		switch(IH::Instance()->event.key.keysym.sym)
-		{
-		case SDLK_ESCAPE:
-			IH::Instance()->endGame();
-			break;
-		//case SDLK_SPACE:
-		//	cout << "OMG\n";
-		//	break;
-		case SDLK_SPACE:
-			cout << "making map\n";
-			createMatch("mapData/mapData/ChickamaugaMapData.txt", 0,0);
-		default:
-			break;
-		}
+	case reviewingMatch:
 		break;
-	}
-	//show what hex the mouse is over
-	if(map)
-	{
-		if(actualX >= 0 && actualX < map->width && actualY >= 0 && actualY < map->height)
-		{
-			map->hilightHex(actualX,actualY);
-		}
 	}
 }
 
@@ -295,33 +324,41 @@ void IH::update(int mspassed)
 {
 	screenShiftX += xMove*5;
 	screenShiftY += yMove*5;
-	if(playingMatch)
+	switch(gameState)
 	{
-	}
-	else
-	{
+	case atLogo:
+		break;
+	case atTitleScreen:
+		break;
+	case atMatchPrep:
+		break;
+	case playingMatch:
+		break;
+	case reviewingMatch:
+		break;
 	}
 }
 
 void IH::drawAll()
 {
 	SDL_FillRect(screen,NULL,0x000000);
-	if(logo)
+	switch(gameState)
 	{
+	case atLogo:
 		apply_surface(0,0,ourLogo,screen);
-	}
-	if(splashScreen)
-	{
+		break;
+	case atTitleScreen:
 		apply_surface(0,0,titleScreen,screen);
-	}
-	if(playingMatch)
-	{
+		break;
+	case atMatchPrep:
+		break;
+	case playingMatch:
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
-	}
-	else
-	{
+		break;
+	case reviewingMatch:
+		break;
 	}
 	if(SDL_Flip(screen) == -1)
 		return;

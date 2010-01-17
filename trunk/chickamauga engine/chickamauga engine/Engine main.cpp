@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 using namespace std;
 #include "SDL.h"
 #include "GraphicsLoader.h"
@@ -10,12 +11,6 @@ static const int SCREEN_BPP = 32;
 
 int main(int argc, char ** argv)
 {
-	int bob = 300;
-	cout << bob << "\n";
-	bob = !bob;
-	cout << bob << "\n";
-	bob = !bob;
-	cout << bob << "\n";
 	if(SDL_Init( SDL_INIT_EVERYTHING) == -1)
 	{
 		return 1;
@@ -31,14 +26,13 @@ int main(int argc, char ** argv)
 		updateTimer += msPassed;
 		drawTimer += msPassed;
 
-		string name;
-		getline(cin, name, '#');
+		//string name;
+		//getline(cin, name, '#');
 		//input
 		while(SDL_PollEvent(&IH::Instance()->event))
 		{
 			IH::Instance()->handlePrimaryInput();
-		}		
-
+		}
 		//logic
 		if(updateTimer > 16)
 		{

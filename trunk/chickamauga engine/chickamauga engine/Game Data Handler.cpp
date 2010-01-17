@@ -3,6 +3,8 @@
 
 IH::IH()
 {
+	playersTurn = 2;
+	gameState = 0;
 	screenSize.x = 860;
 	screenSize.y = 640;
 	bitsperpixel = 32;
@@ -10,9 +12,6 @@ IH::IH()
 	screenShiftY = yMove = 0;
 	fullScreen = false;
 	mouseDown = false;
-	playingMatch = false;
-	splashScreen = true;
-	logo = false;
 	runningGame = true;
 	unitSelected=false;
 	selectedX=selectedY=0;
@@ -53,11 +52,12 @@ IH* IH::Instance()
 
 void IH::createMatch(string mapName, char player1IP[20], char player2IP[20])
 {
-	splashScreen = false;
-	playingMatch = true;
+	gameState = playingMatch;
 	gameRules = new rules;
 	//map object = new map(mapName)
 	map = new mapSuperClass(mapName.c_str());
+	gameRules->loadRules("chickamauga rule set.txt");
+	gameRules->coutRules();
 	//set up the players ip address, and any other neccessary data for them
 	players[0].playerArmy.loadArmy("unionArmyUnits.txt","unionArmy.bmp");
 	players[1].playerArmy.loadArmy("rebelArmyUnits.txt","rebelArmy.bmp");
@@ -66,4 +66,15 @@ void IH::createMatch(string mapName, char player1IP[20], char player2IP[20])
 int IH::endMatch()
 {
 	return 2;
+}
+
+void IH::endGame()
+{
+	if((gameState == playingMatch || 
+		 gameState == atMatchPrep || 
+		 gameState == reviewingMatch)) //&& there is a connection to the server
+	{
+		//send a message to the server saying that this player quit?
+	}
+	runningGame = false;
 }

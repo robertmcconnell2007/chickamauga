@@ -6,6 +6,15 @@ using namespace std;
 #include "rules.h"
 #include "player.h"
 
+enum game_states
+{
+	atLogo,
+	atTitleScreen,
+	atMatchPrep,
+	playingMatch,
+	reviewingMatch
+};
+
 class IH
 {
 private:
@@ -22,12 +31,11 @@ private:
 	int bitsperpixel;
 	bool fullScreen;
 	
-	bool playingMatch;
 	bool runningGame;
-	bool splashScreen;
-	bool logo;
-	int screenShiftX, xMove;
-	int screenShiftY, yMove;
+	int  gameState;
+	int  screenShiftX, xMove;
+	int  screenShiftY, yMove;
+	int  playersTurn;
 	//actual and first used to identify which hex the user clicks on
 	int actualX, actualY;
 	int firstX, firstY;
@@ -47,15 +55,12 @@ public:
 	SDL_Event event;
 	//public functions
 	static IH * Instance();
-
+	map_node ** returnMap() {return map->getMap();}
 	void createMatch(string mapName, char player1IP[20], char player2IP[20]);
 	int endMatch();//returns which player won
 
-	bool isPlayingMatch() {return playingMatch;}
 	bool isGameRunning()  {return runningGame;}
-	bool isSplashScreen() {return splashScreen;}
-	bool isLogo()		  {return logo;}
-	void endGame()        {runningGame = false;}
+	void endGame();
 
 	//these functions are defined in the tools.cpp file!
 	void handlePrimaryInput();
