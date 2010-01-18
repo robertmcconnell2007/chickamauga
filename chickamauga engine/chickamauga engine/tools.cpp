@@ -34,8 +34,20 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 	SDL_Surface *maxAttackImg = NULL;
 	SDL_Rect firstRect;
 	SDL_Rect secondRect;
+	SDL_Rect unit1Rect;
+	SDL_Rect unit2Rect;
 	SDL_Rect defRect;
 	SDL_Rect atkRect;
+	//
+	unit2Rect.x = 146;
+	unit2Rect.y = 0;
+	unit2Rect.h = 50;
+	unit2Rect.w = 50;
+	//
+	unit1Rect.x = 95;
+	unit1Rect.y = 0;
+	unit1Rect.h = 50;
+	unit1Rect.w = 50;
 	//
 	atkRect.x = 65;
 	atkRect.y = 17;
@@ -66,6 +78,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 1)
 			{
 				currentUnits[1] = unionArmy->armyArray[i];
+					SDL_FillRect(screen,&unit2Rect,0xffffff);
 				defCounter2 = unionArmy->armyArray[i]->getPower()*defenseMultiplier;
 				powCounter2 = unionArmy->armyArray[i]->getPower();
 			}
@@ -73,6 +86,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 0)
 			{
 				currentUnits[0] = unionArmy->armyArray[i];
+				SDL_FillRect(screen,&unit1Rect,0xffffff);
 				k++;
 				defCounter1 = (unionArmy->armyArray[i]->getPower())*defenseMultiplier;
 				powCounter1 = (unionArmy->armyArray[i]->getPower());
@@ -86,12 +100,14 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 1)
 			{
 				currentUnits[1] = confedArmy->armyArray[j];
+					SDL_FillRect(screen,&unit2Rect,0xffffff);
 				defCounter2 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
 				powCounter2 = confedArmy->armyArray[j]->getPower();
 			}
 			if(k == 0)
 			{
 				currentUnits[0] = confedArmy->armyArray[j];
+					SDL_FillRect(screen,&unit1Rect,0xffffff);
 				k++;
 				defCounter1 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
 				powCounter1 = confedArmy->armyArray[j]->getPower();
@@ -422,9 +438,10 @@ void IH::handlePrimaryInput()
 				}	
 			}
 		}
-	case reviewingMatch:
-		break;
-	}
+		case reviewingMatch:
+			break;
+		
+	}	
 }
 
 void IH::update(int mspassed)
