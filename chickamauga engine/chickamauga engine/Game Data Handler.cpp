@@ -11,6 +11,7 @@ IH::IH()
 	screenShiftX = xMove = 0;
 	screenShiftY = yMove = 0;
 	fullScreen = false;
+	nodeGui = false;
 	mouseDown = false;
 	runningGame = true;
 	unitSelected=false;

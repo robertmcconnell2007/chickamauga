@@ -284,7 +284,7 @@ void mapSuperClass::createBlankMap(int width, int height)
 	{
 		for(int k = 0; k < height; ++k)
 		{
-			mapPointer[i][k].newNode(i,k);
+			mapPointer[i][k].newNode(k+1,i+1);
 		}
 	}
 
