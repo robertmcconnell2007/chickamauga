@@ -15,6 +15,8 @@ IH::IH()
 	mouseDown = false;
 	runningGame = true;
 	unitSelected=false;
+	currentUnits[0] = NULL;
+	currentUnits[1] = NULL;
 	selectedX=selectedY=0;
 	if(!fullScreen)
 	{
