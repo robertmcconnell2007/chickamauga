@@ -51,7 +51,6 @@ void rules::loadRules(string fileName)
 	string tester;
 	bool nextLoopIsControl = false;
 	int dump1 = 0, dump2 = 0;
-	char throwAway;
 	int totDepend, totRCR, totUKR, totUER, totVPR, totACR, totNCR, totRER;
 	totDepend = totRCR = totUKR = totUER = totVPR = totACR = totNCR = totRER = 0;
 	infile >> numRules;
