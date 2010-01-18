@@ -3,8 +3,8 @@
 #include "unitClass.h"
 #include "tools.h"
 #include "rules.h"
-#include "SDL/SDL.h"		// SDL library
-#include "SDL/SDL_ttf.h"	// true-type font library for SDL
+#include "SDL.h"		// SDL library
+#include "SDL_ttf.h"	// true-type font library for SDL
 #include<stdio.h>
 using namespace std;
 enum terrainTypes;
