@@ -30,24 +30,40 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 	SDL_Color color2 = {255,0,0};
 	char * fontName = "C:\\windows\\fonts\\arial.ttf";
 	TTF_Font *font = TTF_OpenFont (fontName, 14);
+	TTF_Font *font2 = TTF_OpenFont (fontName,26);
 	SDL_Surface *maxDefenseImg = NULL;
 	SDL_Surface *maxAttackImg = NULL;
+	SDL_Surface *unit1StrImg = NULL;
+	SDL_Surface *unit2StrImg = NULL;
 	SDL_Rect firstRect;
 	SDL_Rect secondRect;
-	SDL_Rect unit1Rect;
-	SDL_Rect unit2Rect;
+	SDL_Rect unit1UnderliningRect;
+	SDL_Rect unit2UnderliningRect;
+	SDL_Rect unit1InfoRect;
+	SDL_Rect unit2InfoRect;
 	SDL_Rect defRect;
 	SDL_Rect atkRect;
 	//
-	unit2Rect.x = 146;
-	unit2Rect.y = 0;
-	unit2Rect.h = 50;
-	unit2Rect.w = 50;
+	unit2InfoRect.x = 161;
+	unit2InfoRect.y = 15;
+	unit2InfoRect.h = 35;
+	unit2InfoRect.w = 50;
 	//
-	unit1Rect.x = 95;
-	unit1Rect.y = 0;
-	unit1Rect.h = 50;
-	unit1Rect.w = 50;
+	unit1InfoRect.x = 110;
+	unit1InfoRect.y = 15;
+	unit1InfoRect.h = 35;
+	unit1InfoRect.w = 50;
+	//
+
+	unit2UnderliningRect.x = 146;
+	unit2UnderliningRect.y = 0;
+	unit2UnderliningRect.h = 50;
+	unit2UnderliningRect.w = 50;
+	//
+	unit1UnderliningRect.x = 95;
+	unit1UnderliningRect.y = 0;
+	unit1UnderliningRect.h = 50;
+	unit1UnderliningRect.w = 50;
 	//
 	atkRect.x = 65;
 	atkRect.y = 17;
@@ -78,7 +94,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 1)
 			{
 				currentUnits[1] = unionArmy->armyArray[i];
-					SDL_FillRect(screen,&unit2Rect,0xffffff);
+					SDL_FillRect(screen,&unit2UnderliningRect,0xffffff);
 				defCounter2 = unionArmy->armyArray[i]->getPower()*defenseMultiplier;
 				powCounter2 = unionArmy->armyArray[i]->getPower();
 			}
@@ -86,7 +102,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 0)
 			{
 				currentUnits[0] = unionArmy->armyArray[i];
-				SDL_FillRect(screen,&unit1Rect,0xffffff);
+				SDL_FillRect(screen,&unit1UnderliningRect,0xffffff);
 				k++;
 				defCounter1 = (unionArmy->armyArray[i]->getPower())*defenseMultiplier;
 				powCounter1 = (unionArmy->armyArray[i]->getPower());
@@ -100,14 +116,14 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			if(k == 1)
 			{
 				currentUnits[1] = confedArmy->armyArray[j];
-					SDL_FillRect(screen,&unit2Rect,0xffffff);
+				SDL_FillRect(screen,&unit2UnderliningRect,0xffffff);
 				defCounter2 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
 				powCounter2 = confedArmy->armyArray[j]->getPower();
 			}
 			if(k == 0)
 			{
 				currentUnits[0] = confedArmy->armyArray[j];
-					SDL_FillRect(screen,&unit1Rect,0xffffff);
+					SDL_FillRect(screen,&unit1UnderliningRect,0xffffff);
 				k++;
 				defCounter1 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
 				powCounter1 = confedArmy->armyArray[j]->getPower();
@@ -130,7 +146,6 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 		SDL_FreeSurface(maxDefenseImg);
 	maxDefenseImg = TTF_RenderText_Solid(font,maxDefense,color1);
 	SDL_BlitSurface(maxDefenseImg,NULL,screen,&defRect);
-
 	//uses TTF to put the words "attack = attack"
 	SDL_FillRect(screen,&secondRect,0xff0000);
 	char * myInstructions2 = "attack = ";
@@ -143,6 +158,29 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 		SDL_FreeSurface(maxAttackImg);
 	maxAttackImg = TTF_RenderText_Solid(font,maxAttack,color1);
 	SDL_BlitSurface(maxAttackImg,NULL,screen,&atkRect);
+	// first Units box
+	char * myInstructions3 = "unit 1";
+	SDL_Surface * instructionImage3 = TTF_RenderText_Solid(font,myInstructions3,color1);
+	SDL_BlitSurface(instructionImage3,NULL,screen,&unit1UnderliningRect);
+	char unit1Strength[256];
+	itoa(powCounter1,unit1Strength,10);
+	if(unit1StrImg)
+		SDL_FreeSurface(maxAttackImg);
+	unit1StrImg = TTF_RenderText_Solid(font2,unit1Strength,color2);
+	SDL_BlitSurface(unit1StrImg,NULL,screen,&unit1InfoRect);
+	//
+	if(powCounter2 > 0)
+	{
+	char * myInstructions4 = "unit 2";
+	SDL_Surface * instructionImage4 = TTF_RenderText_Solid(font,myInstructions4,color1);
+	SDL_BlitSurface(instructionImage4,NULL,screen,&unit2UnderliningRect);
+	char unit2Strength[256];
+	itoa(powCounter2,unit2Strength,10);
+	if(unit2StrImg)
+		SDL_FreeSurface(maxAttackImg);
+	unit2StrImg = TTF_RenderText_Solid(font2,unit2Strength,color2);
+	SDL_BlitSurface(unit2StrImg,NULL,screen,&unit2InfoRect);
+	}
 	
 }
 
@@ -308,6 +346,11 @@ void cancelClick(mapSuperClass* map)
 {
 	map->clearEnemy();
 	map->clearMovement();
+	//need to clear the unit array.
+	IH::Instance()->currentUnits[0]= NULL;
+	IH::Instance()->currentUnits[1]= NULL;
+	IH::Instance()->selectedUnit = 0;
+	//currentUnits[1] = NULL;
 }
 bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy, unitClass * unitToMove)
 {

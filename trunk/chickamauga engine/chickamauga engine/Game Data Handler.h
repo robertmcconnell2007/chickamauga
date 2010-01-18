@@ -45,8 +45,8 @@ private:
 	bool nodeGui;
 	int selectedX;
 	int selectedY;
-	unitClass * currentUnits[2];
-	int selectedUnit;
+	
+	
 
 	//
 
@@ -55,6 +55,8 @@ private:
 	SDL_Surface * titleScreen;
 public:
 	//public variables
+	unitClass * currentUnits[2];
+	int selectedUnit;
 	SDL_Event event;
 	//public functions
 	static IH * Instance();
