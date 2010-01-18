@@ -3,6 +3,9 @@
 #include "unitClass.h"
 #include "tools.h"
 #include "rules.h"
+#include "SDL/SDL.h"		// SDL library
+#include "SDL/SDL_ttf.h"	// true-type font library for SDL
+#include<stdio.h>
 using namespace std;
 enum terrainTypes;
 
@@ -12,7 +15,135 @@ enum terrainTypes;
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 
+void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, unitClass *currentUnits[2], SDL_Surface * screen)
+{
+	int k = 0;
+	int defense = 0;
+	int defCounter1 = 0;
+	int defCounter2 = 0;
+	int power = 0;
+	int powCounter1 = 0;
+	int powCounter2 = 0;
+	int defenseMultiplier = 1;
+	SDL_Color color1 = {0,0,0};
+	SDL_Color color2 = {255,0,0};
+	char * fontName = "C:\\windows\\fonts\\arial.ttf";
+	TTF_Font *font = TTF_OpenFont (fontName, 14);
+	SDL_Surface *maxDefenseImg = NULL;
+	SDL_Surface *maxAttackImg = NULL;
+	SDL_Rect firstRect;
+	SDL_Rect secondRect;
+	SDL_Rect defRect;
+	SDL_Rect atkRect;
+	//
+	atkRect.x = 65;
+	atkRect.y = 17;
+	atkRect.h = 50;
+	atkRect.w = 10;
+	//
+	defRect.x = 70;
+	defRect.y = 0;
+	defRect.h = 50;
+	defRect.w = 10;
+	//first unit on gui
+	firstRect.x = 0;
+	firstRect.y = 0;
+	firstRect.h = 20;
+	firstRect.w = 95;
+	//second unit on gui
+	secondRect.x = 0;
+	secondRect.y = 18;
+	secondRect.h = 20;
+	secondRect.w = 95;
+	if(node->type == rough || node->type == roughForest)
+		defenseMultiplier = 2;
+	for(int i = 0; i < unionArmy->size; ++i)
+	{
+		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
+		{
+			//if there is a second unit on the node
+			if(k == 1)
+			{
+				currentUnits[1] = unionArmy->armyArray[i];
+				defCounter2 = unionArmy->armyArray[i]->getPower()*defenseMultiplier;
+				powCounter2 = unionArmy->armyArray[i]->getPower();
+			}
+			//if there is 1 unit on the square
+			if(k == 0)
+			{
+				currentUnits[0] = unionArmy->armyArray[i];
+				k++;
+				defCounter1 = (unionArmy->armyArray[i]->getPower())*defenseMultiplier;
+				powCounter1 = (unionArmy->armyArray[i]->getPower());
+			}
+		}
+	}
+	for(int j = 0; j < confedArmy->size; ++j)
+	{
+		if(confedArmy->armyArray[j]->getX() == node->col && confedArmy->armyArray[j]->getY() == node->row)
+		{
+			if(k == 1)
+			{
+				currentUnits[1] = confedArmy->armyArray[j];
+				defCounter2 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
+				powCounter2 = confedArmy->armyArray[j]->getPower();
+			}
+			if(k == 0)
+			{
+				currentUnits[0] = confedArmy->armyArray[j];
+				k++;
+				defCounter1 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
+				powCounter1 = confedArmy->armyArray[j]->getPower();
+				//uses TTF to put the words "defense ="
+			}
+			
+		}
+	}
+	defense = defCounter1 + defCounter2;
+	power = powCounter1 + powCounter2;
+				//uses TTF to put the words "defense = defense"
+				SDL_FillRect(screen,&firstRect,0x0000ff);
+				char * myInstructions = "defense = ";
+				SDL_Surface *instructionImage = TTF_RenderText_Solid(font,myInstructions,color1);
+				SDL_BlitSurface(instructionImage,NULL,screen,&firstRect);
+				//puts the actual number of defense on the rect
+				char maxDefense[256];
+				itoa(defense,maxDefense,10);
+				if(maxDefenseImg)
+					SDL_FreeSurface(maxDefenseImg);
+				maxDefenseImg = TTF_RenderText_Solid(font,maxDefense,color1);
+				SDL_BlitSurface(maxDefenseImg,NULL,screen,&defRect);
 
+				//uses TTF to put the words "attack = attack"
+				SDL_FillRect(screen,&secondRect,0xff0000);
+				char * myInstructions2 = "attack = ";
+				SDL_Surface *instructionImage2 = TTF_RenderText_Solid(font,myInstructions2,color1);
+				SDL_BlitSurface(instructionImage2,NULL,screen,&secondRect);
+				//puts the actual number of attack on the rect
+				char maxAttack[256];
+				itoa(power,maxAttack,10);
+				if(maxAttackImg)
+					SDL_FreeSurface(maxAttackImg);
+				maxAttackImg = TTF_RenderText_Solid(font,maxAttack,color1);
+				SDL_BlitSurface(maxAttackImg,NULL,screen,&atkRect);
+	
+}
+//checks the clicked node to see if there are any units on it
+bool isUnits(map_node * node, armyClass * unionArmy, armyClass * confedArmy)
+{
+	for(int i = 0; i < unionArmy->size; ++i)
+	{
+		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
+			return true;
+		
+	}
+	for(int j = 0; j < confedArmy->size; ++j)
+	{
+		if(confedArmy->armyArray[j]->getX() == node->col && confedArmy->armyArray[j]->getY() == node->row)
+			return true;
+	}
+	return false;
+}
 int checkEdge(node_edge* edge, int pos)
 {
 	if(edge == NULL)
@@ -156,7 +287,7 @@ void cancelClick(mapSuperClass* map)
 	map->clearEnemy();
 	map->clearMovement();
 }
-bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy, unitClass unitToMove)
+bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy, unitClass * unitToMove)
 {
 	map->clearMovement();
 	checkUnitStacks(map,currentArmy,enemyArmy);
@@ -164,13 +295,13 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	moveTo(node,6);
 	return true;
 }
-bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass unitMoving)
+bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass * unitMoving)
 {
-	map->clearEnemy();
-	map->clearMovement();
+	//map->clearEnemy();
+	//map->clearMovement();
 	if(map->getMap()[newX][newY].movement>=0)
 	{
-		unitMoving.setPosition(newY+1,newX+1);
+		unitMoving->setPosition(newY+1,newX+1);
 		//currentArmy.armyArray[k].hasMoved
 		return true;
 	}
@@ -215,6 +346,14 @@ void IH::handlePrimaryInput()
 		{
 		case SDLK_ESCAPE:
 			break;
+		case SDLK_1:
+			if(nodeGui)
+				selectedUnit = 0;
+			break;
+			case SDLK_2:
+			if(nodeGui)
+				selectedUnit = 1;
+			break;
 		case SDL_QUIT:
 			endGame();
 			break;
@@ -250,24 +389,31 @@ void IH::handlePrimaryInput()
 			{
 				// needs functionality
 				// selected unit needs to be selected by the player from the UI
-				//
-				//if(unitSelected)
-				//{
-				//	if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, selectedUnit))
-				//	{
-				//		unitSelected=false;
-				//	}
-				//	else
-				//	{
-				//		unitSelected=false;
-				//	}
-				//}
-				//else if(firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy, selectedUnit))
-				//{
-				//	unitSelected=true;
-				//	selectedX=actualX;
-				//	selectedY=actualY;
-				//}
+				if(unitSelected)
+				{
+					
+					if(secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[selectedUnit]))
+					{
+						unitSelected=false;
+						nodeGui = false;
+						cancelClick(map);
+					}
+					else
+					{
+						
+						unitSelected=false;
+						nodeGui = false;
+						cancelClick(map);
+					}
+				}
+				else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+				{
+					nodeGui = true;
+					firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy, currentUnits[selectedUnit]);
+					unitSelected=true;
+					selectedX=actualX;
+					selectedY=actualY;	
+				}	
 			}
 		}
 	case reviewingMatch:
@@ -311,6 +457,9 @@ void IH::drawAll()
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
+		if(nodeGui)
+			drawNodeGui(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
+
 		break;
 	case reviewingMatch:
 		break;

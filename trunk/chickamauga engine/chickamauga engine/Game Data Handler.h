@@ -42,8 +42,11 @@ private:
 	bool mouseDown;
 	//for unit movement
 	bool unitSelected;
+	bool nodeGui;
 	int selectedX;
 	int selectedY;
+	unitClass * currentUnits[2];
+	int selectedUnit;
 
 	//
 
