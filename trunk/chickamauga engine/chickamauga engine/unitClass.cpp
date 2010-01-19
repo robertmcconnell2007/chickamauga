@@ -1,5 +1,5 @@
 #include "unitClass.h"
-
+#include <string>
 unitClass::unitClass()
 {
 	hasMovedThisTurn = false;
@@ -41,29 +41,50 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 
 void armyClass::loadArmy(char * fileName, char * armyColorFile)
 {
-	int px,py,pow;
+	int px,py,pow,turn;
+	string name;
 	unitClass *temp;
 	ifstream infile;
 	infile.open(fileName);
-	infile>>size;
-	armyArray=new unitClass*[size];
-	for(int i=0; i<size; i++)
+	infile>>fullSize;
+	infile>>currentSize;
+	armyArray=new unitClass*[fullSize];
+	for(int i=0; i<currentSize; i++)
 	{
 		temp = new unitClass;
 		infile>>py;
 		infile>>px;
 		infile>>pow;
+		getline(infile,name,'#');
 		temp->setPosition(px,py);
 		temp->setPower(pow);
+		temp->setReinforceTurn(-1);
+		temp->setName(name);
 		armyArray[i] = temp;
 	}
+	infile>>reinforcementSize;
+	reinforcements=new unitClass*[reinforcementSize];
+	for(int i=0; i<reinforcementSize; i++)
+	{
+		temp= new unitClass;
+		infile>>pow;
+		infile>>turn;
+		getline(infile,name,'#');
+		temp->setPosition(-1,-1);
+		temp->setPower(pow);
+		temp->setReinforceTurn(turn);
+		temp->setName(name);
+		reinforcements[i]=temp;
+	}
+	exitedUnits=new unitClass*[fullSize];
+	deadUnits=new unitClass*[fullSize];
 	infile.close();
 	armyColors=load_my_image(armyColorFile);
 
 }
 void armyClass::drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen)
 {
-	for(int i=0; i<size; i++)
+	for(int i=0; i<currentSize; i++)
 	{
 		armyArray[i]->drawUnit(xShift,yShift,mapWidth,mapHeight,a_screen,armyColors);
 	}
@@ -71,7 +92,7 @@ void armyClass::drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_S
 
 void armyClass::resetMoves()
 {
-	for(int i = 0; i < size; ++i)
+	for(int i = 0; i < currentSize; ++i)
 	{
 		armyArray[i]->resetMove();
 	}

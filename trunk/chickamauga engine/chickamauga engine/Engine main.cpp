@@ -4,7 +4,6 @@ using namespace std;
 #include "SDL.h"
 #include "GraphicsLoader.h"
 #include "Game Data Handler.h"
-#include "SDL.h"		// SDL library
 #include "SDL_ttf.h"	// true-type font library for SDL
 
 static const int SCREEN_WIDTH = 860;
