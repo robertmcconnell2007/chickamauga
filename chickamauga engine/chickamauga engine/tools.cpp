@@ -87,7 +87,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 	secondRect.w = 95;
 	if(node->type == rough || node->type == roughForest)
 		defenseMultiplier = 2;
-	for(int i = 0; i < unionArmy->size; ++i)
+	for(int i = 0; i < unionArmy->currentSize; ++i)
 	{
 		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
 		{
@@ -110,7 +110,7 @@ void drawNodeGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy,
 			}
 		}
 	}
-	for(int j = 0; j < confedArmy->size; ++j)
+	for(int j = 0; j < confedArmy->currentSize; ++j)
 	{
 		if(confedArmy->armyArray[j]->getX() == node->col && confedArmy->armyArray[j]->getY() == node->row)
 		{
@@ -192,13 +192,13 @@ void setSelectedUnits(map_node * node, armyClass * unionArmy, armyClass * confed
 //checks the clicked node to see if there are any units on it
 bool isUnits(map_node * node, armyClass * unionArmy, armyClass * confedArmy)
 {
-	for(int i = 0; i < unionArmy->size; ++i)
+	for(int i = 0; i < unionArmy->currentSize; ++i)
 	{
 		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
 			return true;
 		
 	}
-	for(int j = 0; j < confedArmy->size; ++j)
+	for(int j = 0; j < confedArmy->currentSize; ++j)
 	{
 		if(confedArmy->armyArray[j]->getX() == node->col && confedArmy->armyArray[j]->getY() == node->row)
 			return true;
@@ -314,7 +314,7 @@ void moveTo(map_node* node,int movement)
 }
 void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 {
-	for(int k = 0; k < enemyArmy.size; k++)
+	for(int k = 0; k < enemyArmy.currentSize; k++)
 	{
 		map->setEnemy(enemyArmy.armyArray[k]->getX()-1,enemyArmy.armyArray[k]->getY()-1);
 	}
@@ -326,14 +326,14 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 	{
 		for(int j = 0; j < map->width; j++)
 		{
-			for(int f = 0; f < first.size; f++)
+			for(int f = 0; f < first.currentSize; f++)
 			{
 				if(first.armyArray[f]->getX()-1 == j && first.armyArray[f]->getY()-1 == i)
 				{
 					mapPointer[i][j].numOfUnits += 1;
 				}
 			}
-			for(int s = 0; s < second.size; s++)
+			for(int s = 0; s < second.currentSize; s++)
 			{
 				if(second.armyArray[s]->getX()-1 == j && second.armyArray[s]->getY()-1 == i)
 				{

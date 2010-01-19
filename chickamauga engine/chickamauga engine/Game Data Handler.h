@@ -2,6 +2,7 @@
 #include <iostream>
 using namespace std;
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include "mapSuperClass.h"
 #include "rules.h"
 #include "player.h"
@@ -57,7 +58,7 @@ public:
 	SDL_Surface * titleScreen;
 	SDL_Surface * GUIGameFrame;
 	
-	SDL_Rect GUIGameFrame;
+	//SDL_Rect GUIGameFrame;
 
 
 	//unit variables
