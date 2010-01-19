@@ -45,16 +45,22 @@ private:
 	bool nodeGui;
 	int selectedX;
 	int selectedY;
-	
-	
-
-	//
-
+public:
+	//true type font stuff
+	TTF_Font *font1;
+	TTF_Font *font2;
+	int fontSize1;
+	int fontSize2;
+	//surfaces and rects
 	SDL_Surface * screen;
 	SDL_Surface * ourLogo;
 	SDL_Surface * titleScreen;
-public:
-	//public variables
+	SDL_Surface * GUIGameFrame;
+	
+	SDL_Rect GUIGameFrame;
+
+
+	//unit variables
 	unitClass * currentUnits[2];
 	int selectedUnit;
 	SDL_Event event;

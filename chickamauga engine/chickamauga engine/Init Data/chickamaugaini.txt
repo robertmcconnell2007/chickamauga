@@ -1,0 +1,14 @@
+title#TitlePage.bmp
+logo#DoubleTappLogo.bmp
+rules#chickamauga rule set.txt
+ttf#C:\\windows\\fonts\\arial.ttf
+map#mapData/mapData/ChickamaugaMapData.txt
+mapnode#mapData/mapImages/hexSheet.bmp
+maproads#mapData/mapImages/roadsNtrails.bmp
+mapcreeks#mapData/mapImages/creeksNbridgesNfords.bmp
+mapstatus#mapData/mapImages/statusTiles.bmp
+maptowns#mapData/mapImages/townNstratPoint.bmp
+army1#unionArmyUnits.txt
+army1colors#unionArmy.bmp
+army2#rebelArmyUnits.txt
+army2colors#unionArmy.bmp

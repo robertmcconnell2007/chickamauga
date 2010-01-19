@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "Game Data Handler.h"
 #include "unitClass.h"
 #include "tools.h"

@@ -241,6 +241,10 @@
 				RelativePath=".\chickamauga rule set.txt"
 				>
 			</File>
+			<File
+				RelativePath=".\Init Data\chickamaugaini.txt"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

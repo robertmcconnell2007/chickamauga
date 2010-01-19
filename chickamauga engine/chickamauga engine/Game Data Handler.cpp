@@ -1,5 +1,6 @@
 #include "Game Data Handler.h"
 #include "mapSuperClass.h"
+#include <fstream>
 
 IH::IH()
 {
