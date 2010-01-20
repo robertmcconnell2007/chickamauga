@@ -3,6 +3,8 @@
 #include <sstream>
 using namespace std;
 #include "Game Data Handler.h"
+#include "player.h"
+#include "unitClass.h"
 #include "mapSuperClass.h"
 #include "rules.h"
 
@@ -53,6 +55,17 @@ void rules::loadRules(string fileName)
 	int dump1 = 0, dump2 = 0;
 	int totDepend, totRCR, totUKR, totUER, totVPR, totACR, totNCR, totRER;
 	totDepend = totRCR = totUKR = totUER = totVPR = totACR = totNCR = totRER = 0;
+	getline(infile, tester, '\n');
+	calculator.loadOdds((char*)tester.c_str());
+	
+	infile >> unitMovePoints;
+	infile >> clearMovePenalty;
+	infile >> forestMovePenalty;
+	infile >> roughMovePenalty;
+	infile >> forestroughMovePenalty;
+	infile >> fordMovePenalty;
+	infile >> roadCost;
+	infile >> trailCost;
 	infile >> numRules;
 	infile >> numDependancies;
 	infile >> RCRrules;
@@ -139,8 +152,11 @@ void rules::loadRules(string fileName)
 			infile >> VPR[totVPR].requisiteEffect2;
 			infile >> VPR[totVPR].requisiteEffect3;
 			infile >> VPR[totVPR].pointValue;
-			//ask the army for that unit and set the pointer to it
+			string temp;
 			infile.ignore(1);
+			getline(infile, temp, '\n');
+			//ask the army for that unit and set the pointer to it
+			VPR[totVPR].specialUnit = IH::Instance()->players[1].playerArmy.findUnit(temp);			
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
@@ -329,20 +345,20 @@ void rules::coutRules()
 			}
 		}
 	}
-	//for(int i = 0; i < 	VPRrules; ++i)
-	//{
-	//	if(!VPR[i].controlRule)
-	//	{
-	//		cout << VPR[i].returnRule() << "\n";
-	//		for(int k = 0; k < numDependancies; ++k)
-	//		{
-	//			if(&VPR[i] == DPD[k].dependantRule)
-	//			{
-	//				cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
-	//			}
-	//		}
-	//	}
-	//}
+	for(int i = 0; i < 	VPRrules; ++i)
+	{
+		if(!VPR[i].controlRule)
+		{
+			cout << VPR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&VPR[i] == DPD[k].dependantRule)
+				{
+					cout << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
 	for(int i = 0; i < 	ACRrules; ++i)
 	{
 		if(!ACR[i].controlRule)
@@ -411,6 +427,11 @@ string roadControlRule::returnRule()
 	return oss.str();
 }
 
+int roadControlRule::calculateRule(int player)
+{
+	return 0;
+}
+
 string unitKillRule::returnRule()
 {
 	ostringstream oss;
@@ -428,6 +449,18 @@ string unitKillRule::returnRule()
 	}
 	oss << "It confers " << pointValue << " points per enemy strength point killed.\n";
 	return oss.str();
+}
+
+int unitKillRule::calculateRule(int player)
+{
+	int calc = 0;
+	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	{
+		for(int i = 0; i < IH::Instance()->players[!player].playerArmy.deadSize; ++i)
+			calc += (IH::Instance()->players[!player].playerArmy.deadUnits[i]->getPower() * pointValue);
+	}
+	return calc;
 }
 
 string unitExitRule::returnRule()
@@ -449,9 +482,24 @@ string unitExitRule::returnRule()
 	return oss.str();
 }
 
+int unitExitRule::calculateRule(int player)
+{
+	int calc = 0;
+	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	{
+	}
+	return calc;
+}
+
 string VIPRule::returnRule()
 {
 	ostringstream oss;
+	if(specialUnit == NULL)
+	{
+		oss << "This VIP rule couldn't find its unit, it is not applicable.\n";
+		return oss.str();
+	}
 	oss << "This rule applies to ";
 	switch(playerSpecific)
 	{
@@ -505,6 +553,16 @@ string VIPRule::returnRule()
 	return oss.str();
 }
 
+int VIPRule::calculateRule(int player)
+{
+	int calc = 0;
+	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	{
+	}
+	return calc;
+}
+
 string areaControlRule::returnRule()
 {
 	ostringstream oss;
@@ -526,6 +584,11 @@ string areaControlRule::returnRule()
 		oss << "X: " << nodesToControl[i]->col << ", Y: " << nodesToControl[i]->row << "; ";
 	oss << "\n";
 	return oss.str();
+}
+
+int areaControlRule::calculateRule(int player)
+{
+	return 0;
 }
 
 string nodeControlRule::returnRule()
@@ -552,6 +615,11 @@ string nodeControlRule::returnRule()
 	return oss.str();
 }
 
+int nodeControlRule::calculateRule(int player)
+{
+	return 0;
+}
+
 string roadExitRule::returnRule()
 {
 	ostringstream oss;
@@ -573,3 +641,17 @@ string roadExitRule::returnRule()
 	return oss.str();
 }
 
+int roadExitRule::calculateRule(int player)
+{
+	return 0;
+}
+
+
+
+
+void rules::calcAllRules()
+{
+	//loop through each rule, check if it's a dependant rule and if it's applicable
+	//to player one, accumulate totals
+	//do the same for player 2
+}

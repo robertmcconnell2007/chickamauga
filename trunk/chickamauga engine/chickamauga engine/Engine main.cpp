@@ -23,6 +23,7 @@ int main(int argc, char ** argv)
 	}
 	Uint32 then = SDL_GetTicks(), now;
 	int msPassed = 0, updateTimer = 0, drawTimer = 0;
+	cout << "I'm beginning game loop now\n";
 	while(IH::Instance()->isGameRunning())
 	{
 		//handle game timers

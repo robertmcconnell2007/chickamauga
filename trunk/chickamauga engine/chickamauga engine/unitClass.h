@@ -1,6 +1,7 @@
 #pragma once
 #include "SDL.h"
 #include "GraphicsLoader.h"
+#include "rules.h"
 #include <fstream>
 #include <string>
 
@@ -18,13 +19,14 @@ class unitClass
 {
 private:
 	std::string name;
-	bool hasMovedThisTurn;
+	bool movedThisTurn;
 	int power;
 	SDL_Rect unitRect;
 	vector2d position;
 	int reinforceTurn;
 public:
 	unitClass();
+	~unitClass();
 	int getX(){return position.x;}
 	int getY(){return position.y;}
 	int getPower(){return power;}
@@ -33,10 +35,10 @@ public:
 	void setName(string s){name=s;}
 	SDL_Rect getSize();
 	void setPosition(int,int);
-	void setMoved() {hasMovedThisTurn = true;}
-	bool hasMoved() {return hasMovedThisTurn;}
+	void setMoved();
+	bool hasMoved(); 
 	void drawUnit(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen,SDL_Surface *armyColors);
-	void resetMove() {hasMovedThisTurn = false;}
+	void resetMove();
 	void setReinforceTurn(int r){reinforceTurn=r;}
 };
 
@@ -61,7 +63,9 @@ public:
 	int exitedSize;
 	void resetMoves();
 	void loadArmy(char * unitFile,char * armyColorFile);
-	void drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen);
+	void drawArmy(int xShift,int yShift,int mapWidth,int maHeight, SDL_Surface* a_screen);
+	unitClass * findUnit(string lookUpName);
+	int checkStatus(unitClass* unit);
 };
 
 

@@ -166,7 +166,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\battleCalc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Engine main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\fileLoader.cpp"
 				>
 			</File>
 			<File
@@ -204,6 +212,14 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\battleCalc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fileLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Game Data Handler.h"
 				>
 			</File>
@@ -238,11 +254,19 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\chickamauga rule set.txt"
+				RelativePath=".\Init Data\chickamauga rule set.txt"
 				>
 			</File>
 			<File
 				RelativePath=".\Init Data\chickamaugaini.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\Init Data\rebelArmyUnits.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\Init Data\unionArmyUnits.txt"
 				>
 			</File>
 		</Filter>

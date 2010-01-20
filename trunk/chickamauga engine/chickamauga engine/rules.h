@@ -1,4 +1,6 @@
 #pragma once
+#include "battleCalc.h"
+#include "mapSuperClass.h"
 
 enum playerSpecificity
 {
@@ -12,7 +14,8 @@ enum effect
 	no,
 	killed,
 	exited,
-	alive
+	alive,
+	reinforcing
 };
 
 enum ruleTypes
@@ -32,7 +35,8 @@ struct masterRule
 	bool controlRule;
 	int playerSpecific;
 	int pointValue;
-	virtual  string returnRule() = 0;
+	virtual string returnRule() = 0;
+	virtual int calculateRule(int player) = 0;
 	masterRule() {controlRule = false;}
 };
 
@@ -49,16 +53,19 @@ struct roadControlRule : public masterRule
 	map_node ** enterNodes;
 	map_node ** exitNodes;
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct unitKillRule : public masterRule
 {
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct unitExitRule : public masterRule
 {
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct VIPRule : public masterRule
@@ -70,6 +77,7 @@ struct VIPRule : public masterRule
 	//unit * to the unit
 	unitClass * specialUnit;
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct areaControlRule : public masterRule
@@ -77,6 +85,7 @@ struct areaControlRule : public masterRule
 	int numNodes;
 	map_node ** nodesToControl;
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct nodeControlRule : public masterRule
@@ -85,6 +94,7 @@ struct nodeControlRule : public masterRule
 	bool needUnitOn;
 	map_node * nodeToControl;
 	string returnRule();
+	int calculateRule(int player);
 };
 
 //this rule will declare that any units of "playerSpecific''s
@@ -95,10 +105,22 @@ struct roadExitRule : public masterRule
 {
 	int howManySpacesToRoad;
 	string returnRule();
+	int calculateRule(int player);
 };
 
 struct rules
 {
+	int unitMovePoints;
+	int clearMovePenalty;
+	int forestMovePenalty;
+	int roughMovePenalty;
+	int forestroughMovePenalty;
+	int fordMovePenalty;
+	int roadCost;
+	int trailCost;
+	battleCalculator calculator;
+
+
 	int numRules;
 	int numDependancies;
 
@@ -123,6 +145,7 @@ struct rules
 	rules();
 	void loadRules(string fileName);
 	void coutRules();
+	void calcAllRules();
 	void deleteRules();
 };
 

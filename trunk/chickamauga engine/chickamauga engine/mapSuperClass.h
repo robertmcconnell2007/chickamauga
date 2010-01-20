@@ -1,5 +1,4 @@
 #pragma once
-
 #include <fstream>
 #include <string>
 using namespace std;
@@ -89,23 +88,7 @@ private:
 	SDL_Rect hexSize;
 	//array of units
 	void createBlankMap(int width, int height); //for the specific use of this class
-	void loadData()
-	{
-		nodeTypes = load_my_image("mapData/mapImages/hexSheet.bmp");
-		roadsTrails = load_my_image("mapData/mapImages/roadsNtrails.bmp");
-		creeksBridgesFords = load_my_image("mapData/mapImages/creeksNbridgesNfords.bmp");
-		statusTiles = load_my_image("mapData/mapImages/statusTiles.bmp");
-		townNstratPoint = load_my_image("mapData/mapImages/townNstratPoint.bmp");
-		SDL_SetColorKey(nodeTypes, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(roadsTrails, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(creeksBridgesFords, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(statusTiles, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(townNstratPoint, SDL_SRCCOLORKEY, 0xff00ff);
-		showEnemyControl = false;
-		hexSize.x = hexSize.y = 0;
-		hexSize.h = 44;
-		hexSize.w = 50;
-	}
+	void loadData();
 public:
 	void clearMovement();
 	int width;
