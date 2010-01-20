@@ -2,13 +2,22 @@
 #include <string>
 unitClass::unitClass()
 {
-	hasMovedThisTurn = false;
+	movedThisTurn = false;
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
 	//position.x=position.y=2;
 	
 }
+
+unitClass::~unitClass()
+{
+	printf("fml\n");
+}
+
+bool unitClass::hasMoved()  {return movedThisTurn;}
+void unitClass::setMoved()  {movedThisTurn = true;}
+void unitClass::resetMove() {movedThisTurn = false;}
 void unitClass::setPosition(int nX,int nY)
 {
 	position.x=nX;
@@ -96,4 +105,54 @@ void armyClass::resetMoves()
 	{
 		armyArray[i]->resetMove();
 	}
+}
+
+unitClass * armyClass::findUnit(string lookUpName)
+{
+	for(int i = 0; i < currentSize; ++i)
+	{
+		if(armyArray[i]->getName() == lookUpName)
+			return armyArray[i];
+	}
+	for(int i = 0; i < reinforcementSize; ++i)
+	{
+		if(reinforcements[i]->getName() == lookUpName)
+			return reinforcements[i];
+	}
+	for(int i = 0; i < exitedSize; ++i)
+	{
+		if(exitedUnits[i]->getName() == lookUpName)
+			return exitedUnits[i];
+	}
+	for(int i = 0; i < deadSize; ++i)
+	{
+		if(deadUnits[i]->getName() == lookUpName)
+			return deadUnits[i];
+	}
+	return NULL;
+}
+
+int armyClass::checkStatus(unitClass* unit)
+{
+	for(int i = 0; i < currentSize; ++i)
+	{
+		if(armyArray[i] == unit)
+			return alive;
+	}
+	for(int i = 0; i < reinforcementSize; ++i)
+	{
+		if(reinforcements[i] == unit)
+			return reinforcing;
+	}
+	for(int i = 0; i < deadSize; ++i)
+	{
+		if(deadUnits[i] == unit)
+			return killed;
+	}
+	for(int i = 0; i < exitedSize; ++i)
+	{
+		if(exitedUnits[i] == unit)
+			return exited;
+	}
+	return -1;
 }

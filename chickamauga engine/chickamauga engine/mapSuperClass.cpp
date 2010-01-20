@@ -1,5 +1,6 @@
 #include "graphicsloader.h"
 #include "mapSuperClass.h"
+#include "Game Data Handler.h"
 
 void mapSuperClass::clearMovement()
 {
@@ -199,6 +200,7 @@ bool mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2
 		}
 		return false;
 	}
+	return false;
 }
 mapSuperClass::mapSuperClass(int sizeX, int sizeY)
 {
@@ -472,4 +474,22 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 			}
 		}
 	}
+}
+
+void mapSuperClass::loadData()
+{
+	nodeTypes = load_my_image(IH::Instance()->fileNames.mapnode);
+	roadsTrails = load_my_image(IH::Instance()->fileNames.maproads);
+	creeksBridgesFords = load_my_image(IH::Instance()->fileNames.mapcreeks);
+	statusTiles = load_my_image(IH::Instance()->fileNames.mapstatus);
+	townNstratPoint = load_my_image(IH::Instance()->fileNames.maptowns);
+	SDL_SetColorKey(nodeTypes, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(roadsTrails, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(creeksBridgesFords, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(statusTiles, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(townNstratPoint, SDL_SRCCOLORKEY, 0xff00ff);
+	showEnemyControl = false;
+	hexSize.x = hexSize.y = 0;
+	hexSize.h = 44;
+	hexSize.w = 50;
 }

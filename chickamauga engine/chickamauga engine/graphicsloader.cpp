@@ -1,5 +1,7 @@
 #include "SDL.h"
 #include <cmath>
+#include <vector>
+#include <string>
 #include "MersenneTwister.h"
 #include "graphicsloader.h"
 using namespace std;
@@ -21,7 +23,7 @@ SDL_Surface *load_my_image( string filename )
 		optimizedImage = SDL_DisplayFormat( loadedImage ); 
 		//Free the old image 
 		SDL_FreeSurface( loadedImage ); 
-	} 
+	}
 
 	//Return the optimized image 
 	return optimizedImage;
@@ -56,6 +58,36 @@ int getRandomNum()
 	return abs(random);
 }
 
+void printStrings(string text, SDL_Rect destRect, SDL_Surface *screen, SDL_Color text_color, TTF_Font *font)
+{
+	int lineSkip = TTF_FontLineSkip(font);
+	int width = 0, height = 10;
+	vector<string> vLines;
+	string strSub;
+	int n = 0, w = 0;
+	while(n != -1)
+	{
+		n = text.find('\n', 0);
+		strSub = text.substr(0, n);
+		if(n!=-1)
+			text = text.substr(n+1, -1);
+		vLines.push_back(strSub);
+		TTF_SizeText(font, strSub.c_str(), &w, &height);
+		if(w > width)
+			width = w;
+	}
+	height = (vLines.size() - 1) * lineSkip + height;
+	SDL_Surface * sTemp = NULL;
+	SDL_Rect tempStrRect;
+	for(int i = 0; i < vLines.size(); ++i)
+	{
+		sTemp = TTF_RenderText_Solid(font, vLines[i].c_str(), text_color);
+		tempStrRect.x = destRect.x;
+		tempStrRect.y = destRect.y + (i * lineSkip);
+		SDL_BlitSurface(sTemp, NULL, screen, &tempStrRect);
+		SDL_FreeSurface(sTemp);
+	}
+}
 
 void writeText(SDL_Surface * ascii, SDL_Rect * asciiSize, SDL_Surface * screen, string output, int positionX, int positionY)
 {
