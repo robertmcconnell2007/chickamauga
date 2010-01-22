@@ -1,6 +1,57 @@
 #include "Game Data Handler.h"
 #include "mapSuperClass.h"
 #include <fstream>
+#include <string>
+
+
+gameFileHandler::gameFileHandler(string name)
+{
+	setGame(name);
+}
+
+bool gameFileHandler::checkFileNames()
+{
+	ifstream gameFile, fileLoaders[4];
+	gameFile.open(gameName.c_str());
+	if(!gameFile.is_open())
+		return false;
+	getline(gameFile, mapName);
+	getline(gameFile, rulesName);
+	getline(gameFile, blue_army);
+	getline(gameFile, gray_army);
+	gameFile.close();
+	fileLoaders[0].open(mapName.c_str());
+	if(!fileLoaders[0].is_open())
+		return false;
+	fileLoaders[0].close();
+	fileLoaders[1].open(rulesName.c_str());
+	if(!fileLoaders[1].is_open())
+		return false;
+	fileLoaders[1].close();
+	fileLoaders[2].open(blue_army.c_str());
+	if(!fileLoaders[2].is_open())
+		return false;
+	fileLoaders[2].close();
+	fileLoaders[3].open(gray_army.c_str());
+	if(!fileLoaders[3].is_open())
+		return false;
+	fileLoaders[3].close();
+	return true;
+}
+
+void gameFileHandler::setGame(string name)
+{
+	gameName = name;
+}
+
+void gameFileHandler::setFiles()
+{
+	IH::Instance()->fileNames.map = mapName;
+	IH::Instance()->fileNames.rules = rulesName;
+	IH::Instance()->fileNames.army1 = blue_army;
+	IH::Instance()->fileNames.army2 = gray_army;
+}
+
 
 IH::IH()
 {
@@ -79,12 +130,12 @@ IH* IH::Instance()
 	return &instance;
 }
 
-void IH::createMatch(string mapName, char player1IP[20], char player2IP[20])
+void IH::createMatch()
 {
-	gameState = matchMainPhase;
+	
 	gameRules = new rules;
 	//map object = new map(mapName)
-	map = new mapSuperClass(mapName.c_str());
+	map = new mapSuperClass(fileNames.map.c_str());
 	gameRules->loadRules(fileNames.rules);
 	gameRules->coutRules();
 	//set up the players ip address, and any other neccessary data for them

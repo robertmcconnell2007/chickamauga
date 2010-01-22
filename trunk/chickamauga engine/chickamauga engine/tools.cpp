@@ -260,7 +260,10 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 			if(!IH::Instance()->currentUnits[0])
 				IH::Instance()->currentUnits[0] = currentArmy.armyArray[i];
 			else if(!IH::Instance()->currentUnits[1])
+			{
+				IH::Instance()->unit2Selected = true;
 				IH::Instance()->currentUnits[1] = currentArmy.armyArray[i];
+			}
 		}
 	}
 	for(int i = 0; i < enemyArmy.currentSize; ++i)
@@ -328,10 +331,8 @@ void IH::handlePrimaryInput()
 		case SDL_KEYDOWN:
 			switch(event.key.keysym.sym)
 			{
-			case SDLK_RETURN:
-				cout << "making map\n";
-				createMatch(fileNames.map, 0,0);
-				gameState = matchMainPhase;//gameState = atTitleScreen;
+			case SDLK_RETURN:				
+				gameState = atMatchPrep;//gameState = atTitleScreen;
 				break;
 			}
 			break;
@@ -343,6 +344,18 @@ void IH::handlePrimaryInput()
 	case atTitleScreen:
 		break;
 	case atMatchPrep:
+		cout << "I'm prepping the match now\n";
+		matchFileNames.setGame("chickamauga.txt");
+		if(matchFileNames.checkFileNames())
+		{
+			matchFileNames.setFiles();
+			createMatch();
+			gameState = matchMainPhase;
+		}
+		else
+		{
+			cout << "FAILED    FAILED    FAILED TO LOAD FILES!!!\n";
+		}
 		break;
 	case matchMainPhase:
 		switch(event.type)
@@ -402,6 +415,14 @@ void IH::handlePrimaryInput()
 				if(clickedIn(event, GUIEndTurnBox))
 				{
 					gameState = matchCombatPhase;
+				}
+				if(currentUnits[0] && clickedIn(event, UISlots[0]))
+				{
+					unit1Selected = !unit1Selected;
+				}
+				if(currentUnits[1] && clickedIn(event, UISlots[1]))
+				{
+					unit2Selected = !unit2Selected;
 				}
 			}
 			else if(firstX == actualX && firstY == actualY)

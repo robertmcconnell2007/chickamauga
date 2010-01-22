@@ -18,6 +18,20 @@ enum game_states
 	reviewingMatch
 };
 
+struct gameFileHandler
+{
+	string gameName;
+	string mapName;
+	string rulesName;
+	string blue_army;
+	string gray_army;
+	gameFileHandler() {}
+	gameFileHandler(string name);
+	bool checkFileNames();
+	void setGame(string name);
+	void setFiles();
+};
+
 class IH
 {
 private:
@@ -47,6 +61,7 @@ private:
 	int selectedX;
 	int selectedY;
 public:
+	gameFileHandler matchFileNames;
 	//2 player objects
 	player players[2];
 	//rules object
@@ -84,7 +99,7 @@ public:
 	//public functions
 	static IH * Instance();
 	map_node ** returnMap() {return map->getMap();}
-	void createMatch(string mapName, char player1IP[20], char player2IP[20]);
+	void createMatch();
 	int endMatch();//returns which player won
 
 	bool isGameRunning()  {return runningGame;}
