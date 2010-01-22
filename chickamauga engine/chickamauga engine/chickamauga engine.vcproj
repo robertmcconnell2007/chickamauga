@@ -58,7 +58,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib SDLmain.lib SDL_ttf.lib"
+				AdditionalDependencies="SDL.lib SDLmain.lib SDL_ttf.lib Ws2_32.lib"
 				AdditionalLibraryDirectories="&quot;C:\Users\Ix\Desktop\svn chickamauga\chickamauga engine\lib&quot;;&quot;C:\Users\Robert McConnell\Desktop\Chickamauga\chickamauga engine\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\messageHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\player.cpp"
 				>
 			</File>
@@ -199,6 +203,10 @@
 			</File>
 			<File
 				RelativePath=".\tools.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UDP.cpp"
 				>
 			</File>
 			<File
@@ -213,6 +221,10 @@
 			>
 			<File
 				RelativePath=".\battleCalc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\dataPacket.h"
 				>
 			</File>
 			<File
@@ -232,6 +244,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\messageHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\player.h"
 				>
 			</File>
@@ -241,6 +257,10 @@
 			</File>
 			<File
 				RelativePath=".\tools.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UDP.h"
 				>
 			</File>
 			<File
