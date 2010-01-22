@@ -1,0 +1,4 @@
+Init Data/mapData/mapData/ChickamaugaMapData.txt
+Init Data/chickamauga rule set.txt
+Init Data/unionArmyUnits.txt
+Init Data/rebelArmyUnits.txt

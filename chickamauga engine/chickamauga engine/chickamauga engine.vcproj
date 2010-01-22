@@ -258,6 +258,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\chickamauga.txt"
+				>
+			</File>
+			<File
 				RelativePath=".\Init Data\chickamaugaini.txt"
 				>
 			</File>
