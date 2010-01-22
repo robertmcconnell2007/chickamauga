@@ -477,8 +477,25 @@ void IH::handlePrimaryInput()
 
 void IH::update(int mspassed)
 {
-	screenShiftX += xMove*5;
-	screenShiftY += yMove*5;
+	switch(gameState)
+	{
+	case matchMainPhase:
+	case matchCombatPhase:
+	case reviewingMatch:
+		screenShiftX += xMove*5;
+		screenShiftY += yMove*5;
+		if(screenShiftX > 50)
+			screenShiftX = 50;
+		if(screenShiftY > 44)
+			screenShiftY = 44;
+		if(screenShiftX < -(((map->width+1)*38)-screen->w+12))
+			screenShiftX = -(((map->width+1)*38)-screen->w+12);
+		if(screenShiftY < -(((map->height)*44)-screen->h+(GUIFrameRect.h*2)))
+			screenShiftY = -(((map->height)*44)-screen->h+(GUIFrameRect.h*2));
+		break;
+	default:
+		break;
+	}
 	switch(gameState)
 	{
 	case atLogo:
