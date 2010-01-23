@@ -1,11 +1,13 @@
 #include "messageHandler.h"
 #include "dataPacket.h"
+#include "UDP.h"
 
 struct dataPacket;
 
 MessageHandler::MessageHandler()
 {
 	inSize = 0;
+	outSize = 0;
 }
 MessageHandler::~MessageHandler()
 {
@@ -48,9 +50,17 @@ bool MessageHandler::getMessage(string *incommingMessage, int *flag)
 }
 bool MessageHandler::checkMessages()
 {
+	bool validMessage = false;
 	if(message.checkMessage(&packet))
 	{
 		if(inSize == PACKETBUFFER)
+			return false;
+		for(int i = 0; i < RECVSUCCESSFUL; ++i)
+		{
+			if(packet.flag == i)
+				validMessage = true;
+		}
+		if(!validMessage)
 			return false;
 		flagArrayIn[inSize] = packet.flag;
 		stringArrayIn[inSize] = packet.stuff;
@@ -76,4 +86,9 @@ void MessageHandler::updateArrayOut()
 		stringArrayOut[i] = stringArrayOut[i+1];
 	}
 	outSize -= 1;
+}
+
+int MessageHandler::getLastUDPError() 
+{ 
+	return message.getLastError(); 
 }

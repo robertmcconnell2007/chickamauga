@@ -49,7 +49,7 @@ public:
 	bool sendNextMessage();
 	bool checkMessages();
 	bool getMessage(string* incommingMessage, int *flag);
-	int getLastUDPError() { return message.getLastError(); }
+	int getLastUDPError();
 	static MessageHandler* Instance()
 	{
 		static MessageHandler instance;

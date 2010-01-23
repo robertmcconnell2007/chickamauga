@@ -7,6 +7,7 @@
 #include "rules.h"
 #include "graphicsloader.h"
 #include "messageHandler.h"
+#include "UDP.h"
 ///<<<<<<< .mine
 #include "SDL.h"		// SDL library
 #include "SDL_ttf.h"	// true-type font library for SDL
@@ -377,6 +378,12 @@ void IH::handlePrimaryInput()
 				waiting = true;
 				amHost = true;
 				playingLAN = false;
+				matchFileNames.setGame("chickamauga.txt");
+				if(matchFileNames.checkFileNames())
+				{
+					matchFileNames.setFiles();
+					gameState = matchMainPhase;
+				}
 			}
 			if(!waiting && clickedIn(event, GameHostButton))
 			{
@@ -388,7 +395,8 @@ void IH::handlePrimaryInput()
 				if(matchFileNames.checkFileNames())
 				{
 					matchFileNames.setFiles();
-					MessageHandler::Instance()->setupHost(); 
+					MessageHandler::Instance()->setupHost();
+					cout << MessageHandler::Instance()->getLastUDPError() << "\n";
 				}
 			}
 			if(!waiting && clickedIn(event, GameJoinButton))
@@ -510,14 +518,14 @@ void IH::handlePrimaryInput()
 					selectedNode = &map->getMap()[firstX][firstY];
 				if(unit1Selected || unit2Selected)
 				{	
-					if(playerIam == 0)
+					if(playerIam == 0 && playersTurn == 0)
 					{
 						if(unit1Selected)
 							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
 						if(unit2Selected)
 							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
 					}
-					else
+					else if (playerIam == 1 && playersTurn == 1)
 					{
 						if(unit1Selected)
 							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
@@ -640,8 +648,8 @@ bool IH::handleMessage()
 {
 	string unitName, stringX, stringY;
 	unitClass * unitToHandle;
-	int newX, newY, n = 0;
 	cout << currentMessage << "\n";
+	int newX, newY, n = 0;
 	switch(currentMessageFlag)
 	{
 	case GAMEFILENAME:
@@ -658,6 +666,7 @@ bool IH::handleMessage()
 	case GETIP:
 		if(amHost)
 		{
+			cout << "OMG I GOT A PING\n";
 			MessageHandler::Instance()->sendMessage(&matchFileNames.gameName, GAMEFILENAME);
 		}
 		else

@@ -1,5 +1,7 @@
 #include "UDP.h"
 #include "dataPacket.h"
+#include <string>
+using namespace std;
 
 struct dataPacket;
 
@@ -126,4 +128,9 @@ bool udpClass::checkMessage(dataPacket* info)
 	}
 	errorCode = NOTREADYERROR;
 	return false;
+}
+
+int udpClass::getLastError()
+{
+	return errorCode;
 }
