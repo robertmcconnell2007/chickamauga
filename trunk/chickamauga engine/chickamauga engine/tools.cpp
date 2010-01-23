@@ -114,10 +114,6 @@ int checkEdge(node_edge* edge, int pos)
 		nodePointer = edge->lowerNode;
 	else
 		nodePointer = edge->upperNode;
-	if(nodePointer->enemy)
-	{
-		return -2;
-	}
 	int numOccupy = nodePointer->numOfUnits;
 	if(numOccupy >= 2)
 		return -1;
@@ -185,32 +181,24 @@ void moveTo(map_node* node,int movement)
 		{
 			if(i > 2)
 			{
-				if(node->nodeEdges[i]->lowerNode->movement >= 0 && tempMove != -2 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->lowerNode->movement)
-				{
-					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
-				}
-				else if(tempMove != -2 && tempMove != -1 && movement-tempMove >= 0)
+				if(node->nodeEdges[i]->lowerNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->lowerNode->movement)
 				{
 					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
 				}
 				else if(tempMove != -1 && movement-tempMove >= 0)
 				{
-					moveTo(node->nodeEdges[i]->lowerNode,0);
+					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
 				}
 			}
 			else
 			{
-				if(node->nodeEdges[i]->upperNode->movement >= 0 && tempMove != -2 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->upperNode->movement)
-				{
-					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
-				}
-				else if(tempMove != -2 && tempMove != -1 && movement-tempMove >= 0)
+				if(node->nodeEdges[i]->upperNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->upperNode->movement)
 				{
 					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
 				}
 				else if(tempMove != -1 && movement-tempMove >= 0)
 				{
-					moveTo(node->nodeEdges[i]->upperNode,0);
+					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
 				}
 			}
 		}
