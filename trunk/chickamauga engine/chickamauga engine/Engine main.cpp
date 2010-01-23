@@ -5,6 +5,7 @@ using namespace std;
 #include "GraphicsLoader.h"
 #include "Game Data Handler.h"
 #include "SDL_ttf.h"	// true-type font library for SDL
+#include "messageHandler.h"
 
 static const int SCREEN_WIDTH = 860;
 static const int SCREEN_HEIGHT = 640;
@@ -21,6 +22,7 @@ int main(int argc, char ** argv)
 		printf("could not initialize True Type Fonts\n");
 		return 2;
 	}
+	//MessageHandler::Instance()->setupHost();
 	Uint32 then = SDL_GetTicks(), now;
 	int msPassed = 0, updateTimer = 0, drawTimer = 0;
 	cout << "I'm beginning game loop now\n";

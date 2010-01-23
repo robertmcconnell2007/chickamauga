@@ -295,10 +295,13 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	}
 	setEnemyNodes(enemyArmy, map);
 	moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+	if(!(IH::Instance()->currentUnits[0] || IH::Instance()->currentUnits[1]))
+		cancelClick(map);
 	return true;
 }
 bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass * unitMoving)
 {
+	checkUnitStacks(map,currentArmy,enemyArmy);
 	if(IH::Instance()->enemyUnitsSelected)
 		cancelClick(map);
 	else if(map->getMap()[newX][newY].movement>=0)
@@ -382,7 +385,13 @@ void IH::handlePrimaryInput()
 				if(matchFileNames.checkFileNames())
 				{
 					matchFileNames.setFiles();
+					createMatch();
 					gameState = matchMainPhase;
+				}
+				else
+				{
+					gameState = atTitleScreen;
+					cout << "FAILED TO LOAD FILES\n";
 				}
 			}
 			if(!waiting && clickedIn(event, GameHostButton))
@@ -403,8 +412,7 @@ void IH::handlePrimaryInput()
 			{
 				waiting = true;
 				amHost = false;
-				playingLAN = true;
-				
+				playingLAN = true;				
 			}
 		}
 		else if(event.type == SDL_KEYDOWN && waiting && !amHost && playingLAN && !keysOff)
@@ -463,6 +471,7 @@ void IH::handlePrimaryInput()
 				break;
 			case SDLK_RETURN:
 				//playerIam = !playerIam;
+				gameState = matchCombatPhase;
 				break;
 			}
 			break;
