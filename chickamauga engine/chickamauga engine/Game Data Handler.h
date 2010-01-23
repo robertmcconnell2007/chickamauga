@@ -39,7 +39,6 @@ private:
 	~IH();
 	//map object
 	mapSuperClass * map;
-	
 	//unit handler object
 	SDL_Rect screenSize;
 	int bitsperpixel;

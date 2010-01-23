@@ -13,6 +13,7 @@ struct dataPacket;
 
 enum errorCodes
 {
+	NONERROR,
 	WSASTARTUPERROR,
 	SOCKETINIERROR,
 	GETHOSTERROR,
@@ -44,7 +45,11 @@ private:
 	int errorCode;
 	bool ready;
 public:
-	udpClass() { ready = false; }
+	udpClass() 
+	{ 
+		ready = false; 
+		dataBuffer = new char[sizeof(dataPacket)];
+	}
 	bool start();
 	bool start(const char* targetIP);
 	bool sendMessage(const dataPacket* info);

@@ -63,14 +63,15 @@ IH::IH()
 	amHost = false;
 	if(!fullScreen)
 	{
-		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);
-		
+		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		
 	}
 	else
 	{
 	}
-	playersTurn = 2;
+	playersTurn = 0;
 	gameState = 0;
+	
+	prefferedFaction = 0;
 	
 	screenShiftX = xMove = 0;
 	screenShiftY = yMove = 0;
