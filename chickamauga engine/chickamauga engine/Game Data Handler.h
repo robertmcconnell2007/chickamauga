@@ -44,11 +44,13 @@ private:
 	SDL_Rect screenSize;
 	int bitsperpixel;
 	bool fullScreen;
-	
+	bool amHost;
 	bool runningGame;
+	bool waiting;
 	int  gameState;
 	int  screenShiftX, xMove;
 	int  screenShiftY, yMove;
+	int  prefferedFaction;
 	//0 == player1, 1 == player2
 	int  playersTurn;
 	int  playerIam;
@@ -62,6 +64,9 @@ private:
 	int selectedY;
 public:
 	gameFileHandler matchFileNames;
+	string currentMessage;
+	int currentMessageFlag;
+	string output;
 	//2 player objects
 	player players[2];
 	//rules object
@@ -88,6 +93,13 @@ public:
 	SDL_Rect UISlots[3];
 	SDL_Rect GUIEndTurnBox;
 	SDL_Rect u5050;
+	SDL_Rect GameStartButton;
+	SDL_Rect GameQuitButton;
+	SDL_Rect GameHostButton;
+	SDL_Rect GameJoinButton;
+	SDL_Rect GameHotseatButton;
+	SDL_Rect GameMessageBox;
+
 
 	//unit variables
 	unitClass * currentUnits[2];
@@ -95,6 +107,8 @@ public:
 	bool enemyUnitsSelected;
 	bool unit1Selected;
 	bool unit2Selected;
+	bool playingLAN;
+	bool keysOff;
 	SDL_Event event;
 	//public functions
 	static IH * Instance();
@@ -109,4 +123,5 @@ public:
 	void handlePrimaryInput();
 	void update(int mspassed);
 	void drawAll();
+	bool handleMessage();
 };

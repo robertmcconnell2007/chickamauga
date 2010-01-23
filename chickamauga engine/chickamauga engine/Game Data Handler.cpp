@@ -55,10 +55,12 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");
 	screenSize.x = 860;
 	screenSize.y = 640;
 	bitsperpixel = 32;
+	amHost = false;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);
@@ -76,6 +78,7 @@ IH::IH()
 	nodeGui = false;
 	mouseDown = false;
 	runningGame = true;
+	waiting = false;
 	currentUnits[0] = NULL;
 	currentUnits[1] = NULL;
 	playersTurn = 0;
@@ -105,6 +108,23 @@ IH::IH()
 	GUIEndTurnBox.y = GUIFrameRect.y + 10;
 	GUIEndTurnBox.h = GUIEndTurnBox.w = 50;
 	UIbkColor = 0x05000;
+
+	GameHotseatButton.h = GameJoinButton.h = GameHostButton.h = GameStartButton.h = GameQuitButton.h = u5050.h;
+	GameHotseatButton.w = GameJoinButton.w = GameHostButton.w = GameStartButton.w = GameQuitButton.w = u5050.w;
+	GameStartButton.x = 30;
+	GameStartButton.y = screen->h - 10 - GameStartButton.h;
+	GameQuitButton.x = screen->w - 30 - GameQuitButton.w;
+	GameQuitButton.y = screen->h - 10 - GameQuitButton.h;
+	GameHostButton.x = 30;
+	GameJoinButton.x = 30;
+	GameHotseatButton.x = 30;
+	GameHostButton.y = 30;
+	GameJoinButton.y = 80;
+	GameHotseatButton.y = 130;
+	GameMessageBox.w = 400;
+	GameMessageBox.h = 50;
+	GameMessageBox.x = screen->w - GameMessageBox.w;
+	GameMessageBox.y = 0;
 }
 
 IH::~IH()

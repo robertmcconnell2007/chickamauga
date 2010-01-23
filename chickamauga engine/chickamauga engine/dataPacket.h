@@ -1,7 +1,9 @@
 #pragma once
 
+#define DATA_PACKET_SIZE      256
+
 struct dataPacket
 {
 	short flag;
-	char stuff[256];
+	char stuff[DATA_PACKET_SIZE];
 };

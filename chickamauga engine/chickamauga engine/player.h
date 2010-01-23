@@ -2,7 +2,7 @@
 #include "unitClass.h"
 struct player
 {
-	char IPAddress[20];
+	char IPAddress[15];
 	int pointsEarned;
 	int playerPosition;
 	//unit array

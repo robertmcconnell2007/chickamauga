@@ -6,7 +6,7 @@ unitClass::unitClass()
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
-	//position.x=position.y=2;
+	position.x=position.y= -1;
 	
 }
 
@@ -46,6 +46,78 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 			}
 		}
 	}
+}
+/*
+MUTKilled,
+	MUTExited,
+	MUTField,
+	MUFField,
+	MUFReinforce,
+*/
+bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
+{
+	bool found = false;
+	int i = 0;
+	switch(moveFrom)
+	{
+	case MUFField:
+		for(i = 0; i < currentSize && !found; ++i)
+		{
+			if(armyArray[i] == unit)
+			{
+				armyArray[i] = NULL;
+				found = true;
+			}
+		}
+		if(found)
+		{
+			i--;
+			currentSize--;
+			for(i; i < currentSize; ++i)
+				armyArray[i] = armyArray[i+1];
+			return true;
+		}
+		else
+			return false;
+		break;
+	case MUFReinforce:
+		for(i = 0; i < reinforcementSize && !found; ++i)
+		{
+			if(reinforcements[i] == unit)
+			{
+				reinforcements[i] = NULL;
+				found = true;
+			}
+		}
+		if(found)
+		{
+			i--;
+			reinforcementSize--;
+			for(i; i < reinforcementSize; ++i)
+				reinforcements[i] = reinforcements[i+1];
+			return true;
+		}
+		else
+			return false;
+		break;
+	}
+	i = 0;
+	switch(moveTo)
+	{
+	case MUTKilled:
+		deadUnits[deadSize] = unit;
+		deadSize++;
+		break;
+	case MUTField:
+		armyArray[currentSize] = unit;
+		currentSize++;
+		break;
+	case MUTExited:
+		exitedUnits[exitedSize] = unit;
+		exitedSize++;
+		break;
+	}
+	return false;
 }
 
 void armyClass::loadArmy(char * fileName, char * armyColorFile)
