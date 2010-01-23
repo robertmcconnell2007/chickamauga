@@ -43,6 +43,7 @@ bool udpClass::start()
 			errorCode = BINDERROR;
 			return false;
 		}
+		isHost = true;
 		ready = true;
 		errorCode = READY;
 		return true;
@@ -68,10 +69,11 @@ bool udpClass::start(const char *targetIP)
 		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_addr.s_addr = inet_addr(targetIP);
 		sockAddr.sin_port = htons(SRVR_PORT);
-		//unsigned long cmdptr = 1;
-		//ioctlsocket(mySocket,FIONBIO,&cmdptr);
+		unsigned long cmdptr = 1;
+		ioctlsocket(mySocket,FIONBIO,&cmdptr);
 		ready = true;
 		errorCode = READY;
+		isHost = false;
 		return true;
 	}
 	errorCode = ALREADYREADYERROR;
@@ -83,7 +85,14 @@ bool udpClass::sendMessage(const dataPacket* info)
 	{
 		dataBuffer = (char*)info;
 		sockAddrLen = sizeof(sockAddr);
-		dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &sockAddr, sockAddrLen);
+		if(isHost)
+		{
+			dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &client, sockAddrLen);
+		}
+		else
+		{
+			dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &sockAddr, sockAddrLen);
+		}
 		if(dataLength == SOCKET_ERROR)
 		{
 			if((err = WSAGetLastError()) != WSAEMSGSIZE && err != WSAEWOULDBLOCK)
@@ -105,10 +114,11 @@ bool udpClass::sendMessage(const dataPacket* info)
 }
 bool udpClass::checkMessage(dataPacket* info)
 {
+	
 	if(ready)
 	{
-		sockAddrLen = sizeof(sockAddr);
-		dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &sockAddr, sockAddrLen);
+		sockAddrLen = sizeof(client);
+		dataLength = recvfrom(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &client, &sockAddrLen);
 		if(dataLength == SOCKET_ERROR)
 		{
 			if((err = WSAGetLastError()) != WSAEMSGSIZE && err != WSAEWOULDBLOCK)
@@ -118,7 +128,7 @@ bool udpClass::checkMessage(dataPacket* info)
 			}
 			errorCode = RECVLITTLEERROR;
 		}
-		else
+		if(dataLength > 0)
 		{
 			*info = *(dataPacket*)dataBuffer;
 			errorCode = RECVSUCCESSFUL;

@@ -35,6 +35,7 @@ class udpClass
 private:
     SOCKET mySocket;	/* Socket descriptor for server */
 	struct sockaddr_in sockAddr;
+	struct sockaddr_in client;
 	struct in_addr compAddress;
 	int sockAddrLen;
 	int err;
@@ -44,6 +45,7 @@ private:
 	struct hostent *phe;
 	int errorCode;
 	bool ready;
+	bool isHost;
 public:
 	udpClass() 
 	{ 
