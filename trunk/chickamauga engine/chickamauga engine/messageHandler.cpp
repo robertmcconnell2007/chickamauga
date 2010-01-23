@@ -5,7 +5,7 @@ struct dataPacket;
 
 MessageHandler::MessageHandler()
 {
-	size = 0;
+	inSize = 0;
 }
 MessageHandler::~MessageHandler()
 {
@@ -21,38 +21,59 @@ bool MessageHandler::setupClient(const char* targetIP)
 }
 bool MessageHandler::sendMessage(string *outgoingMessage, int flag)
 {
-	packet.flag = flag;
-	strcpy(packet.stuff,outgoingMessage->c_str());
+	if(outSize == PACKETBUFFER)
+		return false;
+	flagArrayOut[outSize] = flag;
+	stringArrayOut[outSize] = *outgoingMessage;
+	outSize++;
+	return true;
+}
+bool MessageHandler::sendNextMessage()
+{
+	if(outSize <= 0)
+		return false;
+	packet.flag = flagArrayOut[0];
+	strcpy(packet.stuff,stringArrayOut[0].c_str());
+	updateArrayOut();
 	return message.sendMessage(&packet);
 }
 bool MessageHandler::getMessage(string *incommingMessage, int *flag)
 {
-	if(size <= 0)
+	if(inSize <= 0)
 		return false;
-	*incommingMessage = stringArray[0];
-	*flag = flagArray[0];
-	updateArray();
+	*incommingMessage = stringArrayIn[0];
+	*flag = flagArrayIn[0];
+	updateArrayIn();
 	return true;
 }
 bool MessageHandler::checkMessages()
 {
 	if(message.checkMessage(&packet))
 	{
-		if(size == PACKETBUFFER)
+		if(inSize == PACKETBUFFER)
 			return false;
-		flagArray[size] = packet.flag;
-		stringArray[size] = packet.stuff;
-		size++;
+		flagArrayIn[inSize] = packet.flag;
+		stringArrayIn[inSize] = packet.stuff;
+		inSize++;
 		return true;
 	}
 	return false;
 }
-void MessageHandler::updateArray()
+void MessageHandler::updateArrayIn()
 {
-	for(int i = 0; i < size-1; i++)
+	for(int i = 0; i < inSize-1; i++)
 	{
-		flagArray[i] = flagArray[i+1];
-		stringArray[i] = stringArray[i+1];
+		flagArrayIn[i] = flagArrayIn[i+1];
+		stringArrayIn[i] = stringArrayIn[i+1];
 	}
-	size -= 1;
+	inSize -= 1;
+}
+void MessageHandler::updateArrayOut()
+{
+	for(int i = 0; i < outSize-1; i++)
+	{
+		flagArrayOut[i] = flagArrayOut[i+1];
+		stringArrayOut[i] = stringArrayOut[i+1];
+	}
+	outSize -= 1;
 }

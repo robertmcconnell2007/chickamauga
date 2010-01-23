@@ -10,6 +10,16 @@ struct vector2d
 	int x;
 	int y;
 };
+
+enum operation
+{//MUT = move unit to, MUF = moveUnitFrom
+	MUTKilled,
+	MUTExited,
+	MUTField,
+	MUFField,
+	MUFReinforce,
+};
+
 enum terrainTypes;
 struct map_node;
 struct node_edge;
@@ -66,6 +76,7 @@ public:
 	void drawArmy(int xShift,int yShift,int mapWidth,int maHeight, SDL_Surface* a_screen);
 	unitClass * findUnit(string lookUpName);
 	int checkStatus(unitClass* unit);
+	bool moveUnit(unitClass* unit, int moveFrom, int moveTo);
 };
 
 

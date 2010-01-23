@@ -23,30 +23,36 @@ enum messagerFlags
 	ENDTURN,
 	DEFENDERRETREAT,
 	CHATMESSAGE,
-	QUIT
+	QUIT,
+	GAMEBEGIN,
 };
 
 class MessageHandler
 {
 private:
 	udpClass message;
-	int flagArray[PACKETBUFFER];
-	string stringArray[PACKETBUFFER];
-	int size;
+	int flagArrayIn[PACKETBUFFER];
+	string stringArrayIn[PACKETBUFFER];
+	int flagArrayOut[PACKETBUFFER];
+	string stringArrayOut[PACKETBUFFER];
+	int inSize;
+	int outSize;
 	dataPacket packet;
 	MessageHandler();
 	~MessageHandler();
-	void updateArray();
+	void updateArrayIn();
+	void updateArrayOut();
 public:
 	bool setupHost();
 	bool setupClient(const char* targetIP);
 	bool sendMessage(string* outgoingMessage, int flag);
+	bool sendNextMessage();
 	bool checkMessages();
 	bool getMessage(string* incommingMessage, int *flag);
 	int getLastUDPError() { return message.getLastError(); }
-	static MessageHandler& Instance()
+	static MessageHandler* Instance()
 	{
 		static MessageHandler instance;
-		return instance;
+		return &instance;
 	}
 };

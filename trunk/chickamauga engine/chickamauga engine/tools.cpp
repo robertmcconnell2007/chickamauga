@@ -6,6 +6,7 @@
 #include "tools.h"
 #include "rules.h"
 #include "graphicsloader.h"
+#include "messageHandler.h"
 ///<<<<<<< .mine
 #include "SDL.h"		// SDL library
 #include "SDL_ttf.h"	// true-type font library for SDL
@@ -18,6 +19,18 @@ enum terrainTypes;
 ///primary map and unit control functions
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
+
+int stringToInt(string str)
+{
+	int newInt = 0;
+	int length = 0;
+
+	length = str.length();
+	for(int i = length - 1; i >= 0; ++i)
+		newInt += ((int)(str.c_str()[i] - '0') * (i * 10));
+
+	return newInt;
+}
 
 void drawNodeGui()
 {
@@ -323,6 +336,7 @@ bool clickedIn(SDL_Event event, SDL_Rect rect)
 
 void IH::handlePrimaryInput()
 {
+	SDL_Rect tempRect;
 	switch(gameState)
 	{
 	case atLogo:
@@ -332,7 +346,8 @@ void IH::handlePrimaryInput()
 			switch(event.key.keysym.sym)
 			{
 			case SDLK_RETURN:				
-				gameState = atMatchPrep;//gameState = atTitleScreen;
+				//gameState = atMatchPrep;
+				gameState = atTitleScreen;
 				break;
 			}
 			break;
@@ -342,20 +357,84 @@ void IH::handlePrimaryInput()
 		}
 		break;
 	case atTitleScreen:
+		if(event.type == SDL_MOUSEBUTTONUP)
+		{
+			if(clickedIn(event, GameStartButton))
+			{
+				gameState = atMatchPrep;
+			}
+			if(clickedIn(event, GameQuitButton))
+			{
+				endGame();
+			}
+		}
 		break;
 	case atMatchPrep:
-		cout << "I'm prepping the match now\n";
-		matchFileNames.setGame("chickamauga.txt");
-		if(matchFileNames.checkFileNames())
+		if(event.type == SDL_MOUSEBUTTONUP)
 		{
-			matchFileNames.setFiles();
-			createMatch();
-			gameState = matchMainPhase;
+			if(!waiting && clickedIn(event, GameHotseatButton))
+			{
+				waiting = true;
+				amHost = true;
+				playingLAN = false;
+			}
+			if(!waiting && clickedIn(event, GameHostButton))
+			{
+				waiting = true;
+				cout << "I'm prepping the match now\n";
+				playingLAN = true;
+				amHost = true;
+				matchFileNames.setGame("chickamauga.txt");
+				if(matchFileNames.checkFileNames())
+				{
+					matchFileNames.setFiles();
+					MessageHandler::Instance()->setupHost(); 
+				}
+			}
+			if(!waiting && clickedIn(event, GameJoinButton))
+			{
+				waiting = true;
+				amHost = false;
+				playingLAN = true;
+				
+			}
 		}
-		else
+		else if(event.type == SDL_KEYDOWN && waiting && !amHost && playingLAN && !keysOff)
 		{
-			cout << "FAILED    FAILED    FAILED TO LOAD FILES!!!\n";
+			switch(event.key.keysym.sym)
+			{
+			case SDLK_RETURN:
+				keysOff = true;
+				MessageHandler::Instance()->setupClient((const char*)output.c_str());
+				MessageHandler::Instance()->sendMessage(&output, GETIP);
+				break;
+			case SDLK_BACKSPACE:
+				if(output.length() > 0)
+					output = output.substr(0, output.length() - 1);
+				break;
+			default:
+				if((event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z') ||
+					(event.key.keysym.sym >= 'A' && event.key.keysym.sym <= 'Z'))
+				{
+				}
+				else if(((event.key.keysym.sym >= '0' && event.key.keysym.sym <= '9') || event.key.keysym.sym == '.') && output.length() < 15)
+				{
+					output += event.key.keysym.sym;
+				}
+				break;
+			}
 		}
+		//matchFileNames.setGame("chickamauga.txt");
+		//if(matchFileNames.checkFileNames())
+		//{
+		//	matchFileNames.setFiles();
+		//	createMatch();
+		//	gameState = matchMainPhase;
+		//}
+		//else
+		//{
+		//	cout << "FAILED    FAILED    FAILED TO LOAD FILES!!!\n";
+		//}
 		break;
 	case matchMainPhase:
 		switch(event.type)
@@ -375,7 +454,7 @@ void IH::handlePrimaryInput()
 					unit2Selected = !unit2Selected;
 				break;
 			case SDLK_RETURN:
-				playerIam = !playerIam;
+				//playerIam = !playerIam;
 				break;
 			}
 			break;
@@ -477,6 +556,7 @@ void IH::handlePrimaryInput()
 
 void IH::update(int mspassed)
 {
+	//handle map borders
 	switch(gameState)
 	{
 	case matchMainPhase:
@@ -511,6 +591,11 @@ void IH::update(int mspassed)
 	case reviewingMatch:
 		break;
 	}
+	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
+		IH::Instance()->handleMessage();
+
+	MessageHandler::Instance()->checkMessages();
+	MessageHandler::Instance()->sendNextMessage();
 }
 
 void IH::drawAll()
@@ -523,8 +608,19 @@ void IH::drawAll()
 		break;
 	case atTitleScreen:
 		apply_surface(0,0,titleScreen,screen);
+		drawATile(utilityTiles5050, &u5050, 1, screen, GameStartButton.x, GameStartButton.y);
+		drawATile(utilityTiles5050, &u5050, 2, screen, GameQuitButton.x, GameQuitButton.y);
 		break;
 	case atMatchPrep:
+		drawATile(utilityTiles5050, &u5050, 3, screen, GameHostButton.x, GameHostButton.y);
+		drawATile(utilityTiles5050, &u5050, 4, screen, GameJoinButton.x, GameJoinButton.y);
+		drawATile(utilityTiles5050, &u5050, 5, screen, GameHotseatButton.x, GameHotseatButton.y);
+		if(waiting)
+			printStrings("Waiting for other player to join\n", GameMessageBox, screen, textColor, font1);
+		if(output.length())
+		{
+			printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
+		}
 		break;
 	case matchMainPhase:
 		map->drawMap(screenShiftX, screenShiftY, screen);
@@ -538,6 +634,123 @@ void IH::drawAll()
 	}
 	if(SDL_Flip(screen) == -1)
 		return;
+}
+
+bool IH::handleMessage()
+{
+	string unitName, stringX, stringY;
+	unitClass * unitToHandle;
+	int newX, newY, n = 0;
+	cout << currentMessage << "\n";
+	switch(currentMessageFlag)
+	{
+	case GAMEFILENAME:
+		matchFileNames.setGame(currentMessage);
+		if(matchFileNames.checkFileNames())
+			matchFileNames.setFiles();
+		else
+		{
+			cout << "\n\nERROR, failure to load files\n\n";
+			MessageHandler::Instance()->sendMessage((string*)"Failed to load files\n", QUIT);
+		}
+		return true;
+		break;
+	case GETIP:
+		if(amHost)
+		{
+			MessageHandler::Instance()->sendMessage(&matchFileNames.gameName, GAMEFILENAME);
+		}
+		else
+		{
+		}
+		return true;
+		break;
+	case PICKFACTION:
+		if(amHost)
+		{
+			int otherPrefferedFaction = (int)(currentMessage.c_str()[0] - '0');
+			if(prefferedFaction == otherPrefferedFaction)
+			{//choose randomly
+				if(getRandomNum() % 2 == 0)
+				{
+					prefferedFaction = 0;
+					otherPrefferedFaction = 1;
+				}
+				else
+				{
+					prefferedFaction = 1;
+					otherPrefferedFaction = 0;
+				}
+			}
+			ostringstream oss;
+			oss << otherPrefferedFaction;
+			playerIam = prefferedFaction;
+			MessageHandler::Instance()->sendMessage(&oss.str(), PICKFACTION);
+
+		}
+		else
+		{
+			playerIam = (int)(currentMessage.c_str()[0] - '0');
+		}
+		return true;
+		break;
+	case MOVEUNIT:
+		n = currentMessage.find('#', 0);
+		unitName = currentMessage.substr(0, n);
+		currentMessage = currentMessage.substr(n+1, -1);
+		n = currentMessage.find('#', 0);
+		stringX = currentMessage.substr(0, n);
+		currentMessage = currentMessage.substr(n+1, -1);
+		stringY = currentMessage;
+		newX = stringToInt(stringX);
+		newY = stringToInt(stringY);
+		if(unitToHandle = players[!playerIam].playerArmy.findUnit(unitName))
+			unitToHandle->setPosition(newX, newY);
+		else
+			return false;
+		return true;
+		break;
+	case KILLUNIT:
+		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
+		else
+			return false;
+		return true;
+		break;
+	case REINFORCEUNIT:
+		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFReinforce, MUTField);
+		else
+			return false;
+		return true;
+		break;
+	case EXITUNIT:
+		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTExited);
+		else
+			return false;
+		return true;
+		break;
+	case COMBATPHASE:
+		return true;
+		break;
+	case STARTTURN:
+		return true;
+		break;
+	case ENDTURN:
+		return true;
+		break;
+	case DEFENDERRETREAT:
+		return true;
+		break;
+	case CHATMESSAGE:
+		return true;
+		break;
+	case QUIT:
+		return true;
+		break;
+	}
+	return false;
 }
 
 /*
