@@ -3,7 +3,7 @@
 battleCalculator::battleCalculator()
 {
 	ifstream file;
-	file.open("odds.txt");
+	file.open("Init Data/odds.txt");
 	for(int i=0; i<6; i++)
 	{
 		for(int k=0; k<10; k++)

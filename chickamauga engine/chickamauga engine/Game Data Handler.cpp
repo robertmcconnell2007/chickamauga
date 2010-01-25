@@ -80,6 +80,7 @@ IH::IH()
 	mouseDown = false;
 	runningGame = true;
 	waiting = false;
+	retreatCalled=false;
 	currentUnits[0] = NULL;
 	currentUnits[1] = NULL;
 	playersTurn = 0;
