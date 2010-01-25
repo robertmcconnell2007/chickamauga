@@ -7,6 +7,7 @@ using namespace std;
 #include "rules.h"
 #include "player.h"
 #include "fileLoader.h"
+#include <vector>
 
 enum game_states
 {
@@ -103,6 +104,7 @@ public:
 	//unit variables
 	unitClass * currentUnits[2];
 	map_node * selectedNode;
+	bool retreatCalled;
 	bool enemyUnitsSelected;
 	bool unit1Selected;
 	bool unit2Selected;

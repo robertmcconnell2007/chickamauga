@@ -141,6 +141,8 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		temp->setPower(pow);
 		temp->setReinforceTurn(-1);
 		temp->setName(name);
+		temp->attacking=false;
+		temp->retreat=false;
 		armyArray[i] = temp;
 	}
 	infile>>reinforcementSize;
@@ -155,6 +157,8 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		temp->setPower(pow);
 		temp->setReinforceTurn(turn);
 		temp->setName(name);
+		temp->attacking=false;
+		temp->retreat=false;
 		reinforcements[i]=temp;
 	}
 	exitedUnits=new unitClass*[fullSize];
