@@ -835,7 +835,7 @@ void IH::handlePrimaryInput()
 						unit2Selected = !unit2Selected;
 					break;
 				case SDLK_RETURN:
-					playerIam = !playerIam;
+					//playerIam = !playerIam;
 					break;
 				}
 				break;
@@ -932,8 +932,6 @@ void IH::handlePrimaryInput()
 							}
 						}
 					}
-					
-
 				}
 			}
 			break;
@@ -975,6 +973,8 @@ void IH::update(int mspassed)
 	case atMatchPrep:
 		break;
 	case matchMainPhase:
+		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0)
+			gameState = reviewingMatch;
 		break;
 	case matchCombatPhase:
 		break;
