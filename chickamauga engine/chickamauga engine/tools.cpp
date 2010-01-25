@@ -6,6 +6,8 @@
 #include "tools.h"
 #include "rules.h"
 #include "graphicsloader.h"
+#include "battleCalc.h"
+
 #include "messageHandler.h"
 #include "UDP.h"
 ///<<<<<<< .mine
@@ -317,6 +319,273 @@ bool clickedIn(SDL_Event event, SDL_Rect rect)
 		return true;
 	return false;
 }
+bool setAttacker(mapSuperClass* map,map_node * node, armyClass * ourArmy,armyClass* theirArmy)
+{
+	setEnemyNodes(*theirArmy,map);
+	for(int i=0; i<ourArmy->currentSize; i++)
+	{
+		if(ourArmy->armyArray[i]->getX() == node->col && ourArmy->armyArray[i]->getY() == node->row&&node->enemy)
+		{
+			ourArmy->armyArray[i]->attacking=!ourArmy->armyArray[i]->attacking;
+			node->selected=!node->selected;
+			map->clearEnemy();
+			return true;
+		}
+	}
+	return false;
+}
+//this will only occur if all attackers can attack. combined power is given from
+//attackers range function. goes into battle calc, and then sets retreat variables
+//in attacker or defender or exchange or death
+void attackAndResults(mapSuperClass* map,map_node *tempNode,armyClass *ourArmy,armyClass* enemy,int target,int attackPower)
+{
+	//map_node tempNode;
+	//tempNode=map->getMap()[enemy->armyArray[target]->getX()][enemy->armyArray[target]->getY()];
+	battleCalculator bCalc;
+	int result;
+	int defenderPower=enemy->armyArray[target]->getPower();
+	if(tempNode->type==rough||tempNode->type==roughForest)
+	{
+		defenderPower=defenderPower*2;
+	}
+	result=bCalc.doBattle(attackPower,defenderPower);
+	
+
+	///now for the fun part
+	//retreats:set it here, check in input loop for spaces and whatnot
+	//if its defeated do it here
+	//will also do exchange damage here
+	switch(result)
+	{
+	case 0:
+		{
+			for(int i=0; i<ourArmy->currentSize; i++)
+			{
+				if(ourArmy->armyArray[i]->attacking)
+				{
+					ourArmy->armyArray[i]->retreat=true;
+					ourArmy->armyArray[i]->attacking=false;
+					ourArmy->armyArray[i]->alreadyAttacked=true;
+				}
+			}
+			IH::Instance()->retreatCalled=true;
+			break;
+		}
+	case 1:
+		{
+			for(int i=0; i<ourArmy->currentSize; i++)
+			{
+				if(ourArmy->armyArray[i]->attacking)
+				{
+					ourArmy->moveUnit(ourArmy->armyArray[i],MUFField,MUTKilled);
+				}
+			}
+			break;
+		}
+	case 2:
+		{
+			enemy->armyArray[target]->retreat=true;
+			for(int i=0; i<ourArmy->currentSize; i++)
+			{
+				if(ourArmy->armyArray[i]->attacking)
+				{
+					ourArmy->armyArray[i]->attacking=false;
+					ourArmy->armyArray[i]->alreadyAttacked=true;
+				}
+			}
+			IH::Instance()->retreatCalled=true;
+			break;
+		}
+	case 3:
+		{
+			//kill defender here
+			for(int i=0; i<ourArmy->currentSize; i++)
+			{
+				if(ourArmy->armyArray[i]->attacking)
+				{
+					ourArmy->armyArray[i]->attacking=false;
+					ourArmy->armyArray[i]->alreadyAttacked=true;
+				}
+			}
+			break;
+		}
+	case 4:
+		{
+			//reduce attacker power by defender power...figure this out later
+			break;
+		}
+	}
+	
+
+}
+
+
+//will go through all attackers and check to see if they're 
+//able to attack the enemy targeted
+bool checkAttackersRange(mapSuperClass* map,map_node *tempNode,armyClass* ourArmy,armyClass* enemy,int target)
+{
+	
+	bool ok=false;
+	int totalPower=0;
+	//tempNode=map->getMap()[enemy->armyArray[target]->getX()-1][enemy->armyArray[target]->getY()-1];
+	for(int i=0; i<ourArmy->currentSize; i++)
+	{
+		if(ourArmy->armyArray[i]->attacking)
+		{
+			for(int k=0; k<6; k++)
+			{
+				if(k<3)
+				{
+					if(tempNode->nodeEdges[k]->upperNode->col==ourArmy->armyArray[i]->getX()&&
+						tempNode->nodeEdges[k]->upperNode->row==ourArmy->armyArray[i]->getY()&&!tempNode->nodeEdges[k]->creek_edge)
+					{
+						totalPower+=ourArmy->armyArray[i]->getPower();
+						 ok=true;
+					}
+				}
+				else
+				{
+					if(tempNode->nodeEdges[k]->lowerNode->col==ourArmy->armyArray[i]->getX()&&
+						tempNode->nodeEdges[k]->lowerNode->row==ourArmy->armyArray[i]->getY()&&!tempNode->nodeEdges[k]->creek_edge)	
+					{
+						totalPower+=ourArmy->armyArray[i]->getPower();
+						 ok=true;
+					}
+				}
+			}
+			if(!ok)
+			{
+				return false;
+			}
+			else
+			{
+				//ok=false;
+			}
+		}
+	}
+	attackAndResults(map,tempNode,ourArmy,enemy,target,totalPower);
+
+
+
+
+	return true;
+}
+//takes the second click and finds the enemy and then goes to check the attackers
+bool enemyTarget(mapSuperClass* map, map_node *node, armyClass* ourArmy, armyClass* targetedEnemy)
+{
+	int target=-1;
+	for(int i=0; i<targetedEnemy->currentSize; i++)
+	{
+		if(targetedEnemy->armyArray[i]->getX() == node->col && targetedEnemy->armyArray[i]->getY() == node->row)
+		{
+			target=i;
+		}
+	}
+	if(target==-1)
+	{
+		return false;
+	}
+	if(checkAttackersRange(map,node,ourArmy,targetedEnemy,target))
+	{
+		
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+void showRetreat(mapSuperClass* map,armyClass* ourArmy, armyClass* enemy)
+{
+	map_node *temp;
+	map->clearEnemy();
+	map->clearMovement();
+	for(int i=0; i<ourArmy->currentSize; i++)
+	{
+		if(ourArmy->armyArray[i]->retreat)
+		{
+			setEnemyNodes(*enemy,map);
+			temp=&map->getMap()[ourArmy->armyArray[i]->getY()-1][ourArmy->armyArray[i]->getX()-1];
+			temp->selected=true;
+			for(int k=0; k<6; k++)
+			{
+				if(k<3)
+				{
+					if(!temp->nodeEdges[k]->upperNode->enemy&&!temp->nodeEdges[k]->creek_edge)
+					{
+						temp->nodeEdges[k]->upperNode->selected=true;
+					}
+				}
+				else
+				{
+					if(!temp->nodeEdges[k]->lowerNode->enemy&&!temp->nodeEdges[k]->creek_edge)
+					{
+						temp->nodeEdges[k]->lowerNode->selected=true;
+					}
+
+				}
+			}
+		}
+	}
+	for(int i=0; i<enemy->currentSize; i++)
+	{
+		if(enemy->armyArray[i]->retreat)
+		{
+			setEnemyNodes(*ourArmy,map);
+			temp=&map->getMap()[enemy->armyArray[i]->getY()-1][enemy->armyArray[i]->getX()-1];
+			temp->selected=true;
+			for(int k=0; k<6; k++)
+			{
+				if(k<3)
+				{
+					if(!temp->nodeEdges[k]->upperNode->enemy&&!temp->nodeEdges[k]->creek_edge)
+					{
+						temp->nodeEdges[k]->upperNode->selected=true;
+					}
+				}
+				else
+				{
+					if(!temp->nodeEdges[k]->lowerNode->enemy&&!temp->nodeEdges[k]->creek_edge)
+					{
+						temp->nodeEdges[k]->lowerNode->selected=true;
+					}
+				}
+			}
+		}
+	}
+}
+void doRetreat(mapSuperClass* map,map_node *tempNode,armyClass* ourArmy,armyClass* enemy)
+{
+	bool retreatHappened=false;
+	if(tempNode->selected)
+	{
+		for(int i=0; i<ourArmy->currentSize; i++)
+		{
+			if(ourArmy->armyArray[i]->retreat)
+			{
+				ourArmy->armyArray[i]->setPosition(tempNode->col,tempNode->row);
+				ourArmy->armyArray[i]->retreat=false;
+				retreatHappened=true;
+			}
+		}
+		for(int i=0; i<enemy->currentSize; i++)
+		{
+			if(enemy->armyArray[i]->retreat)
+			{
+				enemy->armyArray[i]->setPosition(tempNode->col,tempNode->row);
+				enemy->armyArray[i]->retreat=false;
+				retreatHappened=true;
+			}
+		}
+	}
+	if(retreatHappened)
+	{
+		map->clearEnemy();
+		map->clearMovement();
+		IH::Instance()->retreatCalled=false;
+	}
+}
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -499,6 +768,7 @@ void IH::handlePrimaryInput()
 				if(clickedIn(event, GUIEndTurnBox))
 				{
 					gameState = matchCombatPhase;
+					cancelClick(map);
 				}
 				if(currentUnits[0] && clickedIn(event, UISlots[0]))
 				{
@@ -547,12 +817,127 @@ void IH::handlePrimaryInput()
 		}
 		break;
 	case matchCombatPhase:
-		//send a message to the server telling it to swapplayers
-		//this next bit is testing
-		players[0].startTurn();
-		players[1].startTurn();
-		gameState = matchMainPhase;
-		break;
+		{
+			switch(event.type)
+			{
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					cancelClick(map);
+					break;
+				case SDLK_1:
+					if(currentUnits[0] && !enemyUnitsSelected)
+						unit1Selected = !unit1Selected;
+					break;
+				case SDLK_2:
+					if(currentUnits[1] && !enemyUnitsSelected)
+						unit2Selected = !unit2Selected;
+					break;
+				case SDLK_RETURN:
+					playerIam = !playerIam;
+					break;
+				}
+				break;
+			case SDL_QUIT:
+				endGame();
+				break;
+			case SDL_MOUSEMOTION:
+				actualX = event.motion.x - screenShiftX;
+				actualY = event.motion.y - screenShiftY;
+				actualX = (actualX-6)/38;
+				if(((actualX+1)%2) == 1)
+					actualY = (actualY)/44;
+				else
+					actualY = (actualY-22)/44;
+				if(event.motion.x < 15)
+					xMove = 1;
+				else if(event.motion.x >= screenSize.x - 15)
+					xMove = -1;
+				else
+					xMove = 0;
+				if(event.motion.y < 15)
+					yMove = 1;
+				else if(event.motion.y >= screenSize.y - 15)
+					yMove = -1;
+				else
+					yMove = 0;
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				mouseDown = true;
+				firstX = actualX;
+				firstY = actualY;
+				break;
+			case SDL_MOUSEBUTTONUP:
+				mouseDown = false;
+				if(clickedIn(event, GUIFrameRect))
+				{
+					if(clickedIn(event, GUIEndTurnBox))
+					{
+						gameState = matchMainPhase;
+					}
+				}
+				else if(firstX == actualX && firstY == actualY)
+				{
+					if(firstX < map->width && firstY < map->height)
+					{
+						selectedNode = &map->getMap()[firstX][firstY];
+					}
+					if(retreatCalled)
+					{
+						doRetreat(map,selectedNode,&players[0].playerArmy,&players[1].playerArmy);
+					}
+					else if(playerIam)
+					{
+						if(setAttacker(map,&map->getMap()[firstX][firstY],&players[1].playerArmy,&players[0].playerArmy))
+						{
+						
+						}
+						else
+						{
+							if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[1].playerArmy,&players[0].playerArmy))
+							{
+								if(retreatCalled)
+								{
+									//map->clearMovement();
+									showRetreat(map,&players[1].playerArmy,&players[0].playerArmy);
+								}
+							}
+							else
+							{
+
+							}
+						}
+					}
+					else
+					{
+						if(setAttacker(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+						{
+
+						}
+						else
+						{
+							if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+							{
+								//same as above
+								if(retreatCalled)
+								{
+									//map->clearMovement();
+									showRetreat(map,&players[0].playerArmy,&players[1].playerArmy);
+								}
+							}
+							else
+							{
+
+							}
+						}
+					}
+					
+
+				}
+			}
+			break;
+		}
 	case reviewingMatch:
 		gameRules->calcAllRules();
 		break;		
@@ -628,6 +1013,7 @@ void IH::drawAll()
 		}
 		break;
 	case matchMainPhase:
+	case matchCombatPhase:
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
