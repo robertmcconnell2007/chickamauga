@@ -53,7 +53,7 @@ int battleCalculator::doBattle(int attackerPower,int defenderPower)
 		attackerAdvantage=false;
 		odds=defenderPower/attackerPower;
 	}
-	roll=rand()%6+1;
+	roll=rand()%6;
 
 	if(attackerAdvantage)
 	{

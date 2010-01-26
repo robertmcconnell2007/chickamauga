@@ -6,7 +6,7 @@
 #include "dataPacket.h"
 
 #define MAXPENDING 5    /* Maximum outstanding connection requests */
-#define SRVR_PORT		7654
+#define SRVR_PORT		4091
 
 
 struct dataPacket;

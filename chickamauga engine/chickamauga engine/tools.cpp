@@ -783,7 +783,7 @@ void IH::handlePrimaryInput()
 			{
 				if(firstX < map->width && firstY < map->height)
 					selectedNode = &map->getMap()[firstX][firstY];
-				if(unit1Selected || unit2Selected)
+				if(currentUnits[0] || currentUnits[1])
 				{	
 					if(playerIam == 0 && playersTurn == 0)
 					{
@@ -887,57 +887,56 @@ void IH::handlePrimaryInput()
 					{
 						doRetreat(map,selectedNode,&players[0].playerArmy,&players[1].playerArmy);
 					}
-					else if(playerIam)
+					//else if(playerIam)
+					//{
+					if(setAttacker(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
 					{
-						if(setAttacker(map,&map->getMap()[firstX][firstY],&players[1].playerArmy,&players[0].playerArmy))
-						{
-						
-						}
-						else
-						{
-							if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[1].playerArmy,&players[0].playerArmy))
-							{
-								if(retreatCalled)
-								{
-									//map->clearMovement();
-									showRetreat(map,&players[1].playerArmy,&players[0].playerArmy);
-								}
-							}
-							else
-							{
-
-							}
-						}
+						//why is this a seperate if statement? why not put it as a ! in place of the else
 					}
 					else
 					{
-						if(setAttacker(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+						if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
 						{
-
+							if(retreatCalled)
+							{
+								//map->clearMovement();
+								showRetreat(map,&players[playerIam].playerArmy,&players[!playerIam].playerArmy);
+							}
 						}
 						else
 						{
-							if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
-							{
-								//same as above
-								if(retreatCalled)
-								{
-									//map->clearMovement();
-									showRetreat(map,&players[0].playerArmy,&players[1].playerArmy);
-								}
-							}
-							else
-							{
-
-							}
+							//spare else statment, need to use or get rid of
 						}
 					}
+					//}
+					//else
+					//{
+					//	if(setAttacker(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+					//	{
+
+					//	}
+					//	else
+					//	{
+					//		if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+					//		{
+					//			//same as above
+					//			if(retreatCalled)
+					//			{
+					//				//map->clearMovement();
+					//				showRetreat(map,&players[0].playerArmy,&players[1].playerArmy);
+					//			}
+					//		}
+					//		else
+					//		{
+
+					//		}
+					//	}
+					//}
 				}
 			}
 			break;
 		}
 	case reviewingMatch:
-		gameRules->calcAllRules();
 		break;		
 	}	
 }
@@ -979,6 +978,8 @@ void IH::update(int mspassed)
 	case matchCombatPhase:
 		break;
 	case reviewingMatch:
+		//call something to calc the gameRules
+		//gameRules->calcAllRules();
 		break;
 	}
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
