@@ -297,12 +297,13 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 	else if(map->getMap()[newX][newY].movement>=0)
 	{
 		if(!unitMoving->hasMoved() && 
-			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))//&&
-			//IH::Instance()->playersTurn == IH::Instance()->playerIam)
+			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
 		{
 			unitMoving->setPosition(newY+1,newX+1);
 			//uncomment below line to restrict units to
 			//one move per turn
+			if(map->getMap()[newX][newY].control)
+				map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
 			unitMoving->setMoved();
 		}
 		return true;
@@ -423,8 +424,7 @@ void attackAndResults(mapSuperClass* map,map_node *tempNode,armyClass *ourArmy,a
 //will go through all attackers and check to see if they're 
 //able to attack the enemy targeted
 bool checkAttackersRange(mapSuperClass* map,map_node *tempNode,armyClass* ourArmy,armyClass* enemy,int target)
-{
-	
+{	
 	bool ok=false;
 	int totalPower=0;
 	//tempNode=map->getMap()[enemy->armyArray[target]->getX()-1][enemy->armyArray[target]->getY()-1];

@@ -110,6 +110,10 @@ struct roadExitRule : public masterRule
 
 struct rules
 {
+	int numExitNodes;
+	int numBRNodes;//blue reinforcement nodes
+	int numGRNodes;//gray reinforcement nodes
+	int numGameTurns;
 	int unitMovePoints;
 	int clearMovePenalty;
 	int forestMovePenalty;

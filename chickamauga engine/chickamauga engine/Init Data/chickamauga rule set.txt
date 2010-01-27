@@ -1,4 +1,5 @@
 Init Data/odds.txt
+15
 6
 1
 3

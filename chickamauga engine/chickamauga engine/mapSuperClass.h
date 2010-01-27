@@ -47,6 +47,7 @@ struct map_node
 		}
 	}
 };
+
 //controlblue control town type type type
 //32 16 8 4 2 1
 
@@ -79,7 +80,7 @@ private:
 	string mapName;
 	bool showEnemyControl;
 	bool mapEdit;
-	map_node** mapPointer;
+	map_node ** mapPointer;
 	SDL_Surface * nodeTypes;
 	SDL_Surface * roadsTrails;
 	SDL_Surface * creeksBridgesFords;
