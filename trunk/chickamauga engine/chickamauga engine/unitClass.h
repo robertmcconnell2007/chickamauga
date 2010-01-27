@@ -74,10 +74,15 @@ public:
 	int reinforcementSize;
 	int deadSize;
 	int exitedSize;
+	int currentStrength();
+	int exitedStrength();
+	int deadStrength();
+	int reinforcingStrength();
 	void resetMoves();
 	void loadArmy(char * unitFile,char * armyColorFile);
 	void drawArmy(int xShift,int yShift,int mapWidth,int maHeight, SDL_Surface* a_screen);
 	unitClass * findUnit(string lookUpName);
+	bool haveLiveUnitAt(int xcord, int ycord);
 	int checkStatus(unitClass* unit);
 	bool moveUnit(unitClass* unit, int moveFrom, int moveTo);
 };

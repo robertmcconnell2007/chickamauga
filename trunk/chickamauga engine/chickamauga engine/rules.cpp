@@ -58,6 +58,7 @@ void rules::loadRules(string fileName)
 	getline(infile, tester, '\n');
 	calculator.loadOdds((char*)tester.c_str());
 	
+	infile >> numGameTurns;
 	infile >> unitMovePoints;
 	infile >> clearMovePenalty;
 	infile >> forestMovePenalty;
@@ -429,7 +430,7 @@ string roadControlRule::returnRule()
 
 int roadControlRule::calculateRule(int player)
 {
-	return 0;
+	return 1;
 }
 
 string unitKillRule::returnRule()
@@ -453,14 +454,18 @@ string unitKillRule::returnRule()
 
 int unitKillRule::calculateRule(int player)
 {
-	int calc = 0;
-	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
-		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
 	{
-		for(int i = 0; i < IH::Instance()->players[!player].playerArmy.deadSize; ++i)
-			calc += (IH::Instance()->players[!player].playerArmy.deadUnits[i]->getPower() * pointValue);
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
 	}
-	return calc;
+	if(canCalc && ((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == 1 && (playerSpecific == none || playerSpecific == gray))))
+	{
+		return IH::Instance()->players[!player].playerArmy.deadStrength() * pointValue;
+	}
+	return 0;
 }
 
 string unitExitRule::returnRule()
@@ -484,12 +489,18 @@ string unitExitRule::returnRule()
 
 int unitExitRule::calculateRule(int player)
 {
-	int calc = 0;
-	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
-		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
 	{
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
 	}
-	return calc;
+	if(canCalc && ((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == 1 && (playerSpecific == none || playerSpecific == gray))))
+	{
+		return IH::Instance()->players[player].playerArmy.exitedStrength() * pointValue;
+	}
+	return 0;
 }
 
 string VIPRule::returnRule()
@@ -552,15 +563,28 @@ string VIPRule::returnRule()
 	oss << " at end of match";
 	return oss.str();
 }
-
+//	no,
+//	killed,
+//	exited,
+//	alive,
+//	reinforcing
 int VIPRule::calculateRule(int player)
 {
-	int calc = 0;
-	if((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
-		(player == 1 && (playerSpecific == none || playerSpecific == gray)))
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
 	{
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
 	}
-	return calc;
+	if(canCalc && ((player == blue && (playerSpecific == none || playerSpecific == blue)) ||
+		(player == gray && (playerSpecific == none || playerSpecific == gray))))
+	{
+		if( (requisiteEffect1 != no && requisiteEffect1 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)) ||
+			(requisiteEffect2 != no && requisiteEffect2 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)) ||
+			(requisiteEffect3 != no && requisiteEffect3 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)))
+			return pointValue;
+	}
+	return 0;
 }
 
 string areaControlRule::returnRule()
@@ -588,6 +612,22 @@ string areaControlRule::returnRule()
 
 int areaControlRule::calculateRule(int player)
 {
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
+	{
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
+	}
+	if(!canCalc)
+		return 0;
+	bool holdAll = true;
+	for(int i = 0; i < numNodes; ++i)
+	{
+		if(!IH::Instance()->players[player].playerArmy.haveLiveUnitAt(nodesToControl[i]->col, nodesToControl[i]->row))
+			holdAll = false;
+	}
+	if(holdAll)
+		return pointValue;
 	return 0;
 }
 
@@ -617,6 +657,15 @@ string nodeControlRule::returnRule()
 
 int nodeControlRule::calculateRule(int player)
 {
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
+	{
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
+	}
+	if(canCalc && ((player == blue &&  nodeToControl->controlBlue && (playerSpecific == blue || playerSpecific == none)) ||
+		(player == gray && !nodeToControl->controlBlue && (playerSpecific == gray || playerSpecific == none))))
+		return pointValue;
 	return 0;
 }
 
@@ -643,6 +692,12 @@ string roadExitRule::returnRule()
 
 int roadExitRule::calculateRule(int player)
 {
+	bool canCalc = true;
+	for(int i = 0; i < IH::Instance()->gameRules->numDependancies; ++i)
+	{
+		if(this == IH::Instance()->gameRules->DPD[i].dependantRule)
+			canCalc = (bool)IH::Instance()->gameRules->DPD[i].controlRule->calculateRule(player);
+	}
 	return 0;
 }
 
@@ -651,6 +706,30 @@ int roadExitRule::calculateRule(int player)
 
 void rules::calcAllRules()
 {
+	int points[2];
+	points[0] = points[1] = 0;
+	for(int i = 0; i < 2; ++i)
+	{
+		for(int i = 0; i < RCRrules; ++i)
+		{
+			if(!RER[i].controlRule)
+				points[i] = RER[i].calculateRule(i);
+			if(!RCR[i].controlRule)
+				points[i] = RCR[i].calculateRule(i);
+			if(!UKR[i].controlRule)
+				points[i] = UKR[i].calculateRule(i);
+			if(!UER[i].controlRule)
+				points[i] = UER[i].calculateRule(i);
+			if(!VPR[i].controlRule)
+				points[i] = VPR[i].calculateRule(i);
+			if(!ACR[i].controlRule)
+				points[i] = ACR[i].calculateRule(i);
+			if(!NCR[i].controlRule)
+				points[i] = NCR[i].calculateRule(i);
+		}
+	}
+	IH::Instance()->players[0].pointsEarned = points[0];
+	IH::Instance()->players[1].pointsEarned = points[1];
 	//loop through each rule, check if it's a dependant rule and if it's applicable
 	//to player one, accumulate totals
 	//do the same for player 2

@@ -232,3 +232,53 @@ int armyClass::checkStatus(unitClass* unit)
 	}
 	return -1;
 }
+
+bool armyClass::haveLiveUnitAt(int xcord, int ycord)
+{
+	for(int i = 0; i < currentSize; ++i)
+	{
+		if(armyArray[i]->getX() == xcord && armyArray[i]->getY() == ycord)
+			return true;
+	}
+	return false;
+}
+
+int armyClass::currentStrength()
+{
+	int calc = 0;
+	for(int i = 0; i < currentSize; ++i)
+	{
+		calc += armyArray[i]->getPower();
+	}
+	return calc;
+}
+
+int armyClass::exitedStrength()
+{
+	int calc = 0;
+	for(int i = 0; i < exitedSize; ++i)
+	{
+		calc += exitedUnits[i]->getPower();
+	}
+	return calc;
+}
+
+int armyClass::deadStrength()
+{
+	int calc = 0;
+	for(int i = 0; i < deadSize; ++i)
+	{
+		calc += deadUnits[i]->getPower();
+	}
+	return calc;
+}
+
+int armyClass::reinforcingStrength()
+{
+	int calc = 0;
+	for(int i = 0; i < reinforcementSize; ++i)
+	{
+		calc += reinforcements[i]->getPower();
+	}
+	return calc;
+}

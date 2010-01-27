@@ -52,8 +52,7 @@ private:
 	int  screenShiftY, yMove;
 	int  prefferedFaction;
 	//0 == player1, 1 == player2
-	int  playersTurn;
-	int  playerIam;
+	
 	//actual and first used to identify which hex the user clicks on
 	int actualX, actualY;
 	int firstX, firstY;
@@ -63,6 +62,8 @@ private:
 	int selectedX;
 	int selectedY;
 public:
+	int  playersTurn;
+	int  playerIam;
 	gameFileHandler matchFileNames;
 	string currentMessage;
 	int currentMessageFlag;
