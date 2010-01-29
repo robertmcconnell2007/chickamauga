@@ -31,6 +31,9 @@ private:
 	std::string name;
 	bool movedThisTurn;
 	int power;
+	bool inCombatPrep;
+	bool alreadyCompletedCombat;
+	bool needsCombat;
 	SDL_Rect unitRect;
 	vector2d position;
 	int reinforceTurn;
@@ -47,12 +50,19 @@ public:
 	std::string getName() {return name;}
 	void setName(string s){name=s;}
 	SDL_Rect getSize();
+	void setComPrep(bool state) {inCombatPrep = state;}
+	void setCompleteCombat() {alreadyCompletedCombat = true;}
+	void setNeedCombat() {needsCombat = true;}
+	bool needCombat() {return needsCombat;}
+	bool comPrep() {return inCombatPrep;}
+	bool completedCombat() {return alreadyCompletedCombat;}
 	void setPosition(int,int);
 	void setMoved();
 	bool hasMoved(); 
 	void drawUnit(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen,SDL_Surface *armyColors);
 	void resetMove();
 	void setReinforceTurn(int r){reinforceTurn=r;}
+	void resetCombat();
 };
 
 class armyClass
@@ -85,6 +95,7 @@ public:
 	bool haveLiveUnitAt(int xcord, int ycord);
 	int checkStatus(unitClass* unit);
 	bool moveUnit(unitClass* unit, int moveFrom, int moveTo);
+	void resetAllCombat();
 };
 
 

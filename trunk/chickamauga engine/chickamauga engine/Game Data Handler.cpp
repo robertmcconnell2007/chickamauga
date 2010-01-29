@@ -55,6 +55,7 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	preppingCombat = false;
 	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");
 	screenSize.x = 860;
