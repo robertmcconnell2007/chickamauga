@@ -33,13 +33,20 @@ struct gameFileHandler
 	void setFiles();
 };
 
+struct battle
+{
+	vector<unitClass*> attackers;
+	vector<unitClass*> defenders;
+	int calcBattle();
+};
+
 class IH
 {
 private:
 	IH();
 	~IH();
 	//map object
-	mapSuperClass * map;
+	
 	//unit handler object
 	SDL_Rect screenSize;
 	int bitsperpixel;
@@ -62,6 +69,8 @@ private:
 	int selectedX;
 	int selectedY;
 public:
+	mapSuperClass * map;
+	battle currentBattle;
 	int  playersTurn;
 	int  playerIam;
 	gameFileHandler matchFileNames;
@@ -110,6 +119,7 @@ public:
 	bool unit1Selected;
 	bool unit2Selected;
 	bool playingLAN;
+	bool preppingCombat;
 	bool keysOff;
 	SDL_Event event;
 	//public functions

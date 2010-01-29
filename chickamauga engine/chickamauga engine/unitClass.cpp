@@ -3,6 +3,9 @@
 unitClass::unitClass()
 {
 	movedThisTurn = false;
+	alreadyCompletedCombat = false;
+	inCombatPrep = false;
+	needsCombat = false;
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
@@ -17,7 +20,7 @@ unitClass::~unitClass()
 
 bool unitClass::hasMoved()  {return movedThisTurn;}
 void unitClass::setMoved()  {movedThisTurn = true;}
-void unitClass::resetMove() {movedThisTurn = false;}
+void unitClass::resetMove() {movedThisTurn = false; needsCombat = false; inCombatPrep = false; alreadyCompletedCombat = false;}
 void unitClass::setPosition(int nX,int nY)
 {
 	position.x=nX;
@@ -46,6 +49,11 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 			}
 		}
 	}
+}
+
+void unitClass::resetCombat()
+{
+	inCombatPrep = false;
 }
 /*
 MUTKilled,
@@ -118,6 +126,12 @@ bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
 		break;
 	}
 	return false;
+}
+
+void armyClass::resetAllCombat()
+{
+	for(int i = 0; i < currentSize; ++i)
+		armyArray[i]->resetCombat();
 }
 
 void armyClass::loadArmy(char * fileName, char * armyColorFile)

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include "Game Data Handler.h"
 #include "unitClass.h"
 #include "mapSuperClass.h"
@@ -35,8 +36,69 @@ int stringToInt(string str)
 	return newInt;
 }
 
-void drawNodeGui()
+bool getUnitsAroundNode(map_node * node, int path, armyClass * army, unitClass * unit1, unitClass * unit2)
 {
+	bool foundUnit1 = false;
+	unit1 = NULL;
+	unit2 = NULL;
+	for(int i = 0; i < army->currentSize; ++i)
+	{
+		if(path < 3)
+		{
+			if(army->armyArray[i]->getX() == node->nodeEdges[path]->upperNode->col &&
+				army->armyArray[i]->getY() == node->nodeEdges[path]->upperNode->row)
+			{
+				if(!foundUnit1)
+				{
+					unit1 = army->armyArray[i];
+					foundUnit1 = true;
+				}
+				else
+					unit2 = army->armyArray[i];
+			}
+		}
+		else
+		{
+			if(army->armyArray[i]->getX() == node->nodeEdges[path]->lowerNode->col &&
+				army->armyArray[i]->getY() == node->nodeEdges[path]->lowerNode->row)
+			{
+				if(!foundUnit1)
+				{
+					unit1 = army->armyArray[i];
+					foundUnit1 = true;
+				}
+				else
+					unit2 = army->armyArray[i];
+			}
+		}
+	}
+	if(foundUnit1)
+		return true;
+	return false;
+}
+
+bool getUnitsOnNode(map_node * node, armyClass * army, unitClass * unit1, unitClass * unit2)
+{
+	bool foundUnit1 = false;
+	unit1 = NULL;
+	unit2 = NULL;
+	for(int i = 0; i < army->currentSize; ++i)
+	{
+		if(army->armyArray[i]->getX() == node->col &&
+			army->armyArray[i]->getY() == node->row)
+		{
+			if(!foundUnit1)
+			{
+				unit1 = army->armyArray[i];
+				foundUnit1 = true;
+			}
+			else
+				unit2 = army->armyArray[i];
+		}
+	}
+	if(foundUnit1)
+		return true;
+	return false;
 }
 
 void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, unitClass *currentUnits[2], SDL_Surface * screen)
@@ -300,6 +362,8 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
 		{
 			unitMoving->setPosition(newY+1,newX+1);
+			if(map->getMap()[newX][newY].enemy)
+				unitMoving->setNeedCombat();
 			//uncomment below line to restrict units to
 			//one move per turn
 			if(map->getMap()[newX][newY].control)
@@ -585,6 +649,243 @@ void doRetreat(mapSuperClass* map,map_node *tempNode,armyClass* ourArmy,armyClas
 		map->clearMovement();
 		IH::Instance()->retreatCalled=false;
 	}
+}
+
+bool canFightOther(map_node * node, armyClass * army)
+{
+	unitClass * unit1 = NULL, * unit2 = NULL;
+	for(int i = 0; i < 6; ++i)
+	{
+		getUnitsAroundNode(node, i, army, unit1, unit2);
+		if(unit1 && !unit1->comPrep())
+			return true;
+		if(unit2 && !unit2->comPrep())
+			return true;
+	}
+	return false;
+}
+
+bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy)
+{
+	bool foundOtherCombatant = false;
+	unitClass * unit1 = NULL, * unit2 = NULL;
+	if(IH::Instance()->currentBattle.attackers.size() == 0)
+	{
+		IH::Instance()->preppingCombat = true;
+	}
+	else
+	{
+		for(int i = 0; i < 6; ++i)
+		{
+			getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
+			if((unit1 != NULL && unit1->comPrep() && !unit1->completedCombat()) ||
+				(unit2 != NULL && unit2->comPrep() && !unit2->completedCombat()))
+				foundOtherCombatant = true;
+		}
+		if(!foundOtherCombatant)
+			return false;
+	}
+	if(!getUnitsOnNode(node, attackerArmy, unit1, unit2))
+	{
+		return false;
+	}
+	if(unit1 != NULL)
+	{
+		unit1->setComPrep(true);
+		IH::Instance()->currentBattle.attackers.push_back(unit1);
+	}
+	if(unit2 != NULL)
+	{
+		unit2->setComPrep(true);
+		IH::Instance()->currentBattle.attackers.push_back(unit2);
+	}
+	
+	for(int i = 0; i < 6; ++i)
+	{
+		getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
+		if(unit1 || unit2)
+		{
+			if(unit1) unit1->setComPrep(true);
+			if(unit2) unit2->setComPrep(true);
+			if(i < 3)
+			{
+				if(!canFightOther(node->nodeEdges[i]->upperNode, attackerArmy))
+				{
+					if(unit1) IH::Instance()->currentBattle.defenders.push_back(unit1);
+					if(unit2) IH::Instance()->currentBattle.defenders.push_back(unit2);
+				}
+			}
+			else
+			{
+				if(!canFightOther(node->nodeEdges[i]->lowerNode, attackerArmy))
+				{
+					if(unit1) IH::Instance()->currentBattle.defenders.push_back(unit1);
+					if(unit2) IH::Instance()->currentBattle.defenders.push_back(unit2);
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy)
+{
+	unitClass * unit1 = NULL, * unit2 = NULL;
+	if(IH::Instance()->currentBattle.attackers.size() == 0)
+		return false;
+	bool foundOtherCombatant = false;
+	for(int i = 0; i < 6; ++i)
+	{
+		getUnitsAroundNode(node, i, attackerArmy, unit1, unit2);
+		if((unit1 != NULL && unit1->comPrep() && !unit1->completedCombat()) ||
+			(unit2 != NULL && unit2->comPrep() && !unit2->completedCombat()))
+			foundOtherCombatant = true;
+	}
+	if(!foundOtherCombatant)
+		return false;
+	if(unit1)
+	{
+		unit1->setComPrep(true);
+		IH::Instance()->currentBattle.defenders.push_back(unit1);
+	}
+	if(unit2)
+	{
+		unit2->setComPrep(true);
+		IH::Instance()->currentBattle.defenders.push_back(unit2);
+	}
+	for(int i = 0; i < 6; ++i)
+	{
+		getUnitsAroundNode(node, i, attackerArmy, unit1, unit2);
+		if(unit1 || unit2)
+		{
+			if(unit1) unit1->setComPrep(true);
+			if(unit2) unit2->setComPrep(true);
+			if(i < 3)
+			{
+				if(!canFightOther(node->nodeEdges[i]->upperNode, defenderArmy))
+				{
+					if(unit1) IH::Instance()->currentBattle.attackers.push_back(unit1);
+					if(unit2) IH::Instance()->currentBattle.attackers.push_back(unit2);
+				}
+			}
+			else
+			{
+				if(!canFightOther(node->nodeEdges[i]->lowerNode, defenderArmy))
+				{
+					if(unit1) IH::Instance()->currentBattle.attackers.push_back(unit1);
+					if(unit2) IH::Instance()->currentBattle.attackers.push_back(unit2);
+				}
+			}
+		}
+	}
+	return true;
+}
+
+int battle::calcBattle()
+{
+	unitClass * unit = NULL;
+	unitClass * otherUnit1 = NULL, *otherUnit2 = NULL;
+	map_node * node = NULL;
+	armyClass * attkr = &IH::Instance()->players[IH::Instance()->playersTurn].playerArmy;
+	armyClass * dfndr = &IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy;
+	bool usableUnit = false;
+	for(int i = 0; i < attackers.size(); ++i)
+	{
+		node = &IH::Instance()->map->getMap()[attackers.at(i)->getX()][attackers.at(i)->getY()];
+		for(int j = 0; j < 6; ++j)
+		{
+			usableUnit = true;
+			getUnitsAroundNode(node, i, dfndr, otherUnit1, otherUnit2);
+			if(otherUnit1 && otherUnit1->completedCombat())
+			{
+				for(int k = 0; k < defenders.size(); ++k)
+					if(otherUnit1 == defenders.at(i))
+						usableUnit = false;
+				if(usableUnit)
+				{
+					if(i < 3)
+					{
+						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr))
+							defenders.push_back(otherUnit1);
+					}
+					else
+					{
+						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr))
+							defenders.push_back(otherUnit1);
+					}
+				}
+			}
+			usableUnit = true;
+			if(otherUnit2 && otherUnit2->completedCombat())
+			{
+				for(int k = 0; k < defenders.size(); ++k)
+					if(otherUnit2 == defenders.at(i))
+						usableUnit = false;
+				if(usableUnit)
+				{
+					if(i < 3)
+					{
+						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr))
+							defenders.push_back(otherUnit2);
+					}
+					else
+					{
+						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr))
+							defenders.push_back(otherUnit2);
+					}
+				}
+			}
+		}
+	}
+	for(int i = 0; i < defenders.size(); ++i)
+	{
+		node = &IH::Instance()->map->getMap()[defenders.at(i)->getX()][defenders.at(i)->getY()];
+		for(int j = 0; j < 6; ++j)
+		{
+			usableUnit = true;
+			getUnitsAroundNode(node, i, attkr, otherUnit1, otherUnit2);
+			if(otherUnit1 && otherUnit1->completedCombat())
+			{
+				for(int k = 0; k < attackers.size(); ++k)
+					if(otherUnit1 == attackers.at(i))
+						usableUnit = false;
+				if(usableUnit)
+				{
+					if(i < 3)
+					{
+						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr))
+							attackers.push_back(otherUnit1);
+					}
+					else
+					{
+						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr))
+							attackers.push_back(otherUnit1);
+					}
+				}
+			}
+			usableUnit = true;
+			if(otherUnit2 && otherUnit2->completedCombat())
+			{
+				for(int k = 0; k < attackers.size(); ++k)
+					if(otherUnit2 == attackers.at(i))
+						usableUnit = false;
+				if(usableUnit)
+				{
+					if(i < 3)
+					{
+						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr))
+							attackers.push_back(otherUnit2);
+					}						
+					else
+					{
+						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr))
+							attackers.push_back(otherUnit2);
+					}						
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 /////////////////////////////////////////////////////
@@ -874,7 +1175,7 @@ void IH::handlePrimaryInput()
 				{
 					if(clickedIn(event, GUIEndTurnBox))
 					{
-						gameState = matchMainPhase;
+						currentBattle.calcBattle();
 					}
 				}
 				else if(firstX == actualX && firstY == actualY)
@@ -883,31 +1184,36 @@ void IH::handlePrimaryInput()
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
 					}
+					if(playersTurn == playerIam)
+					{
+						clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+						clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+					}
 					if(retreatCalled)
 					{
 						doRetreat(map,selectedNode,&players[0].playerArmy,&players[1].playerArmy);
 					}
 					//else if(playerIam)
 					//{
-					if(setAttacker(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
-					{
-						//why is this a seperate if statement? why not put it as a ! in place of the else
-					}
-					else
-					{
-						if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
-						{
-							if(retreatCalled)
-							{
-								//map->clearMovement();
-								showRetreat(map,&players[playerIam].playerArmy,&players[!playerIam].playerArmy);
-							}
-						}
-						else
-						{
-							//spare else statment, need to use or get rid of
-						}
-					}
+					//if(setAttacker(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
+					//{
+					//	//why is this a seperate if statement? why not put it as a ! in place of the else
+					//}
+					//else
+					//{
+					//	if(enemyTarget(map,&map->getMap()[firstX][firstY],&players[playerIam].playerArmy,&players[!playerIam].playerArmy))
+					//	{
+					//		if(retreatCalled)
+					//		{
+					//			//map->clearMovement();
+					//			showRetreat(map,&players[playerIam].playerArmy,&players[!playerIam].playerArmy);
+					//		}
+					//	}
+					//	else
+					//	{
+					//		//spare else statment, need to use or get rid of
+					//	}
+					//}
 					//}
 					//else
 					//{
@@ -944,6 +1250,7 @@ void IH::handlePrimaryInput()
 void IH::update(int mspassed)
 {
 	//handle map borders
+	bool switchState = false;
 	switch(gameState)
 	{
 	case matchMainPhase:
@@ -976,6 +1283,36 @@ void IH::update(int mspassed)
 			gameState = reviewingMatch;
 		break;
 	case matchCombatPhase:
+		if(playerIam == playersTurn)
+		{
+			switchState = true;
+			for(int i = 0; i < players[playerIam].playerArmy.currentSize; ++i)
+			{
+				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !players[playerIam].playerArmy.armyArray[i]->completedCombat())
+				{
+					switchState = false;
+					break;
+				}
+			}
+		}
+		if(switchState)
+		{
+			switchState = false;
+			if(!playingLAN)
+			{
+				playerIam = !playerIam;
+			}
+			else
+			{
+				//SAMSAM send a message saying that the turn has ended, swap turns
+			}
+			playersTurn = !playersTurn;
+			players[0].playerArmy.resetMoves();
+			players[1].playerArmy.resetMoves();
+		}
+		else
+		{
+		}
 		break;
 	case reviewingMatch:
 		//call something to calc the gameRules
