@@ -84,13 +84,14 @@ bool udpClass::sendMessage(const dataPacket* info)
 	if(ready)
 	{
 		dataBuffer = (char*)info;
-		sockAddrLen = sizeof(sockAddr);
 		if(isHost)
 		{
+			sockAddrLen = sizeof(client);
 			dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &client, sockAddrLen);
 		}
 		else
 		{
+			sockAddrLen = sizeof(sockAddr);
 			dataLength = sendto(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &sockAddr, sockAddrLen);
 		}
 		if(dataLength == SOCKET_ERROR)
@@ -102,7 +103,7 @@ bool udpClass::sendMessage(const dataPacket* info)
 			}
 			errorCode = SENDLITTLEERROR;
 		}
-		else
+		if(dataLength > 0)
 		{
 			errorCode = SENDSUCCESSFUL;
 			return true;
@@ -117,8 +118,16 @@ bool udpClass::checkMessage(dataPacket* info)
 	
 	if(ready)
 	{
-		sockAddrLen = sizeof(client);
-		dataLength = recvfrom(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &client, &sockAddrLen);
+		if(isHost)
+		{
+			sockAddrLen = sizeof(client);
+			dataLength = recvfrom(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &client, &sockAddrLen);
+		}
+		else
+		{
+			sockAddrLen = sizeof(sockAddr);
+			dataLength = recvfrom(mySocket,dataBuffer,sizeof(dataPacket),0,(struct sockaddr *) &sockAddr, &sockAddrLen);
+		}
 		if(dataLength == SOCKET_ERROR)
 		{
 			if((err = WSAGetLastError()) != WSAEMSGSIZE && err != WSAEWOULDBLOCK)
