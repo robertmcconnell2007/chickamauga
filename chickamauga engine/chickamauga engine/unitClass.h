@@ -40,8 +40,6 @@ private:
 public:
 	unitClass();
 	~unitClass();
-	bool attacking;
-	bool alreadyAttacked;
 	bool retreat;
 	int getX(){return position.x;}
 	int getY(){return position.y;}

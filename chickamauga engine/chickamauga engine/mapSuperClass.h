@@ -78,7 +78,7 @@ class mapSuperClass
 {
 private:
 	string mapName;
-	bool showEnemyControl;
+	
 	bool mapEdit;
 	map_node ** mapPointer;
 	SDL_Surface * nodeTypes;
@@ -92,6 +92,7 @@ private:
 	void loadData();
 public:
 	void clearMovement();
+	bool showEnemyControl;
 	int width;
 	int height;
 	map_node** getMap() { return mapPointer; }
