@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cmath>
 #include "Game Data Handler.h"
 #include "tools.h"
 #include "unitClass.h"
@@ -36,8 +37,10 @@ int stringToInt(string str)
 	int length = 0;
 
 	length = str.length();
-	for(int i = length - 1; i >= 0; ++i)
-		newInt += ((int)(str.c_str()[i] - '0') * (i * 10));
+	for(int i = length - 1, j = 0; i >= 0; --i, ++j)
+	{
+		newInt += (int)((int)(str.c_str()[i] - '0') * pow(10.0, (double)j));
+	}
 
 	return newInt;
 }
