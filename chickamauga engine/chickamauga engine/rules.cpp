@@ -59,6 +59,7 @@ void rules::loadRules(string fileName)
 	calculator.loadOdds((char*)tester.c_str());
 	
 	infile >> numGameTurns;
+	infile >> roughDefBonus;
 	infile >> unitMovePoints;
 	infile >> clearMovePenalty;
 	infile >> forestMovePenalty;

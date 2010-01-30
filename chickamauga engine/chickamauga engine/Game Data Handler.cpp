@@ -55,6 +55,7 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	currentTurn = 0;
 	preppingCombat = false;
 	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");

@@ -167,10 +167,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\battleCalc.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Engine main.cpp"
 				>
 			</File>
@@ -186,48 +182,72 @@
 				RelativePath=".\graphicsloader.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\mapSuperClass.cpp"
+			<Filter
+				Name="tools"
 				>
-			</File>
-			<File
-				RelativePath=".\messageHandler.cpp"
+				<File
+					RelativePath=".\tools\combat tools.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\draw tools.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\interface tools.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\tools.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="unit and player"
 				>
-			</File>
-			<File
-				RelativePath=".\player.cpp"
+				<File
+					RelativePath=".\battleCalc.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\player.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rules.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\unitClass.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="map"
 				>
-			</File>
-			<File
-				RelativePath=".\rules.cpp"
+				<File
+					RelativePath=".\mapSuperClass.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="server"
 				>
-			</File>
-			<File
-				RelativePath=".\tools.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UDP.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\unitClass.cpp"
-				>
-			</File>
+				<File
+					RelativePath=".\messageHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UDP.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\battleCalc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\dataPacket.h"
-				>
-			</File>
 			<File
 				RelativePath=".\fileLoader.h"
 				>
@@ -240,34 +260,70 @@
 				RelativePath=".\graphicsloader.h"
 				>
 			</File>
-			<File
-				RelativePath=".\mapSuperClass.h"
+			<Filter
+				Name="tools"
 				>
-			</File>
-			<File
-				RelativePath=".\messageHandler.h"
+				<File
+					RelativePath=".\tools\combat tools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\draw tools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools\interface tools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tools.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="unit and player"
 				>
-			</File>
-			<File
-				RelativePath=".\player.h"
+				<File
+					RelativePath=".\battleCalc.h"
+					>
+				</File>
+				<File
+					RelativePath=".\player.h"
+					>
+				</File>
+				<File
+					RelativePath=".\rules.h"
+					>
+				</File>
+				<File
+					RelativePath=".\unitClass.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="map"
 				>
-			</File>
-			<File
-				RelativePath=".\rules.h"
+				<File
+					RelativePath=".\mapSuperClass.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="server"
 				>
-			</File>
-			<File
-				RelativePath=".\tools.h"
-				>
-			</File>
-			<File
-				RelativePath=".\UDP.h"
-				>
-			</File>
-			<File
-				RelativePath=".\unitClass.h"
-				>
-			</File>
+				<File
+					RelativePath=".\dataPacket.h"
+					>
+				</File>
+				<File
+					RelativePath=".\messageHandler.h"
+					>
+				</File>
+				<File
+					RelativePath=".\UDP.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
