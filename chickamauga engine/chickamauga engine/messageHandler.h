@@ -45,7 +45,7 @@ private:
 public:
 	bool setupHost();
 	bool setupClient(const char* targetIP);
-	bool sendMessage(string* outgoingMessage, int flag);
+	bool sendMessage(string outgoingMessage, int flag);
 	bool sendNextMessage();
 	bool checkMessages();
 	bool getMessage(string* incommingMessage, int *flag);

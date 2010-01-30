@@ -10,3 +10,4 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy);
 void cancelClick(mapSuperClass * map);
 void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass * dfndrs);
+void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY);

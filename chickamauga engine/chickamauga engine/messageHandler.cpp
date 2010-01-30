@@ -21,12 +21,12 @@ bool MessageHandler::setupClient(const char* targetIP)
 {
 	return message.start(targetIP);
 }
-bool MessageHandler::sendMessage(string *outgoingMessage, int flag)
+bool MessageHandler::sendMessage(string outgoingMessage, int flag)
 {
 	if(outSize == PACKETBUFFER)
 		return false;
 	flagArrayOut[outSize] = flag;
-	stringArrayOut[outSize] = *outgoingMessage;
+	stringArrayOut[outSize] = outgoingMessage;
 	outSize++;
 	return true;
 }

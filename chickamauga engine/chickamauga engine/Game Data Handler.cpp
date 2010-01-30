@@ -165,7 +165,6 @@ void IH::createMatch()
 	//set up the players ip address, and any other neccessary data for them
 	players[0].playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
 	players[1].playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
-	playerIam = 0;
 }
 
 int IH::endMatch()

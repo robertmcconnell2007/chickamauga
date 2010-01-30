@@ -1,5 +1,7 @@
+#include <sstream>
 #include "interface tools.h"
 #include "combat tools.h"
+#include "../messageHandler.h"
 
 bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
 {
@@ -42,6 +44,18 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	return true;
 }
 
+void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY)
+{
+	unitToMove->setPosition(newY+1,newX+1);
+	if(map->getMap()[newX][newY].enemy)
+		unitToMove->setNeedCombat();
+	//uncomment below line to restrict units to
+	//one move per turn
+	if(map->getMap()[newX][newY].control)
+		map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
+	unitToMove->setMoved();
+}
+
 bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass * unitMoving)
 {
 	checkUnitStacks(map,currentArmy,enemyArmy);
@@ -52,14 +66,13 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 		if(!unitMoving->hasMoved() && 
 			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
 		{
-			unitMoving->setPosition(newY+1,newX+1);
-			if(map->getMap()[newX][newY].enemy)
-				unitMoving->setNeedCombat();
-			//uncomment below line to restrict units to
-			//one move per turn
-			if(map->getMap()[newX][newY].control)
-				map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
-			unitMoving->setMoved();
+			moveUnit(unitMoving, map, newX, newY);
+			if(IH::Instance()->playingLAN)
+			{
+				ostringstream bob;
+				bob << unitMoving->getName() << "#" << newX << "#" << newY;
+				MessageHandler::Instance()->sendMessage(bob.str(), MOVEUNIT); 
+			}
 		}
 		return true;
 	}

@@ -278,8 +278,8 @@ void IH::handlePrimaryInput()
 			{
 			case SDLK_RETURN:
 				keysOff = true;
-				MessageHandler::Instance()->setupClient((const char*)output.c_str());
-				MessageHandler::Instance()->sendMessage(&output, GETIP);
+				MessageHandler::Instance()->setupClient(output.c_str());
+				MessageHandler::Instance()->sendMessage(output, GETIP);
 				break;
 			case SDLK_BACKSPACE:
 				if(output.length() > 0)
@@ -328,7 +328,7 @@ void IH::handlePrimaryInput()
 				break;
 			case SDLK_RETURN:
 				//playerIam = !playerIam;
-				gameState = matchCombatPhase;
+				//gameState = matchCombatPhase;
 				break;
 			}
 			break;
@@ -370,7 +370,7 @@ void IH::handlePrimaryInput()
 					gameState = matchCombatPhase;
 					cancelClick(map);
 					if(playingLAN)
-						MessageHandler::Instance()->sendMessage((string*)"I'mma goin to combat!\n", COMBATPHASE);
+						MessageHandler::Instance()->sendMessage("I'mma goin to combat!\n", COMBATPHASE);
 				}
 				if(currentUnits[0] && clickedIn(event, UISlots[0]))
 				{
@@ -528,16 +528,19 @@ void IH::update(int mspassed)
 	case matchMainPhase:
 	case matchCombatPhase:
 	case reviewingMatch:
-		screenShiftX += xMove*5;
-		screenShiftY += yMove*5;
-		if(screenShiftX > 50)
-			screenShiftX = 50;
-		if(screenShiftY > 44)
-			screenShiftY = 44;
-		if(screenShiftX < -(((map->width+1)*38)-screen->w+12))
-			screenShiftX = -(((map->width+1)*38)-screen->w+12);
-		if(screenShiftY < -(((map->height)*44)-screen->h+(GUIFrameRect.h*2)))
-			screenShiftY = -(((map->height)*44)-screen->h+(GUIFrameRect.h*2));
+		if(map)
+		{
+			screenShiftX += xMove*5;
+			screenShiftY += yMove*5;
+			if(screenShiftX > 50)
+				screenShiftX = 50;
+			if(screenShiftY > 44)
+				screenShiftY = 44;
+			if(screenShiftX < -(((map->width+1)*38)-screen->w+12))
+				screenShiftX = -(((map->width+1)*38)-screen->w+12);
+			if(screenShiftY < -(((map->height)*44)-screen->h+(GUIFrameRect.h*2)))
+				screenShiftY = -(((map->height)*44)-screen->h+(GUIFrameRect.h*2));
+		}
 		break;
 	default:
 		break;
@@ -576,7 +579,7 @@ void IH::update(int mspassed)
 			}
 			else
 			{
-				MessageHandler::Instance()->sendMessage((string *)"Your turn!", STARTTURN);
+				MessageHandler::Instance()->sendMessage("Your turn!", STARTTURN);
 			}
 			if(playersTurn == 1)
 				currentTurn++;
@@ -598,11 +601,12 @@ void IH::update(int mspassed)
 		//gameRules->calcAllRules();
 		break;
 	}
+	MessageHandler::Instance()->checkMessages();
+	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
 		IH::Instance()->handleMessage();
 
-	MessageHandler::Instance()->checkMessages();
-	MessageHandler::Instance()->sendNextMessage();
+	
 }
 
 void IH::drawAll()
@@ -657,12 +661,13 @@ bool IH::handleMessage()
 		if(matchFileNames.checkFileNames())
 		{
 			matchFileNames.setFiles();
+			createMatch();
 			gameState = matchMainPhase;
 		}
 		else
 		{
 			cout << "\n\nERROR, failure to load files\n\n";
-			MessageHandler::Instance()->sendMessage((string*)"Failed to load files\n", QUIT);
+			MessageHandler::Instance()->sendMessage("Failed to load files\n", QUIT);
 		}
 		return true;
 		break;
@@ -670,7 +675,9 @@ bool IH::handleMessage()
 		if(amHost)
 		{
 			cout << "OMG I GOT A PING\n";
-			MessageHandler::Instance()->sendMessage(&matchFileNames.gameName, GAMEFILENAME);
+			MessageHandler::Instance()->sendMessage("1", PICKFACTION);
+			MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
+			createMatch();
 			gameState = matchMainPhase;
 		}
 		else
@@ -698,7 +705,7 @@ bool IH::handleMessage()
 			ostringstream oss;
 			oss << otherPrefferedFaction;
 			playerIam = prefferedFaction;
-			MessageHandler::Instance()->sendMessage(&oss.str(), PICKFACTION);
+			MessageHandler::Instance()->sendMessage(oss.str(), PICKFACTION);
 
 		}
 		else
@@ -718,7 +725,7 @@ bool IH::handleMessage()
 		newX = stringToInt(stringX);
 		newY = stringToInt(stringY);
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(unitName))
-			unitToHandle->setPosition(newX, newY);
+			moveUnit(unitToHandle, map, newX, newY);
 		else
 			return false;
 		return true;
