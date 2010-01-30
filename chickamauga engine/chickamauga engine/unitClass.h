@@ -49,7 +49,7 @@ public:
 	void setName(string s){name=s;}
 	SDL_Rect getSize();
 	void setComPrep(bool state) {inCombatPrep = state;}
-	void setCompleteCombat() {alreadyCompletedCombat = true;}
+	void setCompleteCombat() {alreadyCompletedCombat = true; needsCombat=false;}
 	void setNeedCombat() {needsCombat = true;}
 	bool needCombat() {return needsCombat;}
 	bool comPrep() {return inCombatPrep;}

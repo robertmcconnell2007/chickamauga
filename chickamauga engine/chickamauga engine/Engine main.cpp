@@ -38,7 +38,7 @@ int main(int argc, char ** argv)
 		//string name;
 		//getline(cin, name, '#');
 		//input
-		while(SDL_PollEvent(&IH::Instance()->event))
+ 		while(SDL_PollEvent(&IH::Instance()->event))
 		{
 			IH::Instance()->handlePrimaryInput();
 		}
