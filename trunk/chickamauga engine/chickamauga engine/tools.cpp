@@ -398,96 +398,8 @@ bool clickedIn(SDL_Event event, SDL_Rect rect)
 		return true;
 	return false;
 }
-void showRetreat(mapSuperClass* map,armyClass* ourArmy, armyClass* enemy)
-{
-	map_node *temp;
-	map->clearEnemy();
-	map->clearMovement();
-	for(int i=0; i<ourArmy->currentSize; i++)
-	{
-		if(ourArmy->armyArray[i]->retreat)
-		{
-			setEnemyNodes(*enemy,map);
-			temp=&map->getMap()[ourArmy->armyArray[i]->getY()-1][ourArmy->armyArray[i]->getX()-1];
-			temp->selected=true;
-			for(int k=0; k<6; k++)
-			{
-				if(k<3)
-				{
-					if(!temp->nodeEdges[k]->upperNode->enemy&&!temp->nodeEdges[k]->creek_edge)
-					{
-						temp->nodeEdges[k]->upperNode->selected=true;
-					}
-				}
-				else
-				{
-					if(!temp->nodeEdges[k]->lowerNode->enemy&&!temp->nodeEdges[k]->creek_edge)
-					{
-						temp->nodeEdges[k]->lowerNode->selected=true;
-					}
 
-				}
-			}
-		}
-	}
-	for(int i=0; i<enemy->currentSize; i++)
-	{
-		if(enemy->armyArray[i]->retreat)
-		{
-			setEnemyNodes(*ourArmy,map);
-			temp=&map->getMap()[enemy->armyArray[i]->getY()-1][enemy->armyArray[i]->getX()-1];
-			temp->selected=true;
-			for(int k=0; k<6; k++)
-			{
-				if(k<3)
-				{
-					if(!temp->nodeEdges[k]->upperNode->enemy&&!temp->nodeEdges[k]->creek_edge)
-					{
-						temp->nodeEdges[k]->upperNode->selected=true;
-					}
-				}
-				else
-				{
-					if(!temp->nodeEdges[k]->lowerNode->enemy&&!temp->nodeEdges[k]->creek_edge)
-					{
-						temp->nodeEdges[k]->lowerNode->selected=true;
-					}
-				}
-			}
-		}
-	}
-}
-void doRetreat(mapSuperClass* map,map_node *tempNode,armyClass* ourArmy,armyClass* enemy)
-{
-	bool retreatHappened=false;
-	if(tempNode->selected)
-	{
-		for(int i=0; i<ourArmy->currentSize; i++)
-		{
-			if(ourArmy->armyArray[i]->retreat)
-			{
-				ourArmy->armyArray[i]->setPosition(tempNode->col,tempNode->row);
-				ourArmy->armyArray[i]->retreat=false;
-				retreatHappened=true;
-			}
-		}
-		for(int i=0; i<enemy->currentSize; i++)
-		{
-			if(enemy->armyArray[i]->retreat)
-			{
-				enemy->armyArray[i]->setPosition(tempNode->col,tempNode->row);
-				enemy->armyArray[i]->retreat=false;
-				retreatHappened=true;
-			}
-		}
-	}
-	if(retreatHappened)
-	{
-		map->clearEnemy();
-		map->clearMovement();
-		IH::Instance()->retreatCalled=false;
-	}
-}
+
 
 bool canFightOther(map_node * node, armyClass * army)
 {
@@ -627,6 +539,10 @@ int battle::calcBattle()
 	armyClass * attkr = &IH::Instance()->players[IH::Instance()->playersTurn].playerArmy;
 	armyClass * dfndr = &IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy;
 	bool usableUnit = false;
+	if(!(attackers.size()>0))
+	{
+		return -1;
+	}
 	for(int i = 0; i < attackers.size(); ++i)
 	{
 		node = &IH::Instance()->map->getMap()[attackers.at(i)->getY()-1][attackers.at(i)->getX()-1];
@@ -747,12 +663,186 @@ int battle::calcBattle()
 		}
 	}
 	result=bCalc.doBattle(attackerPower,defenderPower);
-
+	//in results, if attack results in unit losses, vector will be
+	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
+	//cleared after all retreats have gone through
+	switch(result)
+	{
+	case attackRetreat:
+		{
+			IH::Instance()->retreatCalled=true;
+			for(int i=0; i<attackers.size(); i++)
+			{
+				attackers.at(i)->retreat=true;
+				attackers.at(i)->setCompleteCombat();
+				
+			}
+			//for now just delete the defenders
+			//will put in advance later COM
+			for(int i=0; i<defenders.size(); i++)
+			{
+				defenders.at(i)->setCompleteCombat();
+			}
+			defenders.clear();
+			break;
+		}
+	case attackElim:
+		{
+			for(int i=0; i<attackers.size(); i++)
+			{
+				for(int k=0; k<attkr->currentSize; k++)
+				{
+					if(attkr->armyArray[k]==attackers.at(i))
+					{
+						attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
+					}
+				}
+			}
+			attackers.clear();
+			for(int i=0; i<defenders.size(); i++)
+			{
+				defenders.at(i)->setCompleteCombat();
+			}
+			defenders.clear();
+			break;
+		}
+	case defendRetreat:
+		{
+			IH::Instance()->retreatCalled=true;
+			for(int i=0; i<defenders.size(); i++)
+			{
+				defenders.at(i)->retreat=true;
+				defenders.at(i)->setCompleteCombat();
+			}
+			for(int i=0; i<attackers.size(); i++)
+			{
+				attackers.at(i)->setCompleteCombat();
+			}
+			attackers.clear();
+			break;
+		}
+	case defendElim:
+		{
+			for(int i=0; i<defenders.size(); i++)
+			{
+				for(int k=0; k<dfndr->currentSize; k++)
+				{
+					if(dfndr->armyArray[k]==defenders.at(i))
+					{
+						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
+					}
+				}
+			}
+			defenders.clear();
+			for(int i=0; i<attackers.size(); i++)
+			{
+				attackers.at(i)->setCompleteCombat();
+			}
+			attackers.clear();
+			break;
+		}
+	case exchange:
+		{
+			break;
+		}
+	}
 
 	
 
 
 	return 0;
+}
+///will show the first retreater of the retreating battle force
+bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
+{
+	battle * tempBattle;	
+	map_node *node;
+ 	tempBattle=&IH::Instance()->currentBattle;
+	if(tempBattle->attackers.size()>0)//still attackers
+	{
+		setEnemyNodes(*dfndr,map);
+		node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
+		for(int i=0; i<6; i++)
+		{
+			if(i<3)
+			{
+				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge)
+				{
+					node->nodeEdges[i]->upperNode->selected=true;
+				}
+			}
+			else
+			{
+				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge)
+				{
+					node->nodeEdges[i]->lowerNode->selected=true;
+				}
+			}
+		}
+		map->clearEnemy();
+		return true;
+	}
+	else if(tempBattle->defenders.size()>0)
+	{
+		setEnemyNodes(*attkrs,map);
+		node=&map->getMap()[tempBattle->defenders.back()->getY()-1][tempBattle->defenders.back()->getX()-1];
+		for(int i=0; i<6; i++)
+		{
+			if(i<3)
+			{
+				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge)
+				{
+					node->nodeEdges[i]->upperNode->selected=true;
+				}
+			}
+			else
+			{
+				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge)
+				{
+					node->nodeEdges[i]->lowerNode->selected=true;
+				}
+			}
+		}
+		map->clearEnemy();
+		return true;
+	}
+	else
+	{
+		IH::Instance()->retreatCalled=false;
+		return false;
+	}
+}
+void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass * dfndrs)
+{
+	battle * tempBattle=&IH::Instance()->currentBattle;
+	if(tempBattle->attackers.size()>0)
+	{
+		setEnemyNodes(*dfndrs,map);
+		if(node->selected&&!node->enemy)
+		{
+			tempBattle->attackers.back()->setPosition(node->col,node->row);
+			tempBattle->attackers.back()->setCompleteCombat();
+			tempBattle->attackers.pop_back();
+		}
+	}
+	else if(tempBattle->defenders.size()>0)
+	{
+		setEnemyNodes(*attkrs,map);
+		if(node->selected&&!node->enemy)
+		{
+			tempBattle->defenders.back()->setPosition(node->col,node->row);
+			tempBattle->defenders.back()->setCompleteCombat();
+			tempBattle->defenders.pop_back();
+		}
+	}
+	if(tempBattle->attackers.empty()&&tempBattle->defenders.empty())
+	{
+		IH::Instance()->retreatCalled=false;
+	}
+	map->clearMovement();
+	map->clearEnemy();
+
+	
 }
 
 /////////////////////////////////////////////////////
@@ -986,6 +1076,10 @@ void IH::handlePrimaryInput()
 		break;
 	case matchCombatPhase:
 		{
+			if(retreatCalled)
+			{
+				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+			}
 			switch(event.type)
 			{
 			case SDL_KEYDOWN:
@@ -1044,6 +1138,10 @@ void IH::handlePrimaryInput()
 					{
 						currentBattle.calcBattle();
 					}
+					if(retreatCalled)
+					{
+					showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+					}
 				}
 				else if(firstX == actualX && firstY == actualY)
 				{
@@ -1053,13 +1151,17 @@ void IH::handlePrimaryInput()
 					}
 					if(retreatCalled)
 					{
-						doRetreat(map,selectedNode,&players[0].playerArmy,&players[1].playerArmy);
+						doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
 					}
-					if(playersTurn == playerIam)
+					else if(playersTurn == playerIam)
 					{
 						clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 						clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 					}
+
+				}
+				if(!retreatCalled)
+				{
 					cancelClick(map);
 					showCombat();
 				}
@@ -1119,7 +1221,7 @@ void IH::update(int mspassed)
 				}
 			}
 		}
-		if(switchState)
+		if(switchState&&!retreatCalled)
 		{
 			switchState = false;
 			if(!playingLAN)
@@ -1136,6 +1238,10 @@ void IH::update(int mspassed)
 		}
 		else
 		{
+			if(retreatCalled)
+			{
+				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+			}
 		}
 		break;
 	case reviewingMatch:
