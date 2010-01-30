@@ -58,6 +58,7 @@ private:
 	int  screenShiftX, xMove;
 	int  screenShiftY, yMove;
 	int  prefferedFaction;
+	int  currentTurn;
 	//0 == player1, 1 == player2
 	
 	//actual and first used to identify which hex the user clicks on

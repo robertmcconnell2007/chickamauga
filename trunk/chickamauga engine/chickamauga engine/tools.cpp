@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include "Game Data Handler.h"
+#include "tools.h"
 #include "unitClass.h"
 #include "mapSuperClass.h"
 #include "tools.h"
@@ -14,7 +15,12 @@
 ///<<<<<<< .mine
 #include "SDL.h"		// SDL library
 #include "SDL_ttf.h"	// true-type font library for SDL
-#include<stdio.h>
+#include <stdio.h>
+
+#include "tools/interface tools.h"
+#include "tools/combat tools.h"
+#include "tools/draw tools.h"
+
 using namespace std;
 enum terrainTypes;
 
@@ -35,136 +41,8 @@ int stringToInt(string str)
 
 	return newInt;
 }
-void showCombat()
-{
-	unitClass *unit;
-	IH::Instance()->map->showEnemyControl=true;
-	for(int i=0; i<IH::Instance()->currentBattle.attackers.size(); i++)
-	{
-		unit=IH::Instance()->currentBattle.attackers.at(i);
-		IH::Instance()->map->getMap()[unit->getY()-1][unit->getX()-1].selected=true;
-	}
-	for(int i=0; i<IH::Instance()->currentBattle.defenders.size(); i++)
-	{
-		unit=IH::Instance()->currentBattle.defenders.at(i);
-		IH::Instance()->map->getMap()[unit->getY()-1][unit->getX()-1].enemy=true;
-	}
-}
-bool getUnitsAroundNode(map_node * node, int path, armyClass * army, unitClass * &unit1, unitClass * &unit2)
-{
-	bool foundUnit1 = false;
-	unit1 = NULL;
-	unit2 = NULL;
-	for(int i = 0; i < army->currentSize; ++i)
-	{
-		if(path < 3)
-		{
-			if(army->armyArray[i]->getX() == node->nodeEdges[path]->upperNode->col &&
-				army->armyArray[i]->getY() == node->nodeEdges[path]->upperNode->row)
-			{
-				if(!foundUnit1)
-				{
-					unit1 = army->armyArray[i];
-					foundUnit1 = true;
-				}
-				else
-					unit2 = army->armyArray[i];
-			}
-		}
-		else
-		{
-			if(army->armyArray[i]->getX() == node->nodeEdges[path]->lowerNode->col &&
-				army->armyArray[i]->getY() == node->nodeEdges[path]->lowerNode->row)
-			{
-				if(!foundUnit1)
-				{
-					unit1 = army->armyArray[i];
-					foundUnit1 = true;
-				}
-				else
-					unit2 = army->armyArray[i];
-			}
-		}
-	}
-	if(foundUnit1)
-		return true;
-	return false;
-}
 
-bool getUnitsOnNode(map_node * node, armyClass * army, unitClass * &unit1, unitClass * &unit2)
-{
-	bool foundUnit1 = false;
-	unit1 = NULL;
-	unit2 = NULL;
-	for(int i = 0; i < army->currentSize; ++i)
-	{
-		if(army->armyArray[i]->getX() == node->col &&
-			army->armyArray[i]->getY() == node->row)
-		{
-			if(!foundUnit1)
-			{
-				unit1 = army->armyArray[i];
-				foundUnit1 = true;
-			}
-			else
-				unit2 = army->armyArray[i];
-		}
-	}
-	if(foundUnit1)
-		return true;
-	return false;
-}
 
-void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, unitClass *currentUnits[2], SDL_Surface * screen)
-{
-	ostringstream slottxt[3];
-	for(int i = 0; i < 3; ++i)
-		slottxt[i] << "";
-
-	//clear away the guiframe
-	SDL_FillRect(screen, &IH::Instance()->GUIFrameRect, 0x000000);
-	//draw the art frame first
-	//drawATile(IH::Instance()->GUIGameFrame, &IH::Instance()->GUIFrameRect, 0, screen, IH::Instance()->GUIFrameRect.x, IH::Instance()->GUIFrameRect.y);
-	if(currentUnits[0])
-	{
-		slottxt[0] << currentUnits[0]->getName() << "\n";
-		slottxt[0] << currentUnits[0]->getPower() << "\n";
-	}
-	if(currentUnits[1])
-	{
-		slottxt[1] << currentUnits[1]->getName() << "\n";
-		slottxt[1] << currentUnits[1]->getPower() << "\n";
-	}
-	if(node)
-	{
-		switch(node->type)
-		{
-		case clear:
-			slottxt[2] << "Clear\nMove cost is " << IH::Instance()->gameRules->clearMovePenalty << " point(s).\n";
-			break;
-		case forest:
-			slottxt[2] << "Forest\nMove cost is " << IH::Instance()->gameRules->forestMovePenalty << " point(s).\n";
-			break;
-		case rough:
-			slottxt[2] << "Rough\nMove cost is " << IH::Instance()->gameRules->roughMovePenalty << " point(s).\n";
-			break;
-		case roughForest:
-			slottxt[2] << "Forested Rough\nMove cost is " << IH::Instance()->gameRules->forestroughMovePenalty << " point(s).\n";
-			break;
-		case river:
-			slottxt[2] << "River\nNo movement.\n";
-			break;
-		}
-	}
-	if(IH::Instance()->unit1Selected)
-		SDL_FillRect(screen, &IH::Instance()->UISlots[0], IH::Instance()->UIbkColor);
-	if(IH::Instance()->unit2Selected)
-		SDL_FillRect(screen, &IH::Instance()->UISlots[1], IH::Instance()->UIbkColor);
-	for(int i = 0; i < 3; ++i)
-	{
-		printStrings(slottxt[i].str(), IH::Instance()->UISlots[i], screen, IH::Instance()->textColor, IH::Instance()->font1);
-	}
-}
 
 //checks the clicked node to see if there are any units on it
 bool isUnits(map_node * node, armyClass * unionArmy, armyClass * confedArmy)
@@ -172,8 +50,7 @@ bool isUnits(map_node * node, armyClass * unionArmy, armyClass * confedArmy)
 	for(int i = 0; i < unionArmy->currentSize; ++i)
 	{
 		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
-			return true;
-		
+			return true;		
 	}
 	for(int j = 0; j < confedArmy->currentSize; ++j)
 	{
@@ -246,6 +123,7 @@ int checkEdge(node_edge* edge, int pos)
 	}
 	return movementRequired;
 }
+
 void moveTo(map_node* node,int movement)
 {
 	node->movement = movement;
@@ -260,28 +138,21 @@ void moveTo(map_node* node,int movement)
 			if(i > 2)
 			{
 				if(node->nodeEdges[i]->lowerNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->lowerNode->movement)
-				{
 					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
-				}
 				else if(tempMove != -1 && movement-tempMove >= 0)
-				{
 					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
-				}
 			}
 			else
 			{
 				if(node->nodeEdges[i]->upperNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->upperNode->movement)
-				{
 					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
-				}
 				else if(tempMove != -1 && movement-tempMove >= 0)
-				{
 					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
-				}
 			}
 		}
 	}
 }
+
 void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 {
 	for(int k = 0; k < enemyArmy.currentSize; k++)
@@ -289,6 +160,7 @@ void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 		map->setEnemy(enemyArmy.armyArray[k]->getX()-1,enemyArmy.armyArray[k]->getY()-1);
 	}
 }
+
 void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 {
 	map_node** mapPointer = map->getMap();
@@ -313,544 +185,14 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 		}
 	}
 }
-void cancelClick(mapSuperClass * map)
-{
-	map->clearEnemy();
-	map->clearMovement();
-	//need to clear the unit array.
-	IH::Instance()->currentUnits[0] = NULL;
-	IH::Instance()->currentUnits[1] = NULL;
-	IH::Instance()->selectedNode    = NULL;
-	IH::Instance()->unit1Selected   = false;
-	IH::Instance()->unit2Selected   = false;
-	//currentUnits[1] = NULL;
-}
-bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
-{
-	cancelClick(map);
-	checkUnitStacks(map,currentArmy,enemyArmy);
-	IH::Instance()->selectedNode = node;
-	for(int i = 0; i < currentArmy.currentSize; ++i)
-	{
-		if( node->col == currentArmy.armyArray[i]->getX() &&
-			node->row == currentArmy.armyArray[i]->getY())
-		{
-			IH::Instance()->unit1Selected = true;
-			IH::Instance()->enemyUnitsSelected = false;
-			if(!IH::Instance()->currentUnits[0])
-				IH::Instance()->currentUnits[0] = currentArmy.armyArray[i];
-			else if(!IH::Instance()->currentUnits[1])
-			{
-				IH::Instance()->unit2Selected = true;
-				IH::Instance()->currentUnits[1] = currentArmy.armyArray[i];
-			}
-		}
-	}
-	for(int i = 0; i < enemyArmy.currentSize; ++i)
-	{
-		if( node->col == enemyArmy.armyArray[i]->getX() &&
-			node->row == enemyArmy.armyArray[i]->getY())
-		{
-			IH::Instance()->unit1Selected = false;
-			IH::Instance()->enemyUnitsSelected = true;
-			if(!IH::Instance()->currentUnits[0])
-				IH::Instance()->currentUnits[0] = enemyArmy.armyArray[i];
-			else if(!IH::Instance()->currentUnits[1])
-				IH::Instance()->currentUnits[1] = enemyArmy.armyArray[i];
-		}
-	}
-	setEnemyNodes(enemyArmy, map);
-	moveTo(node,IH::Instance()->gameRules->unitMovePoints);
-	if(!(IH::Instance()->currentUnits[0] || IH::Instance()->currentUnits[1]))
-		cancelClick(map);
-	return true;
-}
-bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass * unitMoving)
-{
-	checkUnitStacks(map,currentArmy,enemyArmy);
-	if(IH::Instance()->enemyUnitsSelected)
-		cancelClick(map);
-	else if(map->getMap()[newX][newY].movement>=0)
-	{
-		if(!unitMoving->hasMoved() && 
-			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
-		{
-			unitMoving->setPosition(newY+1,newX+1);
-			if(map->getMap()[newX][newY].enemy)
-				unitMoving->setNeedCombat();
-			//uncomment below line to restrict units to
-			//one move per turn
-			if(map->getMap()[newX][newY].control)
-				map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
-			unitMoving->setMoved();
-		}
-		return true;
-	}
-	return false;
-}
 
-bool clickedIn(SDL_Event event, SDL_Rect rect)
-{
-	if(event.motion.x > rect.x &&
-		event.motion.x < rect.x + rect.w &&
-		event.motion.y > rect.y &&
-		event.motion.y < rect.y + rect.h)
-		return true;
-	return false;
-}
-
-
-
-bool canFightOther(map_node * node, armyClass * army)
-{
-	unitClass * unit1 = NULL, * unit2 = NULL;
-	for(int i = 0; i < 6; ++i)
-	{
-		getUnitsAroundNode(node, i, army, unit1, unit2);
-		if(unit1 && !unit1->comPrep())
-			return true;
-		if(unit2 && !unit2->comPrep())
-			return true;
-	}
-	return false;
-}
-
-bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy)
-{
-	bool foundOtherCombatant = false;
-	unitClass * unit1 = NULL, * unit2 = NULL;
-	if(IH::Instance()->currentBattle.attackers.size() == 0)
-	{
-		IH::Instance()->preppingCombat = true;
-	}
-	else
-	{
-		for(int i = 0; i < 6; ++i)
-		{
-			getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
-			if((unit1 != NULL && unit1->comPrep() && !unit1->completedCombat()) ||
-				(unit2 != NULL && unit2->comPrep() && !unit2->completedCombat()))
-				foundOtherCombatant = true;
-		}
-		if(!foundOtherCombatant)
-			return false;
-	}
-	if(!getUnitsOnNode(node, attackerArmy, unit1, unit2))
-	{
-		return false;
-	}
-	if(unit1 != NULL)
-	{
-		unit1->setComPrep(true);
-		IH::Instance()->currentBattle.attackers.push_back(unit1);
-	}
-	if(unit2 != NULL)
-	{
-		unit2->setComPrep(true);
-		IH::Instance()->currentBattle.attackers.push_back(unit2);
-	}
-	
-	for(int i = 0; i < 6; ++i)
-	{
-		getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
-		if(unit1 || unit2)
-		{
-			if(unit1) unit1->setComPrep(true);
-			if(unit2) unit2->setComPrep(true);
-			if(i < 3)
-			{
-				if(!canFightOther(node->nodeEdges[i]->upperNode, attackerArmy))
-				{
-					if(unit1) IH::Instance()->currentBattle.defenders.push_back(unit1);
-					if(unit2) IH::Instance()->currentBattle.defenders.push_back(unit2);
-				}
-			}
-			else
-			{
-				if(!canFightOther(node->nodeEdges[i]->lowerNode, attackerArmy))
-				{
-					if(unit1) IH::Instance()->currentBattle.defenders.push_back(unit1);
-					if(unit2) IH::Instance()->currentBattle.defenders.push_back(unit2);
-				}
-			}
-		}
-	}
-	return true;
-}
-
-bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy)
-{
-	unitClass * unit1 = NULL, * unit2 = NULL;
-	if(IH::Instance()->currentBattle.attackers.size() == 0)
-		return false;
-	bool foundOtherCombatant = false;
-	for(int i = 0; i < 6; ++i)
-	{
-		getUnitsAroundNode(node, i, attackerArmy, unit1, unit2);
-		if((unit1 != NULL && unit1->comPrep() && !unit1->completedCombat()) ||
-			(unit2 != NULL && unit2->comPrep() && !unit2->completedCombat()))
-			foundOtherCombatant = true;
-	}
-	if(!foundOtherCombatant)
-		return false;
-	if(unit1)
-	{
-		unit1->setComPrep(true);
-		IH::Instance()->currentBattle.defenders.push_back(unit1);
-	}
-	if(unit2)
-	{
-		unit2->setComPrep(true);
-		IH::Instance()->currentBattle.defenders.push_back(unit2);
-	}
-	for(int i = 0; i < 6; ++i)
-	{
-		getUnitsAroundNode(node, i, attackerArmy, unit1, unit2);
-		if(unit1 || unit2)
-		{
-			if(unit1) unit1->setComPrep(true);
-			if(unit2) unit2->setComPrep(true);
-			if(i < 3)
-			{
-				if(!canFightOther(node->nodeEdges[i]->upperNode, defenderArmy))
-				{
-					if(unit1) IH::Instance()->currentBattle.attackers.push_back(unit1);
-					if(unit2) IH::Instance()->currentBattle.attackers.push_back(unit2);
-				}
-			}
-			else
-			{
-				if(!canFightOther(node->nodeEdges[i]->lowerNode, defenderArmy))
-				{
-					if(unit1) IH::Instance()->currentBattle.attackers.push_back(unit1);
-					if(unit2) IH::Instance()->currentBattle.attackers.push_back(unit2);
-				}
-			}
-		}
-	}
-	return true;
-}
-
-int battle::calcBattle()
-{
-	unitClass * unit = NULL;
-	unitClass * otherUnit1 = NULL, *otherUnit2 = NULL;
-	map_node * node = NULL;
-	armyClass * attkr = &IH::Instance()->players[IH::Instance()->playersTurn].playerArmy;
-	armyClass * dfndr = &IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy;
-	bool usableUnit = false;
-	if(!(attackers.size()>0))
-	{
-		return -1;
-	}
-	for(int i = 0; i < attackers.size(); ++i)
-	{
-		node = &IH::Instance()->map->getMap()[attackers.at(i)->getY()-1][attackers.at(i)->getX()-1];
-		for(int j = 0; j < 6; ++j)
-		{
-			usableUnit = true;
-			getUnitsAroundNode(node, i, dfndr, otherUnit1, otherUnit2);
-			if(otherUnit1 && otherUnit1->completedCombat())
-			{
-				for(int k = 0; k < defenders.size(); ++k)
-					if(otherUnit1 == defenders.at(i))
-						usableUnit = false;
-				if(usableUnit)
-				{
-					if(i < 3)
-					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr))
-							defenders.push_back(otherUnit1);
-					}
-					else
-					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr))
-							defenders.push_back(otherUnit1);
-					}
-				}
-			}
-			usableUnit = true;
-			if(otherUnit2 && otherUnit2->completedCombat())
-			{
-				for(int k = 0; k < defenders.size(); ++k)
-					if(otherUnit2 == defenders.at(i))
-						usableUnit = false;
-				if(usableUnit)
-				{
-					if(i < 3)
-					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr))
-							defenders.push_back(otherUnit2);
-					}
-					else
-					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr))
-							defenders.push_back(otherUnit2);
-					}
-				}
-			}
-		}
-	}
-	for(int i = 0; i < defenders.size(); ++i)
-	{
-		node = &IH::Instance()->map->getMap()[defenders.at(i)->getY()-1][defenders.at(i)->getX()-1];
-		for(int j = 0; j < 6; ++j)
-		{
-			usableUnit = true;
-			getUnitsAroundNode(node, i, attkr, otherUnit1, otherUnit2);
-			if(otherUnit1 && otherUnit1->completedCombat())
-			{
-				for(int k = 0; k < attackers.size(); ++k)
-					if(otherUnit1 == attackers.at(i))
-						usableUnit = false;
-				if(usableUnit)
-				{
-					if(i < 3)
-					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr))
-							attackers.push_back(otherUnit1);
-					}
-					else
-					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr))
-							attackers.push_back(otherUnit1);
-					}
-				}
-			}
-			usableUnit = true;
-			if(otherUnit2 && otherUnit2->completedCombat())
-			{
-				for(int k = 0; k < attackers.size(); ++k)
-					if(otherUnit2 == attackers.at(i))
-						usableUnit = false;
-				if(usableUnit)
-				{
-					if(i < 3)
-					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr))
-							attackers.push_back(otherUnit2);
-					}						
-					else
-					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr))
-							attackers.push_back(otherUnit2);
-					}						
-				}
-			}
-		}
-	}
-	///////////////////acutal battle calc now////////////
-	///well assume that everyone can attack everybody and creeks
-	///have already been accounted for
-	battleCalculator bCalc;
-	int result;
-	int attackerPower=0;
-	int defenderPower=0;
-	for(int i=0; i<attackers.size(); i++)
-	{
-		attackerPower+=attackers.at(i)->getPower();
-	}
-	for(int i=0; i<defenders.size(); i++)
-	{
-		node=&IH::Instance()->map->getMap()[defenders.at(i)->getY()-1][defenders.at(i)->getX()-1];
-		if(node->type==rough||node->type==roughForest)
-		{
-			defenderPower+=(defenders.at(i)->getPower()*2);
-		}
-		else
-		{
-			defenderPower+=defenders.at(i)->getPower();
-		}
-	}
-	result=bCalc.doBattle(attackerPower,defenderPower);
-	//in results, if attack results in unit losses, vector will be
-	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
-	//cleared after all retreats have gone through
-	switch(result)
-	{
-	case attackRetreat:
-		{
-			IH::Instance()->retreatCalled=true;
-			for(int i=0; i<attackers.size(); i++)
-			{
-				attackers.at(i)->retreat=true;
-				attackers.at(i)->setCompleteCombat();
-				
-			}
-			//for now just delete the defenders
-			//will put in advance later COM
-			for(int i=0; i<defenders.size(); i++)
-			{
-				defenders.at(i)->setCompleteCombat();
-			}
-			defenders.clear();
-			break;
-		}
-	case attackElim:
-		{
-			for(int i=0; i<attackers.size(); i++)
-			{
-				for(int k=0; k<attkr->currentSize; k++)
-				{
-					if(attkr->armyArray[k]==attackers.at(i))
-					{
-						attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
-					}
-				}
-			}
-			attackers.clear();
-			for(int i=0; i<defenders.size(); i++)
-			{
-				defenders.at(i)->setCompleteCombat();
-			}
-			defenders.clear();
-			break;
-		}
-	case defendRetreat:
-		{
-			IH::Instance()->retreatCalled=true;
-			for(int i=0; i<defenders.size(); i++)
-			{
-				defenders.at(i)->retreat=true;
-				defenders.at(i)->setCompleteCombat();
-			}
-			for(int i=0; i<attackers.size(); i++)
-			{
-				attackers.at(i)->setCompleteCombat();
-			}
-			attackers.clear();
-			break;
-		}
-	case defendElim:
-		{
-			for(int i=0; i<defenders.size(); i++)
-			{
-				for(int k=0; k<dfndr->currentSize; k++)
-				{
-					if(dfndr->armyArray[k]==defenders.at(i))
-					{
-						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
-					}
-				}
-			}
-			defenders.clear();
-			for(int i=0; i<attackers.size(); i++)
-			{
-				attackers.at(i)->setCompleteCombat();
-			}
-			attackers.clear();
-			break;
-		}
-	case exchange:
-		{
-			break;
-		}
-	}
-
-	
-
-
-	return 0;
-}
 ///will show the first retreater of the retreating battle force
-bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
-{
-	battle * tempBattle;	
-	map_node *node;
- 	tempBattle=&IH::Instance()->currentBattle;
-	if(tempBattle->attackers.size()>0)//still attackers
-	{
-		setEnemyNodes(*dfndr,map);
-		node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
-		for(int i=0; i<6; i++)
-		{
-			if(i<3)
-			{
-				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge)
-				{
-					node->nodeEdges[i]->upperNode->selected=true;
-				}
-			}
-			else
-			{
-				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge)
-				{
-					node->nodeEdges[i]->lowerNode->selected=true;
-				}
-			}
-		}
-		map->clearEnemy();
-		return true;
-	}
-	else if(tempBattle->defenders.size()>0)
-	{
-		setEnemyNodes(*attkrs,map);
-		node=&map->getMap()[tempBattle->defenders.back()->getY()-1][tempBattle->defenders.back()->getX()-1];
-		for(int i=0; i<6; i++)
-		{
-			if(i<3)
-			{
-				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge)
-				{
-					node->nodeEdges[i]->upperNode->selected=true;
-				}
-			}
-			else
-			{
-				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge)
-				{
-					node->nodeEdges[i]->lowerNode->selected=true;
-				}
-			}
-		}
-		map->clearEnemy();
-		return true;
-	}
-	else
-	{
-		IH::Instance()->retreatCalled=false;
-		return false;
-	}
-}
-void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass * dfndrs)
-{
-	battle * tempBattle=&IH::Instance()->currentBattle;
-	if(tempBattle->attackers.size()>0)
-	{
-		setEnemyNodes(*dfndrs,map);
-		if(node->selected&&!node->enemy)
-		{
-			tempBattle->attackers.back()->setPosition(node->col,node->row);
-			tempBattle->attackers.back()->setCompleteCombat();
-			tempBattle->attackers.pop_back();
-		}
-	}
-	else if(tempBattle->defenders.size()>0)
-	{
-		setEnemyNodes(*attkrs,map);
-		if(node->selected&&!node->enemy)
-		{
-			tempBattle->defenders.back()->setPosition(node->col,node->row);
-			tempBattle->defenders.back()->setCompleteCombat();
-			tempBattle->defenders.pop_back();
-		}
-	}
-	if(tempBattle->attackers.empty()&&tempBattle->defenders.empty())
-	{
-		IH::Instance()->retreatCalled=false;
-	}
-	map->clearMovement();
-	map->clearEnemy();
-
-	
-}
 
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 /// main loop functions
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
-
 
 
 void IH::handlePrimaryInput()
@@ -1140,7 +482,7 @@ void IH::handlePrimaryInput()
 					}
 					if(retreatCalled)
 					{
-					showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+						showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
 					}
 				}
 				else if(firstX == actualX && firstY == actualY)
@@ -1155,6 +497,8 @@ void IH::handlePrimaryInput()
 					}
 					else if(playersTurn == playerIam)
 					{
+						//unitClass * temp1 = NULL, * temp2 = NULL;
+						//if(getUnitsOnNode(selectedNode, players[playersTurn].playerArmy, temp1, temp2)
 						clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 						clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 					}
@@ -1221,7 +565,7 @@ void IH::update(int mspassed)
 				}
 			}
 		}
-		if(switchState&&!retreatCalled)
+		if(switchState && !retreatCalled)
 		{
 			switchState = false;
 			if(!playingLAN)
@@ -1232,9 +576,12 @@ void IH::update(int mspassed)
 			{
 				//SAMSAM send a message saying that the turn has ended, swap turns
 			}
+			if(playersTurn == 1)
+				currentTurn++;
 			playersTurn = !playersTurn;
 			players[0].playerArmy.resetMoves();
 			players[1].playerArmy.resetMoves();
+			gameState = matchMainPhase;
 		}
 		else
 		{
@@ -1413,179 +760,3 @@ bool IH::handleMessage()
 	return false;
 }
 
-/*
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-//////////Obsoleted Code////////////////////////
-/////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-
-	//blitSurface = TTF_RenderText_Solid(IH::Instance()->font1, slottxt1.str().c_str(), IH::Instance()->textColor);
-	//SDL_BlitSurface(blitSurface, NULL, screen, &tempRect);
-	//SDL_Surface *instructionImage2 = TTF_RenderText_Solid(font,myInstructions2,color1);
-	//SDL_BlitSurface(instructionImage2,NULL,screen,&secondRect);
-	int k = 0;
-	int defense = 0;
-	int defCounter1 = 0;
-	int defCounter2 = 0;
-	int power = 0;
-	int powCounter1 = 0;
-	int powCounter2 = 0;
-	int defenseMultiplier = 1;
-	SDL_Color color1 = {0,0,0};
-	SDL_Color color2 = {255,0,0};
-	char * fontName = "C:\\windows\\fonts\\arial.ttf";
-	TTF_Font *font = TTF_OpenFont (fontName, 14);
-	TTF_Font *font2 = TTF_OpenFont (fontName,26);
-	SDL_Surface *maxDefenseImg = NULL;
-	SDL_Surface *maxAttackImg = NULL;
-	SDL_Surface *unit1StrImg = NULL;
-	SDL_Surface *unit2StrImg = NULL;
-	SDL_Rect firstRect;
-	SDL_Rect secondRect;
-	SDL_Rect unit1UnderliningRect;
-	SDL_Rect unit2UnderliningRect;
-	SDL_Rect unit1InfoRect;
-	SDL_Rect unit2InfoRect;
-	SDL_Rect defRect;
-	SDL_Rect atkRect;
-	//
-	unit2InfoRect.x = 161;
-	unit2InfoRect.y = 15;
-	unit2InfoRect.h = 35;
-	unit2InfoRect.w = 50;
-	//
-	unit1InfoRect.x = 110;
-	unit1InfoRect.y = 15;
-	unit1InfoRect.h = 35;
-	unit1InfoRect.w = 50;
-	//
-
-	unit2UnderliningRect.x = 146;
-	unit2UnderliningRect.y = 0;
-	unit2UnderliningRect.h = 50;
-	unit2UnderliningRect.w = 50;
-	//
-	unit1UnderliningRect.x = 95;
-	unit1UnderliningRect.y = 0;
-	unit1UnderliningRect.h = 50;
-	unit1UnderliningRect.w = 50;
-	//
-	atkRect.x = 65;
-	atkRect.y = 17;
-	atkRect.h = 50;
-	atkRect.w = 10;
-	//
-	defRect.x = 70;
-	defRect.y = 0;
-	defRect.h = 50;
-	defRect.w = 10;
-	//first unit on gui
-	firstRect.x = 0;
-	firstRect.y = 0;
-	firstRect.h = 20;
-	firstRect.w = 95;
-	//second unit on gui
-	secondRect.x = 0;
-	secondRect.y = 18;
-	secondRect.h = 20;
-	secondRect.w = 95;
-	if(node->type == rough || node->type == roughForest)
-		defenseMultiplier = 2;
-	for(int i = 0; i < unionArmy->currentSize; ++i)
-	{
-		if(unionArmy->armyArray[i]->getX() == node->col && unionArmy->armyArray[i]->getY() == node->row)
-		{
-			//if there is a second unit on the node
-			if(k == 1)
-			{
-				currentUnits[1] = unionArmy->armyArray[i];
-					SDL_FillRect(screen,&unit2UnderliningRect,0xffffff);
-				defCounter2 = unionArmy->armyArray[i]->getPower()*defenseMultiplier;
-				powCounter2 = unionArmy->armyArray[i]->getPower();
-			}
-			//if there is 1 unit on the square
-			if(k == 0)
-			{
-				currentUnits[0] = unionArmy->armyArray[i];
-				SDL_FillRect(screen,&unit1UnderliningRect,0xffffff);
-				k++;
-				defCounter1 = (unionArmy->armyArray[i]->getPower())*defenseMultiplier;
-				powCounter1 = (unionArmy->armyArray[i]->getPower());
-			}
-		}
-	}
-	for(int j = 0; j < confedArmy->currentSize; ++j)
-	{
-		if(confedArmy->armyArray[j]->getX() == node->col && confedArmy->armyArray[j]->getY() == node->row)
-		{
-			if(k == 1)
-			{
-				currentUnits[1] = confedArmy->armyArray[j];
-				SDL_FillRect(screen,&unit2UnderliningRect,0xffffff);
-				defCounter2 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
-				powCounter2 = confedArmy->armyArray[j]->getPower();
-			}
-			if(k == 0)
-			{
-				currentUnits[0] = confedArmy->armyArray[j];
-					SDL_FillRect(screen,&unit1UnderliningRect,0xffffff);
-				k++;
-				defCounter1 = confedArmy->armyArray[j]->getPower() *defenseMultiplier;
-				powCounter1 = confedArmy->armyArray[j]->getPower();
-				//uses TTF to put the words "defense ="
-			}
-			
-		}
-	}
-	defense = defCounter1 + defCounter2;
-	power = powCounter1 + powCounter2;
-	//uses TTF to put the words "defense = defense"
-	SDL_FillRect(screen,&firstRect,0x0000ff);
-	char * myInstructions = "defense = ";
-	SDL_Surface *instructionImage = TTF_RenderText_Solid(font,myInstructions,color1);
-	SDL_BlitSurface(instructionImage,NULL,screen,&firstRect);
-	//puts the actual number of defense on the rect
-	char maxDefense[256];
-	_itoa(defense,maxDefense,10);
-	if(maxDefenseImg)
-		SDL_FreeSurface(maxDefenseImg);
-	maxDefenseImg = TTF_RenderText_Solid(font,maxDefense,color1);
-	SDL_BlitSurface(maxDefenseImg,NULL,screen,&defRect);
-	//uses TTF to put the words "attack = attack"
-	SDL_FillRect(screen,&secondRect,0xff0000);
-	char * myInstructions2 = "attack = ";
-	SDL_Surface *instructionImage2 = TTF_RenderText_Solid(font,myInstructions2,color1);
-	SDL_BlitSurface(instructionImage2,NULL,screen,&secondRect);
-	//puts the actual number of attack on the rect
-	char maxAttack[256];
-	itoa(power,maxAttack,10);
-	if(maxAttackImg)
-		SDL_FreeSurface(maxAttackImg);
-	maxAttackImg = TTF_RenderText_Solid(font,maxAttack,color1);
-	SDL_BlitSurface(maxAttackImg,NULL,screen,&atkRect);
-	// first Units box
-	char * myInstructions3 = "unit 1";
-	SDL_Surface * instructionImage3 = TTF_RenderText_Solid(font,myInstructions3,color1);
-	SDL_BlitSurface(instructionImage3,NULL,screen,&unit1UnderliningRect);
-	char unit1Strength[256];
-	itoa(powCounter1,unit1Strength,10);
-	if(unit1StrImg)
-		SDL_FreeSurface(maxAttackImg);
-	unit1StrImg = TTF_RenderText_Solid(font2,unit1Strength,color2);
-	SDL_BlitSurface(unit1StrImg,NULL,screen,&unit1InfoRect);
-	//
-	if(powCounter2 > 0)
-	{
-	char * myInstructions4 = "unit 2";
-	SDL_Surface * instructionImage4 = TTF_RenderText_Solid(font,myInstructions4,color1);
-	SDL_BlitSurface(instructionImage4,NULL,screen,&unit2UnderliningRect);
-	char unit2Strength[256];
-	itoa(powCounter2,unit2Strength,10);
-	if(unit2StrImg)
-		SDL_FreeSurface(maxAttackImg);
-	unit2StrImg = TTF_RenderText_Solid(font2,unit2Strength,color2);
-	SDL_BlitSurface(unit2StrImg,NULL,screen,&unit2InfoRect);
-	}
-
-*/
