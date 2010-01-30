@@ -112,7 +112,7 @@ int battle::calcBattle()
 		for(int j = 0; j < 6; ++j)
 		{
 			usableUnit = true;
-			getUnitsAroundNode(node, i, dfndr, otherUnit1, otherUnit2);
+			getUnitsAroundNode(node, j, dfndr, otherUnit1, otherUnit2);
 			if(otherUnit1 && otherUnit1->completedCombat())
 			{
 				for(int k = 0; k < defenders.size(); ++k)
