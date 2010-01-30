@@ -370,7 +370,7 @@ void IH::handlePrimaryInput()
 					gameState = matchCombatPhase;
 					cancelClick(map);
 					if(playingLAN)
-						MessageHandler::Instance()->sendMessage("I'mma goin to combat!\n", COMBATPHASE);
+						MessageHandler::Instance()->sendMessage((string*)"I'mma goin to combat!\n", COMBATPHASE);
 				}
 				if(currentUnits[0] && clickedIn(event, UISlots[0]))
 				{
@@ -576,7 +576,7 @@ void IH::update(int mspassed)
 			}
 			else
 			{
-				MessageHandler::Instance()->sendMessage("Your turn!", STARTTURN);
+				MessageHandler::Instance()->sendMessage((string *)"Your turn!", STARTTURN);
 			}
 			if(playersTurn == 1)
 				currentTurn++;
