@@ -369,6 +369,8 @@ void IH::handlePrimaryInput()
 				{
 					gameState = matchCombatPhase;
 					cancelClick(map);
+					if(playingLAN)
+						MessageHandler::Instance()->sendMessage("I'mma goin to combat!\n", COMBATPHASE);
 				}
 				if(currentUnits[0] && clickedIn(event, UISlots[0]))
 				{
@@ -574,7 +576,7 @@ void IH::update(int mspassed)
 			}
 			else
 			{
-				//SAMSAM send a message saying that the turn has ended, swap turns
+				MessageHandler::Instance()->sendMessage("Your turn!", STARTTURN);
 			}
 			if(playersTurn == 1)
 				currentTurn++;
@@ -653,7 +655,10 @@ bool IH::handleMessage()
 	case GAMEFILENAME:
 		matchFileNames.setGame(currentMessage);
 		if(matchFileNames.checkFileNames())
+		{
 			matchFileNames.setFiles();
+			gameState = matchMainPhase;
+		}
 		else
 		{
 			cout << "\n\nERROR, failure to load files\n\n";
@@ -666,6 +671,7 @@ bool IH::handleMessage()
 		{
 			cout << "OMG I GOT A PING\n";
 			MessageHandler::Instance()->sendMessage(&matchFileNames.gameName, GAMEFILENAME);
+			gameState = matchMainPhase;
 		}
 		else
 		{
@@ -739,9 +745,16 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case COMBATPHASE:
+		gameState = matchCombatPhase;
 		return true;
 		break;
 	case STARTTURN:
+		if(playersTurn == 1)
+			currentTurn++;
+		playersTurn = !playersTurn;
+		players[0].playerArmy.resetMoves();
+		players[1].playerArmy.resetMoves();
+		gameState = matchMainPhase;
 		return true;
 		break;
 	case ENDTURN:
@@ -754,6 +767,7 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case QUIT:
+		gameState = reviewingMatch;
 		return true;
 		break;
 	}
