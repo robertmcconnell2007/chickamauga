@@ -252,8 +252,7 @@ int battle::calcBattle()
 			for(int i=0; i<attackers.size(); i++)
 			{
 				attackers.at(i)->retreat=true;
-				attackers.at(i)->setCompleteCombat();
-				
+				attackers.at(i)->setCompleteCombat();				
 			}
 			//for now just delete the defenders
 			//will put in advance later COM
