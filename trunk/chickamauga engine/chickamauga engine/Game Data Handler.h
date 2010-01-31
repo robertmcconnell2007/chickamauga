@@ -7,6 +7,7 @@ using namespace std;
 #include "rules.h"
 #include "player.h"
 #include "fileLoader.h"
+#include "infoLog.h"
 #include <vector>
 
 enum game_states
@@ -74,6 +75,12 @@ public:
 	battle currentBattle;
 	int  playersTurn;
 	int  playerIam;
+
+	//chat box info
+	infoLog *chatBox;
+	string chatString;
+	bool startTyping;
+
 	gameFileHandler matchFileNames;
 	string currentMessage;
 	int currentMessageFlag;

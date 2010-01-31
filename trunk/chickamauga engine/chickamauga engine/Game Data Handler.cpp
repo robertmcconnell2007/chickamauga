@@ -1,7 +1,9 @@
 #include "Game Data Handler.h"
 #include "mapSuperClass.h"
+#include "messageHandler.h"
 #include <fstream>
 #include <string>
+#include "infoLog.h"
 
 
 gameFileHandler::gameFileHandler(string name)
@@ -87,6 +89,12 @@ IH::IH()
 	currentUnits[1] = NULL;
 	playersTurn = 0;
 	playerIam = 0;
+
+	//chat box info setup
+	chatBox = new infoLog(128);
+	chatString = "";
+	startTyping = false;
+
 	selectedX = selectedY = 0;
 	font1 = TTF_OpenFont(fileNames.ttf.c_str(), 14);
 	font2 = TTF_OpenFont(fileNames.ttf.c_str(), 26);
@@ -174,12 +182,14 @@ int IH::endMatch()
 
 void IH::endGame()
 {
-	if((gameState == matchMainPhase || 
-		gameState == matchCombatPhase ||
-		 gameState == atMatchPrep || 
-		 gameState == reviewingMatch)) //&& there is a connection to the server
-	{
-		//send a message to the server saying that this player quit?
-	}
+	if(playingLAN)
+		MessageHandler::Instance()->sendMessage("Your opponent has left the game.", QUIT);
+	//if((gameState == matchMainPhase || 
+	//	gameState == matchCombatPhase ||
+	//	 gameState == atMatchPrep || 
+	//	 gameState == reviewingMatch)) //&& there is a connection to the server
+	//{
+	//	//send a message to the server saying that this player quit?
+	//}
 	runningGame = false;
 }
