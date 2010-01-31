@@ -52,7 +52,7 @@ void rules::loadRules(string fileName)
 		return;
 	string tester;
 	bool nextLoopIsControl = false;
-	int dump1 = 0, dump2 = 0;
+	int dump1 = 0, dump2 = 0, dump3 = 0;
 	int totDepend, totRCR, totUKR, totUER, totVPR, totACR, totNCR, totRER;
 	totDepend = totRCR = totUKR = totUER = totVPR = totACR = totNCR = totRER = 0;
 	getline(infile, tester, '\n');
@@ -68,6 +68,29 @@ void rules::loadRules(string fileName)
 	infile >> fordMovePenalty;
 	infile >> roadCost;
 	infile >> trailCost;
+	infile >> dump1;
+	for(int i = 0; i < dump1; ++i)
+	{
+		infile >> dump2;
+		infile >> dump3;
+		exitNodes.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+	}
+	infile >> dump1;
+	for(int i = 0; i < dump1; ++i)
+	{
+		infile >> dump2;
+		infile >> dump3;
+		blueEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+	}
+	infile >> dump1;
+	for(int i = 0; i < dump1; ++i)
+	{
+		infile >> dump2;
+		infile >> dump3;
+		grayEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+	}
+
+
 	infile >> numRules;
 	infile >> numDependancies;
 	infile >> RCRrules;

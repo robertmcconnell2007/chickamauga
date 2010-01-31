@@ -1,6 +1,7 @@
 #pragma once
 #include "battleCalc.h"
 #include "mapSuperClass.h"
+#include <vector>
 
 enum playerSpecificity
 {
@@ -124,6 +125,9 @@ struct rules
 	int roadCost;
 	int trailCost;
 	battleCalculator calculator;
+	vector<map_node*> exitNodes;
+	vector<map_node*> blueEntry;
+	vector<map_node*> grayEntry;
 
 	int numRules;
 	int numDependancies;
