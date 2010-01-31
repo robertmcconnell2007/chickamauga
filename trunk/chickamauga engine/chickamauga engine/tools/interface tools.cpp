@@ -39,6 +39,8 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	}
 	setEnemyNodes(enemyArmy, map);
 	moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+	if(node->exit)
+		IH::Instance()->canExit = true;
 	if(!(IH::Instance()->currentUnits[0] || IH::Instance()->currentUnits[1]))
 		cancelClick(map);
 	return true;
@@ -63,9 +65,12 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 		cancelClick(map);
 	else if(map->getMap()[newX][newY].movement>=0)
 	{
-		if(!unitMoving->hasMoved() && 
-			!(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
+		if(!unitMoving->hasMoved() && !(unitMoving->getX() == newY+1 && unitMoving->getY() == newX+1))
 		{
+			if(map->getMap()[newX][newY].exit && map->getMap()[newX][newY].movement > 0)
+			{
+				IH::Instance()->canExit = true;
+			}
 			moveUnit(unitMoving, map, newX, newY);
 			if(IH::Instance()->playingLAN)
 			{

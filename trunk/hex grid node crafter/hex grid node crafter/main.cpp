@@ -1,19 +1,13 @@
 //using namespace std;
 
-enum terrainTypes
-{
-	clear = 0,
-	forest = 1,
-	rough = 2,
-	roughForest = 3,
-	river = 4
-};
+#pragma once
 #include <string>
 #include <windows.h>
 #include "SDL.h"
 #include "GraphicsLoader.h"
 #include "mapSuperClass.h"
 #include "unitClass.h"
+enum terrainTypes;
 
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 600;
@@ -67,7 +61,7 @@ int main(int argc, char ** argv)
 	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_FULLSCREEN | SDL_HWSURFACE);//
 
 	mapSuperClass MapClass("mapData/mapData/customMapData.txt");
-	//mapSuperClass MapClass("mapData/mapData/chickamaugaMapData.txt");
+	//mapSuperClass MapClass("mapData/mapData/ChickamaugaMapData.txt");
 	//mapSuperClass MapClass(25,28);
 
 	armyClass unionArmy("unionArmyUnits.txt","unionArmy.bmp");
@@ -91,10 +85,10 @@ int main(int argc, char ** argv)
 		MapClass.drawMap(screenShiftx, screenShifty, screen);
 		unionArmy.drawArmy(screenShiftx,screenShifty,MapClass.width,MapClass.height,screen);
 		rebelArmy.drawArmy(screenShiftx,screenShifty,MapClass.width,MapClass.height,screen);
-		if(legendUp)
-		{
-			apply_surface((SCREEN_WIDTH/2 - 440),(SCREEN_HEIGHT/2 - 120),Legend,screen);
-		}
+		//if(legendUp)
+		//{
+		//	apply_surface((SCREEN_WIDTH/2 - 440),(SCREEN_HEIGHT/2 - 120),Legend,screen);
+		//}
 		while(SDL_PollEvent(&event))
 		{
 			if(event.type == SDL_QUIT)
