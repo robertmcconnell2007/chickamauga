@@ -74,6 +74,7 @@ void rules::loadRules(string fileName)
 		infile >> dump2;
 		infile >> dump3;
 		exitNodes.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+		IH::Instance()->map->getMap()[dump2][dump3].exit = true;
 	}
 	infile >> dump1;
 	for(int i = 0; i < dump1; ++i)
@@ -81,6 +82,7 @@ void rules::loadRules(string fileName)
 		infile >> dump2;
 		infile >> dump3;
 		blueEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+		IH::Instance()->map->getMap()[dump2][dump3].reinforceBlue = true;
 	}
 	infile >> dump1;
 	for(int i = 0; i < dump1; ++i)
@@ -88,6 +90,7 @@ void rules::loadRules(string fileName)
 		infile >> dump2;
 		infile >> dump3;
 		grayEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
+		IH::Instance()->map->getMap()[dump2][dump3].reinforceGrey = true;
 	}
 
 

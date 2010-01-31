@@ -2,6 +2,17 @@
 #include "mapSuperClass.h"
 #include "Game Data Handler.h"
 
+void mapSuperClass::cleanReinforce()
+{
+	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
+	{
+		IH::Instance()->gameRules->blueEntry[i]->reinforce = 1;
+	}
+	for(int i = 0; i < IH::Instance()->gameRules->numGRNodes; ++i)
+	{
+		IH::Instance()->gameRules->grayEntry[i]->reinforce = 1;
+	}
+}
 void mapSuperClass::clearMovement()
 {
 	for(int i = 0; i < width; i++)
@@ -128,7 +139,7 @@ void mapSuperClass::setNodeType(int type, int nodeX, int nodeY)
 	if(mapEdit)
 	{
 		if((type&7) <= 7)
-			mapPointer[nodeX][nodeY].type = type;
+			mapPointer[nodeX][nodeY].type = type&7;
 		if((type&8) == 8)
 			mapPointer[nodeX][nodeY].town = !mapPointer[nodeX][nodeY].town;
 		if((type&16) == 16)
@@ -275,6 +286,7 @@ bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 		//infile.ignore();
 	}
 	infile.close();
+	cleanReinforce();
 	return true;
 }
 
@@ -372,6 +384,18 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 			if(i % 2 == 1)
 			{
 				drawATile(nodeTypes, &hexSize, mapPointer[i][k].type, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				if(mapPointer[i][k].exit)
+				{
+					drawATile(nodeTypes, &hexSize, 5, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				}
+				if(mapPointer[i][k].reinforceBlue && IH::Instance()->playersTurn == 0)
+				{
+					drawATile(nodeTypes, &hexSize, 6, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				}
+				if(mapPointer[i][k].reinforceGrey && IH::Instance()->playersTurn == 1)
+				{
+					drawATile(nodeTypes, &hexSize, 6, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				}
 				if(mapPointer[i][k].town)
 				{
 					drawATile(townNstratPoint, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
@@ -425,6 +449,18 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 			else
 			{
 				drawATile(nodeTypes, &hexSize, mapPointer[i][k].type, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				if(mapPointer[i][k].exit)
+				{
+					drawATile(nodeTypes, &hexSize, 5, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				}
+				if(mapPointer[i][k].reinforceBlue && IH::Instance()->playersTurn == 0)
+				{
+					drawATile(nodeTypes, &hexSize, 6, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				}
+				if(mapPointer[i][k].reinforceGrey && IH::Instance()->playersTurn == 1)
+				{
+					drawATile(nodeTypes, &hexSize, 6, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				}
 				if(mapPointer[i][k].town)
 				{
 					drawATile(townNstratPoint, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);

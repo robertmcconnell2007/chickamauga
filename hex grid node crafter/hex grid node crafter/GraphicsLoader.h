@@ -1,6 +1,5 @@
 #pragma once
-using namespace std;
-
+#include "SDL.h"
 #include <cmath>
 #include "MersenneTwister.h"
 
@@ -57,67 +56,67 @@ int getRandomNum()
 }
 
 
-void writeText(SDL_Surface * ascii, SDL_Rect * asciiSize, SDL_Surface * screen, string output, int positionX, int positionY)
-{
-	for(int i = 0; i < (unsigned)output.length(); ++i)
-	{
-		drawATile(ascii, asciiSize, (int)(output[i]), screen, positionX, positionY);
-		positionX += asciiSize->w;
-		if(positionX >= screen->w)
-		{
-			positionX = 0;
-			positionY += asciiSize->h;
-		}
-		if(positionY > screen->h)
-			positionY = 0;
-	}
-}
+//void writeText(SDL_Surface * ascii, SDL_Rect * asciiSize, SDL_Surface * screen, string output, int positionX, int positionY)
+//{
+//	for(int i = 0; i < (unsigned)output.length(); ++i)
+//	{
+//		drawATile(ascii, asciiSize, (int)(output[i]), screen, positionX, positionY);
+//		positionX += asciiSize->w;
+//		if(positionX >= screen->w)
+//		{
+//			positionX = 0;
+//			positionY += asciiSize->h;
+//		}
+//		if(positionY > screen->h)
+//			positionY = 0;
+//	}
+//}
 
-void writeToConsole(SDL_Surface * ascii, SDL_Rect * asciiSize, SDL_Surface * screen, string output, SDL_Rect * console)
-{
-	int tempPosX = console->x;
-	int tempPosY = console->y;
-	for(int i = 0; i < output.length(); ++i)
-	{
-		if(output[i] == '^' && (i + 2) < output.length())
-		{
-			switch(output[i + 1])
-			{
-			case 'N':
-			case 'n':
-				tempPosX = console->x;
-				tempPosY += asciiSize->h;
-				break;
-			case 'R':
-			case 'r':
-				tempPosX = console->x;
-			case 'T':
-			case 't':
-				if(tempPosX + (5 * asciiSize->w) < console->w)
-					tempPosX += (5 * asciiSize->w);
-				else
-				{
-					tempPosX = console->x + (5 * asciiSize->w);
-					tempPosY += asciiSize->h;
-				}
-				break;
-			case 'B':
-			case 'b':
-				if(tempPosX > 0)
-					tempPosX -= asciiSize->w;				
-				break;
-			}
-			i += 2;
-		}
-		drawATile(ascii, asciiSize, (int)(output[i]), screen, tempPosX, tempPosY);
-		tempPosX += asciiSize->w;
-		if(tempPosX >= console->x + console->w)
-		{
-			tempPosX = console->x;
-			tempPosY += asciiSize->h;
-		}
-	}
-}
+//void writeToConsole(SDL_Surface * ascii, SDL_Rect * asciiSize, SDL_Surface * screen, string output, SDL_Rect * console)
+//{
+//	int tempPosX = console->x;
+//	int tempPosY = console->y;
+//	for(int i = 0; i < output.length(); ++i)
+//	{
+//		if(output[i] == '^' && (i + 2) < output.length())
+//		{
+//			switch(output[i + 1])
+//			{
+//			case 'N':
+//			case 'n':
+//				tempPosX = console->x;
+//				tempPosY += asciiSize->h;
+//				break;
+//			case 'R':
+//			case 'r':
+//				tempPosX = console->x;
+//			case 'T':
+//			case 't':
+//				if(tempPosX + (5 * asciiSize->w) < console->w)
+//					tempPosX += (5 * asciiSize->w);
+//				else
+//				{
+//					tempPosX = console->x + (5 * asciiSize->w);
+//					tempPosY += asciiSize->h;
+//				}
+//				break;
+//			case 'B':
+//			case 'b':
+//				if(tempPosX > 0)
+//					tempPosX -= asciiSize->w;				
+//				break;
+//			}
+//			i += 2;
+//		}
+//		drawATile(ascii, asciiSize, (int)(output[i]), screen, tempPosX, tempPosY);
+//		tempPosX += asciiSize->w;
+//		if(tempPosX >= console->x + console->w)
+//		{
+//			tempPosX = console->x;
+//			tempPosY += asciiSize->h;
+//		}
+//	}
+//}
 ////////OBSOLETE CODE FROM PREVIOUS PROJECTS//////////////
 //////////// USE FOR REFERENCE MATERIAL //////////////////
 

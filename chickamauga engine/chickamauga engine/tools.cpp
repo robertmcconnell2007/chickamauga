@@ -130,7 +130,10 @@ int checkEdge(node_edge* edge, int pos)
 
 void moveTo(map_node* node,int movement)
 {
-	node->movement = movement;
+	if(node->movement < movement)
+		node->movement = movement;
+	else
+		return;
 	if(movement == 0 || node->enemy)
 		return;
 	int tempMove;
@@ -383,6 +386,10 @@ void IH::handlePrimaryInput()
 				yMove = -1;
 			else
 				yMove = 0;
+			if(actualX < map->width && actualX >= 0 && actualY < map->height && actualY >= 0)
+			{
+				map->hilightHex(actualX,actualY);
+			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			mouseDown = true;
@@ -391,61 +398,71 @@ void IH::handlePrimaryInput()
 			break;
 		case SDL_MOUSEBUTTONUP:
 			mouseDown = false;
-			if(clickedIn(event, GUIFrameRect))
+			if(!menuUp)
 			{
-				if(clickedIn(event, GUIEndTurnBox))
+				if(clickedIn(event, GUIFrameRect))
 				{
-					gameState = matchCombatPhase;
-					cancelClick(map);
-					if(playingLAN)
+					if(clickedIn(event, GUIEndTurnBox))
 					{
-						MessageHandler::Instance()->sendMessage("I'mma goin to combat!", COMBATPHASE);
-						chatBox->addString("You have entered combat!");
+						map->cleanReinforce();
+						gameState = matchCombatPhase;
+						cancelClick(map);
+						if(playingLAN)
+						{
+							MessageHandler::Instance()->sendMessage("I'mma goin to combat!", COMBATPHASE);
+							chatBox->addString("You have entered combat!");
+						}
+					}
+					if(currentUnits[0] && clickedIn(event, UISlots[0]))
+					{
+						unit1Selected = !unit1Selected;
+					}
+					if(currentUnits[1] && clickedIn(event, UISlots[1]))
+					{
+						unit2Selected = !unit2Selected;
 					}
 				}
-				if(currentUnits[0] && clickedIn(event, UISlots[0]))
+				else if(firstX == actualX && firstY == actualY)
 				{
-					unit1Selected = !unit1Selected;
-				}
-				if(currentUnits[1] && clickedIn(event, UISlots[1]))
-				{
-					unit2Selected = !unit2Selected;
-				}
-			}
-			else if(firstX == actualX && firstY == actualY)
-			{
-				if(firstX < map->width && firstY < map->height)
-					selectedNode = &map->getMap()[firstX][firstY];
-				if(currentUnits[0] || currentUnits[1])
-				{	
-					if(playerIam == 0 && playersTurn == 0)
+					if(firstX < map->width && firstY < map->height)
 					{
-						if(unit1Selected)
-							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
-						if(unit2Selected)
-							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
+						selectedNode = &map->getMap()[firstX][firstY];
+						if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn)
+							canReinforce = true;
+						if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn)
+							canReinforce = true;
 					}
-					else if (playerIam == 1 && playersTurn == 1)
+					if(currentUnits[0] || currentUnits[1])
+					{	
+						if(playerIam == 0 && playersTurn == 0)
+						{
+							if(unit1Selected)
+								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
+							if(unit2Selected)
+								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
+						}
+						else if (playerIam == 1 && playersTurn == 1)
+						{
+							if(unit1Selected)
+								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
+							if(unit2Selected)
+								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
+						}
+						unit1Selected = unit2Selected = false;
+						nodeGui = false;
+						cancelClick(map);
+					}
+					else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
 					{
-						if(unit1Selected)
-							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
-						if(unit2Selected)
-							secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
-					}
-					unit1Selected = unit2Selected = false;
-					nodeGui = false;
-					cancelClick(map);
+						nodeGui = true;
+						if(playerIam == 0)
+							firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
+						else
+							firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
+						selectedX=actualX;
+						selectedY=actualY;
+					}	
 				}
-				else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
-				{
-					nodeGui = true;
-					if(playerIam == 0)
-						firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
-					else
-						firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
-					selectedX=actualX;
-					selectedY=actualY;
-				}	
 			}
 		}
 		break;
@@ -532,40 +549,43 @@ void IH::handlePrimaryInput()
 				break;
 			case SDL_MOUSEBUTTONUP:
 				mouseDown = false;
-				if(clickedIn(event, GUIFrameRect))
+				if(!menuUp)
 				{
-					if(clickedIn(event, GUIEndTurnBox))
+					if(clickedIn(event, GUIFrameRect))
 					{
-						currentBattle.calcBattle();
+						if(clickedIn(event, GUIEndTurnBox))
+						{
+							currentBattle.calcBattle();
+						}
+						if(retreatCalled)
+						{
+							showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+						}
 					}
-					if(retreatCalled)
+					else if(firstX == actualX && firstY == actualY)
 					{
-						showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-					}
-				}
-				else if(firstX == actualX && firstY == actualY)
-				{
-					if(firstX < map->width && firstY < map->height)
-					{
-						selectedNode = &map->getMap()[firstX][firstY];
-					}
-					if(retreatCalled)
-					{
-						doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-					}
-					else if(playersTurn == playerIam)
-					{
-						//unitClass * temp1 = NULL, * temp2 = NULL;
-						//if(getUnitsOnNode(selectedNode, players[playersTurn].playerArmy, temp1, temp2)
-						clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
-						clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
-					}
+						if(firstX < map->width && firstY < map->height)
+						{
+							selectedNode = &map->getMap()[firstX][firstY];
+						}
+						if(retreatCalled)
+						{
+							doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+						}
+						else if(playersTurn == playerIam)
+						{
+							//unitClass * temp1 = NULL, * temp2 = NULL;
+							//if(getUnitsOnNode(selectedNode, players[playersTurn].playerArmy, temp1, temp2)
+							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+						}
 
-				}
-				if(!retreatCalled)
-				{
-					cancelClick(map);
-					showCombat();
+					}
+					if(!retreatCalled)
+					{
+						cancelClick(map);
+						showCombat();
+					}
 				}
 			}
 			break;
@@ -684,7 +704,12 @@ void IH::drawAll()
 		drawATile(utilityTiles5050, &u5050, 4, screen, GameJoinButton.x, GameJoinButton.y);
 		drawATile(utilityTiles5050, &u5050, 5, screen, GameHotseatButton.x, GameHotseatButton.y);
 		if(waiting)
-			printStrings("Waiting for other player to join\n", GameMessageBox, screen, textColor, font1);
+		{
+			if(amHost)
+				printStrings("Waiting for other player to join\n", GameMessageBox, screen, textColor, font1);
+			else
+				printStrings("Please enter the IP number of the host.", GameMessageBox, screen, textColor, font1);
+		}
 		if(output.length())
 		{
 			printStrings("\n" + output, GameMessageBox, screen, textColor, font1);

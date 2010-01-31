@@ -65,6 +65,9 @@ IH::IH()
 	screenSize.y = 640;
 	bitsperpixel = 32;
 	amHost = false;
+	canExit = false;
+	canReinforce = false;
+	menuUp = false;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		

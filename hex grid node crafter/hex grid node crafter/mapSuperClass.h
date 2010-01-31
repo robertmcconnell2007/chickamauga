@@ -1,5 +1,4 @@
 #pragma once
-
 #include <fstream>
 #include <string>
 using namespace std;
@@ -10,6 +9,14 @@ struct node_edge;
 class armyClass;
 class unitClass;
 
+enum terrainTypes
+{
+	clear = 0,
+	forest = 1,
+	rough = 2,
+	roughForest = 3,
+	river = 4
+};
 struct map_node
 {
 	node_edge *nodeEdges[6];
@@ -22,6 +29,8 @@ struct map_node
 	bool town;			//8
 	bool control;		//16
 	bool controlBlue;	//32
+	bool reinforce;
+	bool exit;
 	void newNode(int x, int y)
 	{
 		col = x;
@@ -34,12 +43,15 @@ struct map_node
 		town = false;
 		control = false;
 		controlBlue = false;
+		reinforce = false;
+		exit = false;
 		for(int j = 0; j < 6; ++j)
 		{
 			nodeEdges[j] = NULL;
 		}
 	}
 };
+
 //controlblue control town type type type
 //32 16 8 4 2 1
 
@@ -70,9 +82,9 @@ class mapSuperClass
 {
 private:
 	string mapName;
-	bool showEnemyControl;
+	
 	bool mapEdit;
-	map_node** mapPointer;
+	map_node ** mapPointer;
 	SDL_Surface * nodeTypes;
 	SDL_Surface * roadsTrails;
 	SDL_Surface * creeksBridgesFords;
@@ -81,33 +93,16 @@ private:
 	SDL_Rect hexSize;
 	//array of units
 	void createBlankMap(int width, int height); //for the specific use of this class
-	void loadData()
-	{
-		nodeTypes = load_my_image("mapData/mapImages/hexSheet.bmp");
-		roadsTrails = load_my_image("mapData/mapImages/roadsNtrails.bmp");
-		creeksBridgesFords = load_my_image("mapData/mapImages/creeksNbridgesNfords.bmp");
-		statusTiles = load_my_image("mapData/mapImages/statusTiles.bmp");
-		townNstratPoint = load_my_image("mapData/mapImages/townNstratPoint.bmp");
-		SDL_SetColorKey(nodeTypes, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(roadsTrails, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(creeksBridgesFords, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(statusTiles, SDL_SRCCOLORKEY, 0xff00ff);
-		SDL_SetColorKey(townNstratPoint, SDL_SRCCOLORKEY, 0xff00ff);
-		showEnemyControl = false;
-		hexSize.x = hexSize.y = 0;
-		hexSize.h = 44;
-		hexSize.w = 50;
-	}
+	void loadData();
 public:
 	void clearMovement();
+	bool showEnemyControl;
 	int width;
 	int height;
 	map_node** getMap() { return mapPointer; }
-	mapSuperClass(char* nameOfInputFile); //fixed map generation
-	bool mapSuperClassIni(char* nameOfInputFile); //fixed map generation
-	//void mapDraw(SDL_Surface screen,int offsetX, int offsetY); //draws map and all units on the map
+	mapSuperClass(const char* nameOfInputFile); //fixed map generation
+	bool mapSuperClassIni(const char* nameOfInputFile); //fixed map generation
 	void hilightHex(int nodeX, int nodeY); //highlights the selected hex, if a unit is present, will show the available movement and enemy control area
-	//bool unitMotion(); //will return false if units aren't in the process of moving to show movement rather than instantaneous
 	void drawMap(int screenShiftx, int screenShifty, SDL_Surface * screen);
 	mapSuperClass(int sizeX, int sizeY); //random map generation
 	void exportMap();
@@ -116,6 +111,7 @@ public:
 	bool setConnecterType(int type, int node1X, int node1Y, int node2X, int node2Y);
 	void setEnemy(int x, int y);
 	void clearEnemy();
+	void deleteMap();
 	~mapSuperClass();
 };
 void mapSuperClass::clearMovement()
@@ -126,6 +122,8 @@ void mapSuperClass::clearMovement()
 		{
 			mapPointer[i][j].movement = -1;
 			mapPointer[i][j].numOfUnits = 0;
+			mapPointer[i][j].selected=false;
+			
 		}
 	}
 }
@@ -165,7 +163,7 @@ void mapSuperClass::exportMap()
 	int nodeOut;
 	ofstream outfile;
 	outfile.open("mapData/mapData/customMapData.txt",fstream::out);
-	outfile << "Custom Map#" << width << " " << height << "\n";
+	outfile << "Custom Map#" << width << " " << height;
 	for(int i = 0; i < height; i++)
 	{
 		for(int j = 0; j < width; j++)
@@ -215,12 +213,15 @@ void mapSuperClass::exportMap()
 }
 mapSuperClass::~mapSuperClass()
 {
+	deleteMap();
+}
+void mapSuperClass::deleteMap()
+{
 	for(int i = 0; i < width; i++)
 	{
 		delete [] mapPointer[i];
 	}
-	SDL_FreeSurface(nodeTypes);
-	SDL_FreeSurface(roadsTrails);
+	SDL_FreeSurface(nodeTypes);	SDL_FreeSurface(roadsTrails);
 	SDL_FreeSurface(creeksBridgesFords);
 	SDL_FreeSurface(statusTiles);
 	SDL_FreeSurface(townNstratPoint);
@@ -239,12 +240,12 @@ void mapSuperClass::setNodeType(int type, int nodeX, int nodeY)
 	if(mapEdit)
 	{
 		if((type&7) <= 7)
-			mapPointer[nodeX][nodeY].type = type;
+			mapPointer[nodeX][nodeY].type = type&7;
 		if((type&8) == 8)
 			mapPointer[nodeX][nodeY].town = !mapPointer[nodeX][nodeY].town;
 		if((type&16) == 16)
 		{
-			mapPointer[nodeX][nodeY].type = 0;
+			mapPointer[nodeX][nodeY].type = type&7;
 			if(mapPointer[nodeX][nodeY].control == false)
 			{
 				mapPointer[nodeX][nodeY].control = true;
@@ -313,6 +314,7 @@ bool mapSuperClass::setConnecterType(int type, int node1X, int node1Y, int node2
 		}
 		return false;
 	}
+	return false;
 }
 mapSuperClass::mapSuperClass(int sizeX, int sizeY)
 {
@@ -334,11 +336,11 @@ bool mapSuperClass::mapSuperClassIni(int sizeX, int sizeY)
 	mapEdit = true;
 	return true;
 }
-mapSuperClass::mapSuperClass(char* nameOfInputFile)
+mapSuperClass::mapSuperClass(const char* nameOfInputFile)
 {
 	mapSuperClassIni(nameOfInputFile);
 }
-bool mapSuperClass::mapSuperClassIni(char* nameOfInputFile)
+bool mapSuperClass::mapSuperClassIni(const char* nameOfInputFile)
 {
 	loadData();
 	mapEdit = true;
@@ -359,21 +361,8 @@ bool mapSuperClass::mapSuperClassIni(char* nameOfInputFile)
 		{
 			for(int i = 0; i < width; i++)
 			{
-				//mapPointer[i][j].col = i;
-				//mapPointer[i][j].row = j;
 				infile >> nodeData;
 				setNodeType(nodeData,i,j);
-				//mapPointer[i][j].type = nodeData&7;
-				//if((nodeData&8) == 8)
-				//	mapPointer[i][j].town = true;
-				//if((nodeData&16) == 16)
-				//{
-				//	mapPointer[i][j].control = true;
-				//	if((nodeData&32) == 32)
-				//		mapPointer[i][j].controlBlue = true;
-				//	else
-				//		mapPointer[i][j].controlBlue = false;
-				//}
 				for(int k = 0; k < 3; k++)
 				{
 					infile >> nodeData;
@@ -411,7 +400,7 @@ void mapSuperClass::createBlankMap(int width, int height)
 	{
 		for(int k = 0; k < height; ++k)
 		{
-			mapPointer[i][k].newNode(i,k);
+			mapPointer[i][k].newNode(k+1,i+1);
 		}
 	}
 
@@ -601,3 +590,20 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 	}
 }
 
+void mapSuperClass::loadData()
+{
+	nodeTypes = load_my_image("mapData/mapImages/hexSheet.bmp");
+	roadsTrails = load_my_image("mapData/mapImages/roadsNtrails.bmp");
+	creeksBridgesFords = load_my_image("mapData/mapImages/creeksNbridgesNfords.bmp");
+	statusTiles = load_my_image("mapData/mapImages/statusTiles.bmp");
+	townNstratPoint = load_my_image("mapData/mapImages/townNstratPoint.bmp");
+	SDL_SetColorKey(nodeTypes, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(roadsTrails, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(creeksBridgesFords, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(statusTiles, SDL_SRCCOLORKEY, 0xff00ff);
+	SDL_SetColorKey(townNstratPoint, SDL_SRCCOLORKEY, 0xff00ff);
+	showEnemyControl = false;
+	hexSize.x = hexSize.y = 0;
+	hexSize.h = 44;
+	hexSize.w = 50;
+}

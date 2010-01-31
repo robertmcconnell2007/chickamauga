@@ -76,6 +76,14 @@ public:
 	int  playersTurn;
 	int  playerIam;
 
+	//exit bool
+	bool canExit;
+	//entry bool
+	bool canReinforce;
+
+	//menu bool
+	bool menuUp;
+
 	//chat box info
 	infoLog *chatBox;
 	string chatString;

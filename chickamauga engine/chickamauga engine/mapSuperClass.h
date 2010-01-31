@@ -29,6 +29,10 @@ struct map_node
 	bool town;			//8
 	bool control;		//16
 	bool controlBlue;	//32
+	int reinforce;
+	bool reinforceBlue;
+	bool reinforceGrey;
+	bool exit;
 	void newNode(int x, int y)
 	{
 		col = x;
@@ -41,6 +45,10 @@ struct map_node
 		town = false;
 		control = false;
 		controlBlue = false;
+		reinforce = 0;
+		reinforceBlue = false;
+		reinforceGrey = false;
+		exit = false;
 		for(int j = 0; j < 6; ++j)
 		{
 			nodeEdges[j] = NULL;
@@ -108,5 +116,6 @@ public:
 	void setEnemy(int x, int y);
 	void clearEnemy();
 	void deleteMap();
+	void cleanReinforce();
 	~mapSuperClass();
 };
