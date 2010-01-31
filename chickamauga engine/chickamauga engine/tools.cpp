@@ -10,6 +10,7 @@
 #include "rules.h"
 #include "graphicsloader.h"
 #include "battleCalc.h"
+#include "infoLog.h"
 
 #include "messageHandler.h"
 #include "UDP.h"
@@ -329,10 +330,34 @@ void IH::handlePrimaryInput()
 				if(currentUnits[1] && !enemyUnitsSelected)
 					unit2Selected = !unit2Selected;
 				break;
-			case SDLK_RETURN:
-				//playerIam = !playerIam;
-				//gameState = matchCombatPhase;
-				break;
+				case SDLK_RETURN:
+					if(startTyping)
+					{
+						MessageHandler::Instance()->sendMessage(chatString,CHATMESSAGE);
+						chatBox->addString(chatString);
+						chatString = "";
+						startTyping = false;
+					}
+					else
+					{
+						startTyping = true;
+					}
+					break;
+				case SDLK_DELETE:
+					{
+						chatString = chatString.substr(0,chatString.length()-1);
+					}
+					break;
+				default:
+					if(startTyping)
+					{
+						char c = event.key.keysym.sym;
+						if(c >= ' ' && c <= '~')
+						{
+							chatString += event.key.keysym.sym;
+						}
+					}
+					break;
 			}
 			break;
 		case SDL_QUIT:
@@ -373,7 +398,10 @@ void IH::handlePrimaryInput()
 					gameState = matchCombatPhase;
 					cancelClick(map);
 					if(playingLAN)
-						MessageHandler::Instance()->sendMessage("I'mma goin to combat!\n", COMBATPHASE);
+					{
+						MessageHandler::Instance()->sendMessage("I'mma goin to combat!", COMBATPHASE);
+						chatBox->addString("You have entered combat!");
+					}
 				}
 				if(currentUnits[0] && clickedIn(event, UISlots[0]))
 				{
@@ -444,7 +472,32 @@ void IH::handlePrimaryInput()
 						unit2Selected = !unit2Selected;
 					break;
 				case SDLK_RETURN:
-					//playerIam = !playerIam;
+					if(startTyping)
+					{
+						MessageHandler::Instance()->sendMessage(chatString,CHATMESSAGE);
+						chatBox->addString(chatString);
+						chatString = "";
+						startTyping = false;
+					}
+					else
+					{
+						startTyping = true;
+					}
+					break;
+				case SDLK_DELETE:
+					{
+						chatString = chatString.substr(0,chatString.length()-1);
+					}
+					break;
+				default:
+					if(startTyping)
+					{
+						char c = event.key.keysym.sym;
+						if(c >= ' ' && c <= '~')
+						{
+							chatString += event.key.keysym.sym;
+						}
+					}
 					break;
 				}
 				break;
@@ -583,6 +636,7 @@ void IH::update(int mspassed)
 			else
 			{
 				MessageHandler::Instance()->sendMessage("Your turn!", STARTTURN);
+				chatBox->addString("You have ended your turn.");
 			}
 			if(playersTurn == 1)
 				currentTurn++;
@@ -654,6 +708,7 @@ void IH::drawAll()
 bool IH::handleMessage()
 {
 	string unitName, stringX, stringY;
+	string temp;
 	unitClass * unitToHandle;
 	cout << currentMessage << "\n";
 	int newX, newY, n = 0;
@@ -670,7 +725,7 @@ bool IH::handleMessage()
 		else
 		{
 			cout << "\n\nERROR, failure to load files\n\n";
-			MessageHandler::Instance()->sendMessage("Failed to load files\n", QUIT);
+			MessageHandler::Instance()->sendMessage("Failed to load files", QUIT);
 		}
 		return true;
 		break;
@@ -728,33 +783,50 @@ bool IH::handleMessage()
 		newX = stringToInt(stringX);
 		newY = stringToInt(stringY);
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(unitName))
+		{
 			moveUnit(unitToHandle, map, newX, newY);
+			temp = unitName + " has moved to (" + stringX + "," + stringY + ")";
+			chatBox->addString(temp);
+		}
 		else
 			return false;
 		return true;
 		break;
 	case KILLUNIT:
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		{
 			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
+			temp = currentMessage + " has been killed.";
+			chatBox->addString(temp);
+		}
 		else
 			return false;
 		return true;
 		break;
 	case REINFORCEUNIT:
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		{
 			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFReinforce, MUTField);
+			temp = currentMessage + " has entered the battlefield.";
+			chatBox->addString(temp);
+		}
 		else
 			return false;
 		return true;
 		break;
 	case EXITUNIT:
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		{
 			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTExited);
+			temp = currentMessage + " has left the battlefield.";
+			chatBox->addString(temp);
+		}
 		else
 			return false;
 		return true;
 		break;
 	case COMBATPHASE:
+		chatBox->addString(currentMessage);
 		gameState = matchCombatPhase;
 		return true;
 		break;
@@ -764,6 +836,7 @@ bool IH::handleMessage()
 		playersTurn = !playersTurn;
 		players[0].playerArmy.resetMoves();
 		players[1].playerArmy.resetMoves();
+		chatBox->addString(currentMessage);
 		gameState = matchMainPhase;
 		return true;
 		break;
@@ -771,12 +844,15 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case DEFENDERRETREAT:
+		chatBox->addString("Your units lost a battle and need to retreat!");
 		return true;
 		break;
 	case CHATMESSAGE:
+		chatBox->addString(currentMessage);
 		return true;
 		break;
 	case QUIT:
+		chatBox->addString(currentMessage);
 		gameState = reviewingMatch;
 		return true;
 		break;

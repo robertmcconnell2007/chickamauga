@@ -182,6 +182,10 @@
 				RelativePath=".\graphicsloader.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\infoLog.cpp"
+				>
+			</File>
 			<Filter
 				Name="tools"
 				>
@@ -258,6 +262,10 @@
 			</File>
 			<File
 				RelativePath=".\graphicsloader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\infoLog.h"
 				>
 			</File>
 			<Filter
