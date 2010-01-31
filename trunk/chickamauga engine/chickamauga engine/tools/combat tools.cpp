@@ -231,7 +231,7 @@ int battle::calcBattle()
 	for(int i=0; i<defenders.size(); i++)
 	{
 		node=&IH::Instance()->map->getMap()[defenders.at(i)->getY()-1][defenders.at(i)->getX()-1];
-		if(node->type==rough||node->type==roughForest)
+		if(node->type==rough||node->type==roughForest||node->town)
 		{
 			defenderPower+=(defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus);
 		}
@@ -244,6 +244,7 @@ int battle::calcBattle()
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through
+	defenderPower=0;
 	switch(result)
 	{
 	case attackRetreat:
@@ -320,9 +321,78 @@ int battle::calcBattle()
 		}
 	case exchange:
 		{
+			for(int i=0; i<defenders.size(); i++)
+			{
+				defenderPower+=defenders.at(i)->getPower();
+				for(int k=0; k<dfndr->currentSize; k++)
+				{
+					if(dfndr->armyArray[k]==defenders.at(i))
+					{
+						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
+					}
+				}
+			}
+			defenders.clear();
+			while(defenderPower>0)
+			{
+				for(int i=0; i<attackers.size(); i++)
+				{
+					//attackers will remain at greater than 1
+					//defender power=0
+					if(attackers.at(i)->getPower()==defenderPower)
+					{
+						for(int k=0; k<attkr->currentSize; k++)
+						{
+							if(attkr->armyArray[k]==attackers.at(i))
+							{
+								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
+							}
+						}
+						defenderPower=0;
+						break;
+					}
+					else if(attackers.at(i)->getPower()>defenderPower)
+					{
+						attackers.at(i)->setPower(attackers.at(i)->getPower()-defenderPower);
+						defenderPower=0;
+						break;
+					}
+					else if(attackers.at(i)->getPower()<defenderPower)
+					{
+						defenderPower-=attackers.at(i)->getPower();
+						for(int k=0; k<attkr->currentSize; k++)
+						{
+							if(attkr->armyArray[k]==attackers.at(i))
+							{
+								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
+							}
+						}
+					}
+				}
+			}
+			for(int i=0; i<attackers.size(); i++)
+			{
+				attackers.at(i)->setCompleteCombat();
+			}
+			attackers.clear();
 			break;
 		}
 	}
 	IH::Instance()->preppingCombat = false;
 	return 0;
+}
+
+//push the unit clarified in the message into the defender buffer so they 
+//can be retreated
+void networkRetreat(string unitName)
+{
+	armyClass *tempArmy;
+	tempArmy=&IH::Instance()->players[IH::Instance()->playerIam].playerArmy;
+	for(int i=0; i<tempArmy->currentSize; i++)
+	{
+		if(tempArmy->armyArray[i]->getName()==unitName)
+		{
+			IH::Instance()->currentBattle.defenders.push_back(tempArmy->armyArray[i]);
+		}
+	}
 }
