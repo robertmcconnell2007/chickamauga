@@ -11,6 +11,7 @@
 #include "graphicsloader.h"
 #include "battleCalc.h"
 #include "infoLog.h"
+#include "sound.h"
 
 #include "messageHandler.h"
 #include "UDP.h"
@@ -251,6 +252,8 @@ void IH::handlePrimaryInput()
 					matchFileNames.setFiles();
 					createMatch();
 					gameState = matchMainPhase;
+					
+					
 				}
 				else
 				{
@@ -664,6 +667,27 @@ void IH::update(int mspassed)
 			players[0].playerArmy.resetMoves();
 			players[1].playerArmy.resetMoves();
 			gameState = matchMainPhase;
+			// change the sound depending on whose turn it is
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			IH::Instance()->gameSound->stopMusic(prevSong);
+					if(IH::Instance()->playersTurn == 0)
+					{
+					IH::Instance()->gameSound->playWAV(unionMusic);
+					IH::Instance()->prevSong = unionMusic;
+					}
+					else
+					{
+					IH::Instance()->gameSound->playWAV(confederateMusic);
+					IH::Instance()->prevSong = confederateMusic;
+					}
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+			
 		}
 		else
 		{

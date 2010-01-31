@@ -8,6 +8,7 @@ using namespace std;
 #include "player.h"
 #include "fileLoader.h"
 #include "infoLog.h"
+#include "sound.h"
 #include <vector>
 
 enum game_states
@@ -72,10 +73,13 @@ private:
 	int selectedY;
 public:
 	mapSuperClass * map;
+	sound * gameSound;
 	battle currentBattle;
 	int  playersTurn;
 	int  playerIam;
-
+	
+	//previous song
+	int prevSong;
 	//exit bool
 	bool canExit;
 	//entry bool
