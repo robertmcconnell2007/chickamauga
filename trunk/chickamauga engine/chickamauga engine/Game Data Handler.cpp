@@ -57,6 +57,7 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	prevSong = -1;
 	currentTurn = 0;
 	preppingCombat = false;
 	keysOff = false;
@@ -140,6 +141,9 @@ IH::IH()
 	GameMessageBox.h = 50;
 	GameMessageBox.x = screen->w - GameMessageBox.w;
 	GameMessageBox.y = 0;
+
+	//initializing gameSound
+	gameSound = new sound();
 }
 
 IH::~IH()
@@ -167,7 +171,6 @@ IH* IH::Instance()
 
 void IH::createMatch()
 {
-	
 	gameRules = new rules;
 	//map object = new map(mapName)
 	map = new mapSuperClass(fileNames.map.c_str());
@@ -176,6 +179,15 @@ void IH::createMatch()
 	//set up the players ip address, and any other neccessary data for them
 	players[0].playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
 	players[1].playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
+	// Start the sound when the game begins 
+	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+	IH::Instance()->gameSound->playWAV(unionMusic);
+	IH::Instance()->prevSong = unionMusic;
+	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
+		
 }
 
 int IH::endMatch()
