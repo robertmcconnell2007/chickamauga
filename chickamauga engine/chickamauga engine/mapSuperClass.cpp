@@ -362,6 +362,7 @@ void mapSuperClass::createBlankMap(int width, int height)
 		}
 	}
 }
+
 void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * screen)
 {
 	for(int i = 0; i < width; ++i)
