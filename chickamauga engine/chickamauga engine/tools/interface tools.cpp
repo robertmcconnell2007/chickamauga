@@ -105,6 +105,15 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 	if(IH::Instance()->currentBattle.attackers.size() == 0)
 	{
 		IH::Instance()->preppingCombat = true;
+		for(int i = 0; i < 6; ++i)
+		{
+			getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
+			if((unit1 != NULL && !unit1->completedCombat()) ||
+				(unit2 != NULL && !unit2->completedCombat()))
+				foundOtherCombatant = true;
+		}
+		if(!foundOtherCombatant)
+			return false;
 	}
 	else
 	{
@@ -148,7 +157,7 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 			if(unit2) unit2->setComPrep(true);
 			if(i < 3)
 			{
-				if(!canFightOther(node->nodeEdges[i]->upperNode, attackerArmy))
+				if(!canFightOther(node->nodeEdges[i]->upperNode, attackerArmy) && !unit1->completedCombat())
 				{
 					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
 					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
@@ -156,7 +165,7 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 			}
 			else
 			{
-				if(!canFightOther(node->nodeEdges[i]->lowerNode, attackerArmy))
+				if(!canFightOther(node->nodeEdges[i]->lowerNode, attackerArmy) && !unit1->completedCombat())
 				{
 					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
 					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
@@ -164,22 +173,31 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 			}
 		}
 	}
-	for(int i = 0; i < 6; ++i)
+	if(numDef == 1)
 	{
-		getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
-		if(unit1 || unit2)
+		for(int i = 0; i < 6; ++i)
 		{
-			if(unit1) unit1->setComPrep(true);
-			if(unit2) unit2->setComPrep(true);
-			if(i < 3)
+			getUnitsAroundNode(node, i, defenderArmy, unit1, unit2);
+			if(unit1 || unit2)
 			{
-				if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
-				if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
-			}
-			else
-			{
-				if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
-				if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
+				if(unit1) unit1->setComPrep(true);
+				if(unit2) unit2->setComPrep(true);
+				if(i < 3)
+				{
+					if(!unit1->completedCombat())
+					{
+						if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
+						if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
+					}
+				}
+				else
+				{
+					if(!unit1->completedCombat())
+					{
+						if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.defenders.push_back(unit1);
+						if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.defenders.push_back(unit2);
+					}
+				}
 			}
 		}
 	}
@@ -203,6 +221,11 @@ bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defend
 		return false;
 	if(!getUnitsOnNode(node, defenderArmy, unit1, unit2))
 		return false;
+	for(int i = 0; i < IH::Instance()->currentBattle.defenders.size(); ++i)
+	{
+		if(unit1 == IH::Instance()->currentBattle.defenders.at(i))
+			return false;
+	}
 	if(unit1)
 	{
 		unit1->setComPrep(true);
@@ -224,7 +247,7 @@ bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defend
 			if(unit2) unit2->setComPrep(true);
 			if(i < 3)
 			{
-				if(!canFightOther(node->nodeEdges[i]->upperNode, defenderArmy))
+				if(!canFightOther(node->nodeEdges[i]->upperNode, defenderArmy) && !unit1->completedCombat())
 				{
 					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
 					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
@@ -232,7 +255,7 @@ bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defend
 			}
 			else
 			{
-				if(!canFightOther(node->nodeEdges[i]->lowerNode, defenderArmy))
+				if(!canFightOther(node->nodeEdges[i]->lowerNode, defenderArmy) && !unit1->completedCombat())
 				{
 					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
 					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
@@ -251,13 +274,19 @@ bool clickDefender(map_node * node, armyClass * attackerArmy, armyClass * defend
 				if(unit2) unit2->setComPrep(true);
 				if(i < 3)
 				{
-					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
-					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
+					if(!unit1->completedCombat())
+					{
+						if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
+						if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
+					}
 				}
 				else
 				{
-					if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
-					if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
+					if(!unit1->completedCombat())
+					{
+						if(unit1 && !alreadyInAttkDef(unit1)) IH::Instance()->currentBattle.attackers.push_back(unit1);
+						if(unit2 && !alreadyInAttkDef(unit2)) IH::Instance()->currentBattle.attackers.push_back(unit2);
+					}
 				}
 			}
 		}
