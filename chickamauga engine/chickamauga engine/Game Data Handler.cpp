@@ -182,16 +182,16 @@ void IH::createMatch()
 	// Start the sound when the game begins 
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-	if(playerIam == 0)
-	{
-		IH::Instance()->gameSound->playWAV(unionMusic);
-		IH::Instance()->prevSong = unionMusic;
-	}
-	else
-	{
-		IH::Instance()->gameSound->playWAV(confederateMusic);
-		IH::Instance()->prevSong = unionMusic;
-	}
+	//if(playerIam == 0)
+	//{
+	//	IH::Instance()->gameSound->playWAV(unionMusic);
+	//	IH::Instance()->prevSong = unionMusic;
+	//}
+	//else
+	//{
+	//	IH::Instance()->gameSound->playWAV(confederateMusic);
+	//	IH::Instance()->prevSong = unionMusic;
+	//}
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -		

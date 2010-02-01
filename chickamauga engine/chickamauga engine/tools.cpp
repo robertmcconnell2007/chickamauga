@@ -573,7 +573,6 @@ void IH::handlePrimaryInput()
 					if(!retreatCalled)
 					{
 						cancelClick(map);
-						//showCombat();
 					}
 				}
 			}
@@ -586,6 +585,7 @@ void IH::handlePrimaryInput()
 
 void IH::update(int mspassed)
 {
+//	int bob = 0;
 	//handle map borders
 	bool switchState = false;
 	switch(gameState)
@@ -628,35 +628,43 @@ void IH::update(int mspassed)
 			switchState = true;
 			for(int i = 0; i < players[playerIam].playerArmy.currentSize; ++i)
 			{
-				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !players[playerIam].playerArmy.armyArray[i]->completedCombat())
+				//if(players[playerIam].playerArmy.armyArray[i]->completedCombat())
+				//{
+				//	bob++;
+				//}
+				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
 				{
 					switchState = false;
 					break;
 				}
 			}
+			//if(bob == 1)
+			//{
+			//	bob = 0;
+			//}
 		}
 		if(switchState && !retreatCalled)
 		{
 			if(playersTurn == 1)
 				currentTurn++;
 			playersTurn = !playersTurn;
-			players[0].playerArmy.resetMoves();
-			players[1].playerArmy.resetMoves();
+			players[0].startTurn();
+			players[1].startTurn();
 			gameState = matchMainPhase;			
 			if(!playingLAN)
 			{
 				playerIam = !playerIam;
-				IH::Instance()->gameSound->stopMusic(prevSong);
-				if(IH::Instance()->playersTurn == 0)
-				{
-					IH::Instance()->gameSound->playWAV(unionMusic);
-					IH::Instance()->prevSong = unionMusic;
-				}
-				else
-				{
-					IH::Instance()->gameSound->playWAV(confederateMusic);
-					IH::Instance()->prevSong = confederateMusic;
-				}
+				//IH::Instance()->gameSound->stopMusic(prevSong);
+				//if(IH::Instance()->playersTurn == 0)
+				//{
+				//	IH::Instance()->gameSound->playWAV(unionMusic);
+				//	IH::Instance()->prevSong = unionMusic;
+				//}
+				//else
+				//{
+				//	IH::Instance()->gameSound->playWAV(confederateMusic);
+				//	IH::Instance()->prevSong = confederateMusic;
+				//}
 			}
 			else
 			{
@@ -667,10 +675,6 @@ void IH::update(int mspassed)
 		}
 		else
 		{
-			if(retreatCalled)
-			{
-				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-			}
 		}
 		break;
 	case reviewingMatch:
@@ -724,6 +728,7 @@ void IH::drawAll()
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
+		showCombat();
 		drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
 		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 		break;
@@ -869,8 +874,8 @@ bool IH::handleMessage()
 		if(playersTurn == 1)
 			currentTurn++;
 		playersTurn = !playersTurn;
-		players[0].playerArmy.resetMoves();
-		players[1].playerArmy.resetMoves();
+		players[0].startTurn();
+		players[1].startTurn();
 		chatBox->addString(currentMessage);
 		gameState = matchMainPhase;
 		return true;

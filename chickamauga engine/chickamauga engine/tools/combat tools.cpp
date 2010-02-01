@@ -121,15 +121,15 @@ int battle::calcBattle()
 						usableUnit = false;
 				if(usableUnit)
 				{
-					if(i < 3)
+					if(j < 3)
 					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr) &&
+						if(!canFightOther(node->nodeEdges[j]->upperNode, attkr) &&
 							!alreadyInAttkDef(otherUnit1))
 							defenders.push_back(otherUnit1);
 					}
 					else
 					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr) &&
+						if(!canFightOther(node->nodeEdges[j]->lowerNode, attkr) &&
 							!alreadyInAttkDef(otherUnit1))
 							defenders.push_back(otherUnit1);
 					}
@@ -143,15 +143,15 @@ int battle::calcBattle()
 						usableUnit = false;
 				if(usableUnit)
 				{
-					if(i < 3)
+					if(j < 3)
 					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, attkr) &&
+						if(!canFightOther(node->nodeEdges[j]->upperNode, attkr) &&
 							!alreadyInAttkDef(otherUnit2))
 							defenders.push_back(otherUnit2);
 					}
 					else
 					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, attkr) &&
+						if(!canFightOther(node->nodeEdges[j]->lowerNode, attkr) &&
 							!alreadyInAttkDef(otherUnit2))
 							defenders.push_back(otherUnit2);
 					}
@@ -175,15 +175,15 @@ int battle::calcBattle()
 				}
 				if(usableUnit)
 				{
-					if(i < 3)
+					if(j < 3)
 					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr) &&
+						if(!canFightOther(node->nodeEdges[j]->upperNode, dfndr) &&
 							!alreadyInAttkDef(otherUnit1))
 							attackers.push_back(otherUnit1);
 					}
 					else
 					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr) &&
+						if(!canFightOther(node->nodeEdges[j]->lowerNode, dfndr) &&
 							!alreadyInAttkDef(otherUnit1))
 							attackers.push_back(otherUnit1);
 					}
@@ -197,15 +197,15 @@ int battle::calcBattle()
 						usableUnit = false;
 				if(usableUnit)
 				{
-					if(i < 3)
+					if(j < 3)
 					{
-						if(!canFightOther(node->nodeEdges[i]->upperNode, dfndr) &&
+						if(!canFightOther(node->nodeEdges[j]->upperNode, dfndr) &&
 							!alreadyInAttkDef(otherUnit2))
 							attackers.push_back(otherUnit2);
 					}						
 					else
 					{
-						if(!canFightOther(node->nodeEdges[i]->lowerNode, dfndr) &&
+						if(!canFightOther(node->nodeEdges[j]->lowerNode, dfndr) &&
 							!alreadyInAttkDef(otherUnit2))
 							attackers.push_back(otherUnit2);
 					}						
@@ -221,7 +221,6 @@ int battle::calcBattle()
 	///////////////////acutal battle calc now////////////
 	///well assume that everyone can attack everybody and creeks
 	///have already been accounted for
-	battleCalculator bCalc;
 	int result;
 	int attackerPower=0;
 	int defenderPower=0;
@@ -241,7 +240,7 @@ int battle::calcBattle()
 			defenderPower+=defenders.at(i)->getPower();
 		}
 	}
-	result = bCalc.doBattle(attackerPower,defenderPower);
+	result = IH::Instance()->gameRules->calculator.doBattle(attackerPower,defenderPower);
 	result = defendRetreat;
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
@@ -404,7 +403,7 @@ int battle::calcBattle()
 			break;
 		}
 	}
-	//IH::Instance()->preppingCombat = false;
+	IH::Instance()->preppingCombat = false;
 	return 0;
 }
 

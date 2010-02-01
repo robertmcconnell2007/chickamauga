@@ -48,6 +48,7 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 
 void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY)
 {
+	setEnemyNodes(IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy, map);
 	unitToMove->setPosition(newY+1,newX+1);
 	if(map->getMap()[newX][newY].enemy)
 		unitToMove->setNeedCombat();
@@ -117,6 +118,11 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 	if(!getUnitsOnNode(node, attackerArmy, unit1, unit2))
 	{
 		return false;
+	}
+	for(int i = 0; i < IH::Instance()->currentBattle.attackers.size(); ++i)
+	{
+		if(unit1 == IH::Instance()->currentBattle.attackers.at(i))
+			return false;
 	}
 	if(unit1 != NULL)
 	{
