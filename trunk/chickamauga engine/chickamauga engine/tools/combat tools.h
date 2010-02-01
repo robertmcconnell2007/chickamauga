@@ -7,3 +7,4 @@ bool getUnitsAroundNode(map_node * node, int path, armyClass * army, unitClass *
 bool getUnitsOnNode(map_node * node, armyClass * army, unitClass * &unit1, unitClass * &unit2);
 bool canFightOther(map_node * node, armyClass * army);
 bool alreadyInAttkDef(unitClass * unit);
+void networkRetreat(string unitName);

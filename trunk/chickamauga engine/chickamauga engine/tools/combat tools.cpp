@@ -1,4 +1,5 @@
 #include "combat tools.h"
+#include "../messageHandler.h"
 
 bool alreadyInAttkDef(unitClass * unit)
 {
@@ -240,11 +241,11 @@ int battle::calcBattle()
 			defenderPower+=defenders.at(i)->getPower();
 		}
 	}
-	result=bCalc.doBattle(attackerPower,defenderPower);
+	result = bCalc.doBattle(attackerPower,defenderPower);
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through
-	defenderPower=0;
+	defenderPower = 0;
 	switch(result)
 	{
 	case attackRetreat:
@@ -272,6 +273,8 @@ int battle::calcBattle()
 				{
 					if(attkr->armyArray[k]==attackers.at(i))
 					{
+						if(IH::Instance()->playingLAN)
+							MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
 						attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
 					}
 				}
@@ -286,11 +289,22 @@ int battle::calcBattle()
 		}
 	case defendRetreat:
 		{
-			IH::Instance()->retreatCalled=true;
-			for(int i=0; i<defenders.size(); i++)
+			IH::Instance()->retreatCalled = true;
+			if(IH::Instance()->playingLAN)
 			{
-				defenders.at(i)->retreat=true;
-				defenders.at(i)->setCompleteCombat();
+				for(int i=0; i<defenders.size(); i++)
+				{
+					MessageHandler::Instance()->sendMessage(defenders.at(i)->getName(), DEFENDERRETREAT);
+				}
+				MessageHandler::Instance()->sendMessage("ready", DEFENDERRETREAT);
+			}
+			else
+			{
+				for(int i=0; i<defenders.size(); i++)
+				{
+					defenders.at(i)->retreat=true;
+					defenders.at(i)->setCompleteCombat();
+				}
 			}
 			for(int i=0; i<attackers.size(); i++)
 			{
@@ -307,6 +321,8 @@ int battle::calcBattle()
 				{
 					if(dfndr->armyArray[k]==defenders.at(i))
 					{
+						if(IH::Instance()->playingLAN)
+							MessageHandler::Instance()->sendMessage(dfndr->armyArray[k]->getName(), KILLUNIT);
 						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
 					}
 				}
@@ -328,6 +344,7 @@ int battle::calcBattle()
 				{
 					if(dfndr->armyArray[k]==defenders.at(i))
 					{
+						MessageHandler::Instance()->sendMessage(dfndr->armyArray[k]->getName(), KILLUNIT);
 						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
 					}
 				}
@@ -345,6 +362,7 @@ int battle::calcBattle()
 						{
 							if(attkr->armyArray[k]==attackers.at(i))
 							{
+								MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
 								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
 							}
 						}
@@ -353,17 +371,18 @@ int battle::calcBattle()
 					}
 					else if(attackers.at(i)->getPower()>defenderPower)
 					{
-						attackers.at(i)->setPower(attackers.at(i)->getPower()-defenderPower);
+						attackers.at(i)->setPower(attackers.at(i)->getPower() - defenderPower);
 						defenderPower=0;
 						break;
 					}
-					else if(attackers.at(i)->getPower()<defenderPower)
+					else if(attackers.at(i)->getPower() < defenderPower)
 					{
-						defenderPower-=attackers.at(i)->getPower();
+						defenderPower -= attackers.at(i)->getPower();
 						for(int k=0; k<attkr->currentSize; k++)
 						{
 							if(attkr->armyArray[k]==attackers.at(i))
 							{
+								MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
 								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
 							}
 						}
@@ -392,6 +411,7 @@ void networkRetreat(string unitName)
 	{
 		if(tempArmy->armyArray[i]->getName()==unitName)
 		{
+			tempArmy->armyArray[i]->retreat = true;
 			IH::Instance()->currentBattle.defenders.push_back(tempArmy->armyArray[i]);
 		}
 	}

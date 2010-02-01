@@ -12,6 +12,7 @@
 #include "battleCalc.h"
 #include "infoLog.h"
 #include "sound.h"
+#include "tools/combat tools.h"
 
 #include "messageHandler.h"
 #include "UDP.h"
@@ -651,43 +652,33 @@ void IH::update(int mspassed)
 		}
 		if(switchState && !retreatCalled)
 		{
-			switchState = false;
+			if(playersTurn == 1)
+				currentTurn++;
+			playersTurn = !playersTurn;
+			players[0].playerArmy.resetMoves();
+			players[1].playerArmy.resetMoves();
+			gameState = matchMainPhase;			
 			if(!playingLAN)
 			{
 				playerIam = !playerIam;
+				IH::Instance()->gameSound->stopMusic(prevSong);
+				if(IH::Instance()->playersTurn == 0)
+				{
+					IH::Instance()->gameSound->playWAV(unionMusic);
+					IH::Instance()->prevSong = unionMusic;
+				}
+				else
+				{
+					IH::Instance()->gameSound->playWAV(confederateMusic);
+					IH::Instance()->prevSong = confederateMusic;
+				}
 			}
 			else
 			{
 				MessageHandler::Instance()->sendMessage("Your turn!", STARTTURN);
 				chatBox->addString("You have ended your turn.");
 			}
-			if(playersTurn == 1)
-				currentTurn++;
-			playersTurn = !playersTurn;
-			players[0].playerArmy.resetMoves();
-			players[1].playerArmy.resetMoves();
-			gameState = matchMainPhase;
-			// change the sound depending on whose turn it is
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			IH::Instance()->gameSound->stopMusic(prevSong);
-					if(IH::Instance()->playersTurn == 0)
-					{
-					IH::Instance()->gameSound->playWAV(unionMusic);
-					IH::Instance()->prevSong = unionMusic;
-					}
-					else
-					{
-					IH::Instance()->gameSound->playWAV(confederateMusic);
-					IH::Instance()->prevSong = confederateMusic;
-					}
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-			
+			switchState = false;			
 		}
 		else
 		{
@@ -845,7 +836,13 @@ bool IH::handleMessage()
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
 		{
 			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
-			temp = currentMessage + " has been killed.";
+			temp = "Enemy unit, " + currentMessage + " has been killed.";
+			chatBox->addString(temp);
+		}
+		else if(unitToHandle = players[playerIam].playerArmy.findUnit(currentMessage))
+		{
+			players[playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
+			temp = "Your unit, " + currentMessage + " has been killed.";
 			chatBox->addString(temp);
 		}
 		else
@@ -893,7 +890,21 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case DEFENDERRETREAT:
-		chatBox->addString("Your units lost a battle and need to retreat!");
+		if(currentMessage == "done")
+		{
+			retreatCalled = false;
+			IH::Instance()->currentBattle.defenders.clear();
+		}
+		else if(currentMessage == "ready")
+		{
+			retreatCalled = true;
+			chatBox->addString("Your units lost a battle and need to retreat!");
+		}
+		else
+		{
+			networkRetreat(currentMessage);
+			chatBox->addString("Your unit, " + currentMessage + ", needs to retreat.");
+		}
 		return true;
 		break;
 	case CHATMESSAGE:
