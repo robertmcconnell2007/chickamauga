@@ -252,9 +252,7 @@ void IH::handlePrimaryInput()
 				{
 					matchFileNames.setFiles();
 					createMatch();
-					gameState = matchMainPhase;
-					
-					
+					gameState = matchMainPhase;					
 				}
 				else
 				{
@@ -280,7 +278,7 @@ void IH::handlePrimaryInput()
 			{
 				waiting = true;
 				amHost = false;
-				playingLAN = true;				
+				playingLAN = true;			
 			}
 		}
 		else if(event.type == SDL_KEYDOWN && waiting && !amHost && playingLAN && !keysOff)
@@ -308,17 +306,6 @@ void IH::handlePrimaryInput()
 				break;
 			}
 		}
-		//matchFileNames.setGame("chickamauga.txt");
-		//if(matchFileNames.checkFileNames())
-		//{
-		//	matchFileNames.setFiles();
-		//	createMatch();
-		//	gameState = matchMainPhase;
-		//}
-		//else
-		//{
-		//	cout << "FAILED    FAILED    FAILED TO LOAD FILES!!!\n";
-		//}
 		break;
 	case matchMainPhase:
 		switch(event.type)
@@ -361,7 +348,7 @@ void IH::handlePrimaryInput()
 						char c = event.key.keysym.sym;
 						if(c >= ' ' && c <= '~')
 						{
-							chatString += event.key.keysym.sym;
+							chatString += c;
 						}
 					}
 					break;
@@ -472,10 +459,6 @@ void IH::handlePrimaryInput()
 		break;
 	case matchCombatPhase:
 		{
-			if(retreatCalled)
-			{
-				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-			}
 			switch(event.type)
 			{
 			case SDL_KEYDOWN:
@@ -495,7 +478,7 @@ void IH::handlePrimaryInput()
 				case SDLK_RETURN:
 					if(startTyping)
 					{
-						MessageHandler::Instance()->sendMessage(chatString,CHATMESSAGE);
+						MessageHandler::Instance()->sendMessage(chatString, CHATMESSAGE);
 						chatBox->addString(chatString);
 						chatString = "";
 						startTyping = false;
@@ -516,7 +499,7 @@ void IH::handlePrimaryInput()
 						char c = event.key.keysym.sym;
 						if(c >= ' ' && c <= '~')
 						{
-							chatString += event.key.keysym.sym;
+							chatString += c;
 						}
 					}
 					break;
@@ -557,13 +540,17 @@ void IH::handlePrimaryInput()
 				{
 					if(clickedIn(event, GUIFrameRect))
 					{
-						if(clickedIn(event, GUIEndTurnBox))
+						if(clickedIn(event, GUIEndTurnBox) && playerIam == playersTurn)
 						{
 							currentBattle.calcBattle();
 						}
-						if(retreatCalled)
+						if(currentUnits[0] && clickedIn(event, UISlots[0]))
 						{
-							showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+							unit1Selected = !unit1Selected;
+						}
+						if(currentUnits[1] && clickedIn(event, UISlots[1]))
+						{
+							unit2Selected = !unit2Selected;
 						}
 					}
 					else if(firstX == actualX && firstY == actualY)
@@ -578,8 +565,6 @@ void IH::handlePrimaryInput()
 						}
 						else if(playersTurn == playerIam)
 						{
-							//unitClass * temp1 = NULL, * temp2 = NULL;
-							//if(getUnitsOnNode(selectedNode, players[playersTurn].playerArmy, temp1, temp2)
 							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 						}
@@ -588,7 +573,7 @@ void IH::handlePrimaryInput()
 					if(!retreatCalled)
 					{
 						cancelClick(map);
-						showCombat();
+						//showCombat();
 					}
 				}
 			}
@@ -732,6 +717,10 @@ void IH::drawAll()
 		break;
 	case matchMainPhase:
 	case matchCombatPhase:
+		if(retreatCalled)
+		{
+			showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+		}
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
@@ -825,7 +814,7 @@ bool IH::handleMessage()
 		if(unitToHandle = players[!playerIam].playerArmy.findUnit(unitName))
 		{
 			moveUnit(unitToHandle, map, newX, newY);
-			temp = unitName + " has moved to (" + stringX + "," + stringY + ")";
+			temp = unitName + " has moved to (" + stringX + ", " + stringY + ")";
 			chatBox->addString(temp);
 		}
 		else
@@ -893,7 +882,7 @@ bool IH::handleMessage()
 		if(currentMessage == "done")
 		{
 			retreatCalled = false;
-			IH::Instance()->currentBattle.defenders.clear();
+			//IH::Instance()->currentBattle.defenders.clear();
 		}
 		else if(currentMessage == "ready")
 		{

@@ -242,6 +242,7 @@ int battle::calcBattle()
 		}
 	}
 	result = bCalc.doBattle(attackerPower,defenderPower);
+	result = defendRetreat;
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through
@@ -250,6 +251,7 @@ int battle::calcBattle()
 	{
 	case attackRetreat:
 		{
+			cout << "Attacker retreat\n";
 			IH::Instance()->retreatCalled=true;
 			for(int i=0; i<attackers.size(); i++)
 			{
@@ -267,6 +269,7 @@ int battle::calcBattle()
 		}
 	case attackElim:
 		{
+			cout << "Attacker eliminated\n";
 			for(int i=0; i<attackers.size(); i++)
 			{
 				for(int k=0; k<attkr->currentSize; k++)
@@ -289,6 +292,7 @@ int battle::calcBattle()
 		}
 	case defendRetreat:
 		{
+			cout << "Defender Retreat\n";
 			IH::Instance()->retreatCalled = true;
 			if(IH::Instance()->playingLAN)
 			{
@@ -297,6 +301,7 @@ int battle::calcBattle()
 					MessageHandler::Instance()->sendMessage(defenders.at(i)->getName(), DEFENDERRETREAT);
 				}
 				MessageHandler::Instance()->sendMessage("ready", DEFENDERRETREAT);
+				defenders.clear();
 			}
 			else
 			{
@@ -315,6 +320,7 @@ int battle::calcBattle()
 		}
 	case defendElim:
 		{
+			cout << "Defender Eliminated\n";
 			for(int i=0; i<defenders.size(); i++)
 			{
 				for(int k=0; k<dfndr->currentSize; k++)
@@ -337,6 +343,7 @@ int battle::calcBattle()
 		}
 	case exchange:
 		{
+			cout << "Exchange\n";
 			for(int i=0; i<defenders.size(); i++)
 			{
 				defenderPower+=defenders.at(i)->getPower();
@@ -397,7 +404,7 @@ int battle::calcBattle()
 			break;
 		}
 	}
-	IH::Instance()->preppingCombat = false;
+	//IH::Instance()->preppingCombat = false;
 	return 0;
 }
 
