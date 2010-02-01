@@ -316,7 +316,8 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 	{
 		if(IH::Instance()->playingLAN)
 			MessageHandler::Instance()->sendMessage("done", DEFENDERRETREAT);
-		IH::Instance()->retreatCalled = false;
+		else
+			IH::Instance()->retreatCalled = false;
 	}
 	map->clearMovement();
 	map->clearEnemy();
