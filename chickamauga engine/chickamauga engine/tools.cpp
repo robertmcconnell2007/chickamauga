@@ -400,7 +400,7 @@ void IH::handlePrimaryInput()
 			{
 				if(clickedIn(event, GUIFrameRect))
 				{
-					if(clickedIn(event, GUIEndTurnBox))
+					if(clickedIn(event, GUIEndTurnBox) && playersTurn == playerIam)
 					{
 						map->cleanReinforce();
 						gameState = matchCombatPhase;
