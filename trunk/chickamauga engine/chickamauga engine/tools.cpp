@@ -628,7 +628,7 @@ void IH::update(int mspassed)
 			switchState = true;
 			for(int i = 0; i < players[playerIam].playerArmy.currentSize; ++i)
 			{
-				if(!currentBattle.defenders.empty() && players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
+				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
 				{
 					switchState = false;
 					break;
@@ -667,10 +667,10 @@ void IH::update(int mspassed)
 		}
 		else
 		{
-			//if(retreatCalled)
-			//{
-			//	showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-			//}
+			if(retreatCalled && !playingLAN)
+			{
+				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+			}
 		}
 		break;
 	case reviewingMatch:
@@ -870,6 +870,7 @@ bool IH::handleMessage()
 		players[1].startTurn();
 		chatBox->addString(currentMessage);
 		gameState = matchMainPhase;
+		keysOff = false;
 		return true;
 		break;
 	case ENDTURN:
