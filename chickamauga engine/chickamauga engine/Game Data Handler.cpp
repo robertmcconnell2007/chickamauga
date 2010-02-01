@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
+#define DEBUG
 
 
 gameFileHandler::gameFileHandler(string name)
@@ -144,6 +145,10 @@ IH::IH()
 
 	//initializing gameSound
 	gameSound = new sound();
+
+#ifdef DEBUG
+	output = "5.243.77.115";
+#endif
 }
 
 IH::~IH()
@@ -161,6 +166,8 @@ IH::~IH()
 	}
 	players[0].deletePlayer();
 	players[1].deletePlayer();
+	MessageHandler::Instance()->sendMessage("OMG OMG OMG I CRASHEDED!",QUIT);
+	MessageHandler::Instance()->sendNextMessage();
 }
 
 IH* IH::Instance()
@@ -205,7 +212,11 @@ int IH::endMatch()
 void IH::endGame()
 {
 	if(playingLAN)
+	{
 		MessageHandler::Instance()->sendMessage("Your opponent has left the game.", QUIT);
+		MessageHandler::Instance()->sendNextMessage();
+	}
+
 	//if((gameState == matchMainPhase || 
 	//	gameState == matchCombatPhase ||
 	//	 gameState == atMatchPrep || 

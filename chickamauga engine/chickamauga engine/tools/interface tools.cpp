@@ -1,6 +1,7 @@
 #include <sstream>
 #include "interface tools.h"
 #include "combat tools.h"
+#include "draw tools.h"
 #include "../messageHandler.h"
 
 bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
@@ -318,5 +319,6 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 		IH::Instance()->retreatCalled = false;
 	}
 	map->clearMovement();
-	map->clearEnemy();	
+	map->clearEnemy();
+	showRetreater(map,&IH::Instance()->players[IH::Instance()->playersTurn].playerArmy,&IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
 }

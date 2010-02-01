@@ -81,6 +81,8 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 	battle * tempBattle;	
 	map_node *node;
 	bool nodeFound=false;
+	map->clearEnemy();
+	map->clearMovement();
 	checkUnitStacks(map,*attkrs,*dfndr);
  	tempBattle=&IH::Instance()->currentBattle;
 	if(tempBattle->attackers.size()>0)//still attackers
@@ -91,7 +93,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 		{
 			if(i<3)
 			{
-				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<2)
+				if(!node->nodeEdges[i]->upperNode->enemy && !node->nodeEdges[i]->creek_edge && node->nodeEdges[i]->upperNode->numOfUnits < 2)
 				{
 					node->nodeEdges[i]->upperNode->selected=true;
 					nodeFound=true;
@@ -136,6 +138,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 		IH::Instance()->retreatCalled=false;
 		return false;
 	}
+
 	if(nodeFound)
 	{
 		map->clearEnemy();
@@ -254,7 +257,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 				if(dfndr->armyArray[k]==tempBattle->defenders.back())
 				{
 					dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
-					tempBattle->attackers.pop_back();
+					tempBattle->defenders.pop_back();
 					break;
 				}
 			}

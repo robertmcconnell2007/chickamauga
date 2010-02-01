@@ -95,5 +95,3 @@ public:
 	bool moveUnit(unitClass* unit, int moveFrom, int moveTo);
 	void resetAllCombat();
 };
-
-
