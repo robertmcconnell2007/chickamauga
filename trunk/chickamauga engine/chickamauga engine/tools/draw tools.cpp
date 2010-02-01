@@ -60,8 +60,10 @@ void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, uni
 void showCombat()
 {
 	unitClass *unit;
-	IH::Instance()->map->clearEnemy();
-	IH::Instance()->map->showEnemyControl=true;
+	//IH::Instance()->map->clearEnemy();
+	IH::Instance()->map->showEnemyControl = true;
+	if(IH::Instance()->currentBattle.attackers.size() == 0 && IH::Instance()->currentBattle.defenders.size() == 0)
+		return;
 	for(int i=0; i< IH::Instance()->currentBattle.attackers.size(); i++)
 	{
 		unit = IH::Instance()->currentBattle.attackers.at(i);

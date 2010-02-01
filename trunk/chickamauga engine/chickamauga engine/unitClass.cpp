@@ -9,8 +9,7 @@ unitClass::unitClass()
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
-	position.x=position.y= -1;
-	
+	position.x=position.y= -1;	
 }
 
 unitClass::~unitClass()
