@@ -866,6 +866,7 @@ bool IH::handleMessage()
 		if(playersTurn == 1)
 			currentTurn++;
 		playersTurn = !playersTurn;
+		keysOff = false;
 		players[0].startTurn();
 		players[1].startTurn();
 		chatBox->addString(currentMessage);
@@ -883,7 +884,6 @@ bool IH::handleMessage()
 			retreatCalled = false;
 			currentBattle.attackers.clear();
 			currentBattle.defenders.clear();
-			//IH::Instance()->currentBattle.defenders.clear();
 		}
 		else if(currentMessage == "ready")
 		{
