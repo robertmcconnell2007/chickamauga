@@ -272,11 +272,14 @@ void cancelClick(mapSuperClass * map)
 void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass * dfndrs)
 {
 	battle * tempBattle=&IH::Instance()->currentBattle;
+	ostringstream oss;
 	if(tempBattle->attackers.size()>0)
 	{
 		setEnemyNodes(*dfndrs,map);
 		if(node->selected&&!node->enemy)
 		{
+			oss << tempBattle->attackers.back()->getName() << "#" << node->col << "#" << node->row;
+			MessageHandler::Instance()->sendMessage(oss.str(), MOVEUNIT);
 			tempBattle->attackers.back()->setPosition(node->col,node->row);
 			tempBattle->attackers.back()->setCompleteCombat();
 			tempBattle->attackers.pop_back();
@@ -287,13 +290,19 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 		setEnemyNodes(*attkrs,map);
 		if(node->selected&&!node->enemy)
 		{
+			oss << tempBattle->defenders.back()->getName() << "#" << node->col << "#" << node->row;
+			MessageHandler::Instance()->sendMessage(oss.str(), MOVEUNIT);
 			tempBattle->defenders.back()->setPosition(node->col,node->row);
 			tempBattle->defenders.back()->setCompleteCombat();
 			tempBattle->defenders.pop_back();
 		}
 	}
-	if(tempBattle->attackers.empty()&&tempBattle->defenders.empty())
+	if(tempBattle->attackers.empty() && tempBattle->defenders.empty())
 	{
+		if(IH::Instance()->playingLAN)
+		{
+			MessageHandler::Instance()->sendMessage("done", DEFENDERRETREAT);
+		}
 		IH::Instance()->retreatCalled=false;
 	}
 	map->clearMovement();

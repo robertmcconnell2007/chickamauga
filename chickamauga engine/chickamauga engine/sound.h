@@ -4,8 +4,8 @@
 #include <string.h>
 #include <math.h>
 #include <iostream>
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 #include <string>
 using namespace std;
 
@@ -13,20 +13,21 @@ enum SoundFX
 {
 	unionMusic, confederateMusic
 };
+
 class sound
 {
 private:
 	int volume;
 public:
-sound();
-~sound();
-string *musicArray;
-void playWAV(int);
-//void playMP3(enum);
-bool fillMusic();
-void increaseVolume(int, int);
-void decreaseVolume(int, int);
-void stopMusic(int);
+	sound();
+	~sound();
+	string *musicArray;
+	void playWAV(int);
+	//void playMP3(enum);
+	bool fillMusic();
+	void increaseVolume(int, int);
+	void decreaseVolume(int, int);
+	void stopMusic(int);
 };
 
 
