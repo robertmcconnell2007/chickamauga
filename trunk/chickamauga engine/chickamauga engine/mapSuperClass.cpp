@@ -21,8 +21,7 @@ void mapSuperClass::clearMovement()
 		{
 			mapPointer[i][j].movement = -1;
 			mapPointer[i][j].numOfUnits = 0;
-			mapPointer[i][j].selected=false;
-			
+			mapPointer[i][j].selected=false;			
 		}
 	}
 }
