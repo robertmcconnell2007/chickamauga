@@ -417,7 +417,9 @@ void networkRetreat(string unitName)
 	{
 		if(tempArmy->armyArray[i]->getName()==unitName)
 		{
+			cout << unitName << " added to retreat buffer.\n";
 			tempArmy->armyArray[i]->retreat = true;
+			tempArmy->armyArray[i]->needCombat();
 			IH::Instance()->currentBattle.defenders.push_back(tempArmy->armyArray[i]);
 		}
 	}

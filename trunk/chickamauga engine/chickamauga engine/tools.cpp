@@ -632,7 +632,7 @@ void IH::update(int mspassed)
 				//{
 				//	bob++;
 				//}
-				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
+				if(!currentBattle.defenders.empty() && players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
 				{
 					switchState = false;
 					break;
@@ -675,6 +675,10 @@ void IH::update(int mspassed)
 		}
 		else
 		{
+			//if(retreatCalled)
+			//{
+			//	showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+			//}
 		}
 		break;
 	case reviewingMatch:
@@ -721,10 +725,6 @@ void IH::drawAll()
 		break;
 	case matchMainPhase:
 	case matchCombatPhase:
-		if(retreatCalled)
-		{
-			showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
-		}
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
@@ -893,6 +893,7 @@ bool IH::handleMessage()
 		{
 			retreatCalled = true;
 			chatBox->addString("Your units lost a battle and need to retreat!");
+			showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
 		}
 		else
 		{
