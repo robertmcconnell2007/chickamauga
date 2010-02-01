@@ -540,7 +540,7 @@ void IH::handlePrimaryInput()
 				{
 					if(clickedIn(event, GUIFrameRect))
 					{
-						if(clickedIn(event, GUIEndTurnBox) && playerIam == playersTurn)
+						if(clickedIn(event, GUIEndTurnBox) && playerIam == playersTurn && !keysOff)
 						{
 							currentBattle.calcBattle();
 						}
@@ -563,7 +563,7 @@ void IH::handlePrimaryInput()
 						{
 							doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
 						}
-						else if(playersTurn == playerIam)
+						else if(playersTurn == playerIam && !keysOff)
 						{
 							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
@@ -628,20 +628,12 @@ void IH::update(int mspassed)
 			switchState = true;
 			for(int i = 0; i < players[playerIam].playerArmy.currentSize; ++i)
 			{
-				//if(players[playerIam].playerArmy.armyArray[i]->completedCombat())
-				//{
-				//	bob++;
-				//}
 				if(!currentBattle.defenders.empty() && players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
 				{
 					switchState = false;
 					break;
 				}
 			}
-			//if(bob == 1)
-			//{
-			//	bob = 0;
-			//}
 		}
 		if(switchState && !retreatCalled)
 		{
@@ -886,7 +878,10 @@ bool IH::handleMessage()
 	case DEFENDERRETREAT:
 		if(currentMessage == "done")
 		{
+			keysOff = false;
 			retreatCalled = false;
+			currentBattle.attackers.clear();
+			currentBattle.defenders.clear();
 			//IH::Instance()->currentBattle.defenders.clear();
 		}
 		else if(currentMessage == "ready")
@@ -907,6 +902,7 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case QUIT:
+		cout << currentMessage << "\n";
 		chatBox->addString(currentMessage);
 		gameState = reviewingMatch;
 		return true;

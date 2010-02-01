@@ -76,7 +76,7 @@ void showCombat()
 	}
 }
 
-bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
+bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 {
 	battle * tempBattle;	
 	map_node *node;
@@ -85,7 +85,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 	map->clearMovement();
 	checkUnitStacks(map,*attkrs,*dfndr);
  	tempBattle=&IH::Instance()->currentBattle;
-	if(tempBattle->attackers.size()>0)//still attackers
+	if(tempBattle->attackers.size() > 0)//still attackers
 	{
 		setEnemyNodes(*dfndr,map);
 		node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
@@ -109,7 +109,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 			}
 		}
 	}
-	else if(tempBattle->defenders.size()>0)
+	else if(tempBattle->defenders.size() > 0)
 	{
 		setEnemyNodes(*attkrs,map);
 		node=&map->getMap()[tempBattle->defenders.back()->getY()-1][tempBattle->defenders.back()->getX()-1];
@@ -238,7 +238,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 	}
 	else//if all else fails...unit says FML
 	{
-		if(tempBattle->attackers.size()>0)
+		if(tempBattle->attackers.size() > 0)
 		{
 			for(int k=0; k<attkrs->currentSize; k++)
 			{
@@ -250,7 +250,7 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr)
 				}
 			}
 		}
-		else if(tempBattle->defenders.size()>0)
+		else if(tempBattle->defenders.size() > 0)
 		{
 			for(int k=0; k<dfndr->currentSize; k++)
 			{

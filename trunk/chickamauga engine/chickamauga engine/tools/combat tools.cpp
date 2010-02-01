@@ -295,12 +295,12 @@ int battle::calcBattle()
 			IH::Instance()->retreatCalled = true;
 			if(IH::Instance()->playingLAN)
 			{
-				for(int i=0; i<defenders.size(); i++)
+				IH::Instance()->keysOff = true;
+				for(int i=0; i < defenders.size(); i++)
 				{
 					MessageHandler::Instance()->sendMessage(defenders.at(i)->getName(), DEFENDERRETREAT);
 				}
 				MessageHandler::Instance()->sendMessage("ready", DEFENDERRETREAT);
-				defenders.clear();
 			}
 			else
 			{
