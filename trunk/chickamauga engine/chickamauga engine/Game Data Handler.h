@@ -92,6 +92,7 @@ public:
 	infoLog *chatBox;
 	string chatString;
 	bool startTyping;
+	SDL_Rect chatRect;
 
 	gameFileHandler matchFileNames;
 	string currentMessage;

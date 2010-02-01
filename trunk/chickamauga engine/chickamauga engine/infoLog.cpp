@@ -23,3 +23,7 @@ string infoLog::operator[](int index)
 {
 	return info[index];
 }
+string infoLog::at(int index)
+{
+	return info[index];
+}

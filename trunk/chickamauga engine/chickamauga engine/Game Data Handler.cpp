@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
-#define DEBUG
+//#define DEBUG
 
 
 gameFileHandler::gameFileHandler(string name)
@@ -99,6 +99,10 @@ IH::IH()
 	chatBox = new infoLog(128);
 	chatString = "";
 	startTyping = false;
+	chatRect.w = 300;
+	chatRect.h = 200;
+	chatRect.x = 0;
+	chatRect.y = 0;
 
 	selectedX = selectedY = 0;
 	font1 = TTF_OpenFont(fileNames.ttf.c_str(), 14);
