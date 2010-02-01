@@ -242,7 +242,6 @@ int battle::calcBattle()
 		}
 	}
 	result = IH::Instance()->gameRules->calculator.doBattle(attackerPower,defenderPower);
-	//result = attackElim;
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through

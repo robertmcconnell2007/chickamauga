@@ -381,6 +381,13 @@ void IH::handlePrimaryInput()
 			{
 				map->hilightHex(actualX,actualY);
 			}
+			if(clickedIn(event, chatRect))
+			{
+				if(chatRect.x == 0)
+					chatRect.x = screenSize.x-chatRect.w;
+				else
+					chatRect.x = 0;
+			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			mouseDown = true;
@@ -722,6 +729,7 @@ void IH::drawAll()
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		showCombat();
 		drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
+		drawChat(chatBox,chatString,1,screen);
 		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 		break;
 	case reviewingMatch:

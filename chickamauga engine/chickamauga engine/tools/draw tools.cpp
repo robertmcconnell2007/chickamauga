@@ -1,10 +1,25 @@
 #include "draw tools.h"
+#include "../infoLog.h"
 
 #include <string>
 #include <sstream>
 using namespace std;
 
 void setEnemyNodes(armyClass, mapSuperClass*);
+
+void drawChat(infoLog* chatBox, string chatString, int scroll, SDL_Surface* screen)
+{
+	if(chatBox->size-scroll < 10)
+		scroll = chatBox->size-10;
+	ostringstream linesInChatBox;
+	for(int i = 0; i < 10; i++)
+	{
+		linesInChatBox << chatBox->at(chatBox->size-i-scroll) << "\n";
+	}
+	linesInChatBox << chatString;
+	SDL_FillRect(screen, &IH::Instance()->chatRect, 0x000000);
+	printStrings(linesInChatBox.str(), IH::Instance()->chatRect, screen, IH::Instance()->textColor, IH::Instance()->font1);
+}
 
 void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, unitClass *currentUnits[2], SDL_Surface * screen)
 {
