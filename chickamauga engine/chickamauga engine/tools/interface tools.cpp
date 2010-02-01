@@ -58,11 +58,13 @@ void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY)
 	if(map->getMap()[newX][newY].control)
 		map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
 	unitToMove->setMoved();
+	map->clearEnemy();
 }
 
 bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass currentArmy, armyClass enemyArmy, unitClass * unitMoving)
 {
 	checkUnitStacks(map,currentArmy,enemyArmy);
+	map->clearEnemy();
 	if(IH::Instance()->enemyUnitsSelected)
 		cancelClick(map);
 	else if(map->getMap()[newX][newY].movement>=0)
@@ -287,7 +289,7 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 		{
 			if(IH::Instance()->playingLAN)
 			{
-				oss << tempBattle->attackers.back()->getName() << "#" << node->col << "#" << node->row;
+				oss << tempBattle->attackers.back()->getName() << "#" << node->row-1 << "#" << node->col-1;
 				MessageHandler::Instance()->sendMessage(oss.str(), MOVEUNIT);
 			}
 			tempBattle->attackers.back()->setPosition(node->col,node->row);
@@ -303,7 +305,7 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 		{
 			if(IH::Instance()->playingLAN)
 			{
-				oss << tempBattle->defenders.back()->getName() << "#" << node->col << "#" << node->row;
+				oss << tempBattle->defenders.back()->getName() << "#" << node->row-1 << "#" << node->col-1;
 				MessageHandler::Instance()->sendMessage(oss.str(), MOVEUNIT);
 			}
 			tempBattle->defenders.back()->setPosition(node->col,node->row);
@@ -316,10 +318,9 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 	{
 		if(IH::Instance()->playingLAN)
 			MessageHandler::Instance()->sendMessage("done", DEFENDERRETREAT);
-		else
-			IH::Instance()->retreatCalled = false;
+		IH::Instance()->retreatCalled = false;
 	}
 	map->clearMovement();
-	map->clearEnemy();
 	showRetreater(map,&IH::Instance()->players[IH::Instance()->playersTurn].playerArmy,&IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
+	map->clearEnemy();
 }
