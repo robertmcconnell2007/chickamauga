@@ -1,4 +1,5 @@
 #include "combat tools.h"
+#include "draw tools.h"
 #include "../messageHandler.h"
 
 bool alreadyInAttkDef(unitClass * unit)
@@ -241,7 +242,7 @@ int battle::calcBattle()
 		}
 	}
 	result = IH::Instance()->gameRules->calculator.doBattle(attackerPower,defenderPower);
-	result = defendRetreat;
+	//result = attackElim;
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through
@@ -264,6 +265,7 @@ int battle::calcBattle()
 				defenders.at(i)->setCompleteCombat();
 			}
 			defenders.clear();
+			showRetreater(IH::Instance()->map, attkr, dfndr);
 			break;
 		}
 	case attackElim:
