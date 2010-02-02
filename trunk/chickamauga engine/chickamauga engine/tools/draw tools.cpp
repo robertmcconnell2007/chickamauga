@@ -72,6 +72,69 @@ void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, uni
 	}
 }
 
+void drawCombatGui(SDL_Surface *screen)
+{
+	
+	ostringstream slottxt[3];
+	for(int i = 0; i < 3; ++i)
+		slottxt[i] << "";
+	battle *tempBattle;
+	int tempPower=0, tempPower2=0;
+	int odds;
+	SDL_FillRect(screen, &IH::Instance()->GUIFrameRect, 0x000000);
+	tempBattle=&IH::Instance()->currentBattle;
+	
+	slottxt[0] << "Attackers Strength\n";
+	if(tempBattle->attackers.size()>0)
+	{
+		for(int i=0; i<tempBattle->attackers.size(); i++)
+		{
+			tempPower+=tempBattle->attackers.at(i)->getPower();
+		}
+	}
+	slottxt[0] << tempPower << "\n";
+	slottxt[1] << "Defenders Strength\n";
+	if(tempBattle->defenders.size()>0)
+	{
+		for(int i=0; i<tempBattle->defenders.size(); i++)
+		{
+			tempPower2+=tempBattle->defenders.at(i)->getPower();
+		}
+	}
+	slottxt[1] << tempPower2 << "\n";
+
+	slottxt[2] << "odds\n";
+	//attacker advantage
+	if(tempPower > tempPower2)
+	{
+		if(tempPower2>0)
+		{
+			odds= tempPower/tempPower2;
+			slottxt[2] << odds << " : 1\n";
+		}
+	}
+	else if(tempPower2> tempPower)
+	{
+		if(tempPower>0)
+		{
+			odds= tempPower2/tempPower;
+			slottxt[2] << "1 : "<< odds << "\n";
+		}
+	}
+	else
+	{
+		slottxt[2] << "1 : 1 \n";
+	}
+	for(int i = 0; i < 3; ++i)
+	{
+		printStrings(slottxt[i].str(), IH::Instance()->UISlots[i], screen, IH::Instance()->textColor, IH::Instance()->font1);
+	}
+
+
+
+
+}
+
 void showCombat()
 {
 	unitClass *unit;

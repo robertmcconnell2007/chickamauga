@@ -123,6 +123,8 @@ public:
 	SDL_Rect GUIFrameRect;
 	SDL_Rect UISlots[3];
 	SDL_Rect GUIEndTurnBox;
+	SDL_Rect GUICalcCombatBox;
+	SDL_Rect GUIResetCombatBox;
 	SDL_Rect u5050;
 	SDL_Rect GameStartButton;
 	SDL_Rect GameQuitButton;

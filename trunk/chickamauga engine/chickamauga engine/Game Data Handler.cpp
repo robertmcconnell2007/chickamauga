@@ -147,6 +147,17 @@ IH::IH()
 	GameMessageBox.x = screen->w - GameMessageBox.w;
 	GameMessageBox.y = 0;
 
+	//
+	GUICalcCombatBox.h=GUICalcCombatBox.w=50;
+	GUICalcCombatBox.x=GUIEndTurnBox.x-110;
+	GUICalcCombatBox.y=GUIEndTurnBox.y;
+
+	GUIResetCombatBox.h=GUIResetCombatBox.w=50;
+	GUIResetCombatBox.x=GUICalcCombatBox.x+60;
+	GUIResetCombatBox.y=GUICalcCombatBox.y;
+
+
+
 	//initializing gameSound
 	gameSound = new sound();
 

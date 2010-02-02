@@ -135,7 +135,7 @@ void armyClass::resetAllCombat()
 
 void armyClass::loadArmy(char * fileName, char * armyColorFile)
 {
-	int px,py,pow,turn;
+	int px,py,pow,turn,type;
 	string name;
 	unitClass *temp;
 	ifstream infile;
@@ -149,12 +149,14 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		infile>>py;
 		infile>>px;
 		infile>>pow;
+		infile>>type;
 		getline(infile,name,'#');
 		temp->setPosition(px,py);
 		temp->setPower(pow);
 		temp->setReinforceTurn(-1);
 		temp->setName(name);
 		temp->retreat=false;
+		temp->setType(type);
 		armyArray[i] = temp;
 	}
 	infile>>reinforcementSize;
@@ -164,12 +166,14 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		temp= new unitClass;
 		infile>>pow;
 		infile>>turn;
+		infile>>type;
 		getline(infile,name,'#');
 		temp->setPosition(-1,-1);
 		temp->setPower(pow);
 		temp->setReinforceTurn(turn);
 		temp->setName(name);
 		temp->retreat=false;
+		temp->setType(type);
 		reinforcements[i]=temp;
 	}
 	exitedUnits=new unitClass*[fullSize];
