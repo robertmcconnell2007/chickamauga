@@ -2,6 +2,33 @@
 #include "draw tools.h"
 #include "../messageHandler.h"
 
+
+
+
+void resetCombat()
+{
+	battle *tempBattle;
+	tempBattle= &IH::Instance()->currentBattle;
+	if(!tempBattle->attackers.empty())
+	{
+		for(int i=0; i<tempBattle->attackers.size(); i++)
+		{
+			tempBattle->attackers.at(i)->setComPrep(false);
+		}
+	}
+	if(!tempBattle->defenders.empty())
+	{
+		for(int i=0; i<tempBattle->defenders.size(); i++)
+		{
+			tempBattle->defenders.at(i)->setComPrep(false);
+		}
+	}
+	IH::Instance()->preppingCombat=false;
+	tempBattle->attackers.clear();
+	tempBattle->defenders.clear();
+}
+
+
 bool alreadyInAttkDef(unitClass * unit)
 {
 	for(int i = 0; i < IH::Instance()->currentBattle.attackers.size(); ++i)

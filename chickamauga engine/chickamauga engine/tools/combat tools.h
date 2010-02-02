@@ -8,3 +8,4 @@ bool getUnitsOnNode(map_node * node, armyClass * army, unitClass * &unit1, unitC
 bool canFightOther(map_node * node, armyClass * army);
 bool alreadyInAttkDef(unitClass * unit);
 void networkRetreat(string unitName);
+void resetCombat();

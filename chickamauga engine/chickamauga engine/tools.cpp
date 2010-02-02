@@ -547,17 +547,13 @@ void IH::handlePrimaryInput()
 				{
 					if(clickedIn(event, GUIFrameRect))
 					{
-						if(clickedIn(event, GUIEndTurnBox) && playerIam == playersTurn && !keysOff)
+						if(clickedIn(event, GUICalcCombatBox) && playerIam == playersTurn && !keysOff)
 						{
 							currentBattle.calcBattle();
 						}
-						if(currentUnits[0] && clickedIn(event, UISlots[0]))
+						if(clickedIn(event, GUIResetCombatBox) && playerIam==playersTurn && !keysOff)
 						{
-							unit1Selected = !unit1Selected;
-						}
-						if(currentUnits[1] && clickedIn(event, UISlots[1]))
-						{
-							unit2Selected = !unit2Selected;
+							resetCombat();
 						}
 					}
 					else if(firstX == actualX && firstY == actualY)
@@ -728,9 +724,19 @@ void IH::drawAll()
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		showCombat();
-		drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
+		if(gameState==matchMainPhase)
+		{
+			drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
+			drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+		}
+		else if(!IH::Instance()->retreatCalled)
+		{
+			drawCombatGui(screen);
+			drawATile(utilityTiles5050, &u5050, 6, screen, GUICalcCombatBox.x, GUICalcCombatBox.y);
+			drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
+		}
 		drawChat(chatBox,chatString,1,screen);
-		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+		
 		break;
 	case reviewingMatch:
 		break;

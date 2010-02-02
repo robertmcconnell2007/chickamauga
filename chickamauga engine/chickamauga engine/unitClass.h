@@ -37,10 +37,13 @@ private:
 	SDL_Rect unitRect;
 	vector2d position;
 	int reinforceTurn;
+	int type;
 public:
 	unitClass();
 	~unitClass();
 	bool retreat;
+	void setType(int t) {type=t;}
+	int getType(){return type;}
 	int getX(){return position.x;}
 	int getY(){return position.y;}
 	int getPower(){return power;}
