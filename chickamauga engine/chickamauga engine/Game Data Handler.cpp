@@ -59,7 +59,7 @@ void gameFileHandler::setFiles()
 IH::IH()
 {
 	prevSong = -1;
-	currentTurn = 0;
+	currentTurn = 1;
 	preppingCombat = false;
 	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");
@@ -70,6 +70,7 @@ IH::IH()
 	canExit = false;
 	canReinforce = false;
 	menuUp = false;
+	menuOption = -1;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		
@@ -79,7 +80,7 @@ IH::IH()
 	}
 	playersTurn = 0;
 	gameState = 0;
-	
+
 	prefferedFaction = 0;
 	
 	screenShiftX = xMove = 0;
@@ -161,6 +162,24 @@ IH::IH()
 	//initializing gameSound
 	gameSound = new sound();
 
+	yesNoBox.h = 200;
+	yesNoBox.w = 300;
+	yesNoBox.x = (screenSize.x/2)-(yesNoBox.w/2);
+	yesNoBox.y = (screenSize.y/2)-(yesNoBox.h/2);
+	noBox = yesBox = u5050;
+	yesBox.x = yesNoBox.x + (yesNoBox.w/3)-(yesBox.w/2);
+	yesBox.y = yesNoBox.y + (3*(yesNoBox.h/4))-(yesBox.h/2);
+	noBox.x = yesNoBox.x + (2*(yesNoBox.w/3))-(noBox.w/2);
+	noBox.y = yesNoBox.y + (3*(yesNoBox.h/4))-(noBox.h/2);
+
+	reinforceBox.h = 200;
+	reinforceBox.w = 300;
+	reinforceBox.x = (screenSize.x/2)-(reinforceBox.w/2);
+	reinforceBox.y = 50 + (screenSize.y/2)-(reinforceBox.h/2);
+	okBox = u5050;
+	okBox.x = reinforceBox.x + 25;
+	okBox.y = reinforceBox.y + 25;
+
 #ifdef DEBUG
 	output = "5.243.77.115";
 #endif
@@ -204,16 +223,16 @@ void IH::createMatch()
 	// Start the sound when the game begins 
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
-	//if(playerIam == 0)
-	//{
-	//	IH::Instance()->gameSound->playWAV(unionMusic);
-	//	IH::Instance()->prevSong = unionMusic;
-	//}
-	//else
-	//{
-	//	IH::Instance()->gameSound->playWAV(confederateMusic);
-	//	IH::Instance()->prevSong = unionMusic;
-	//}
+	if(playerIam == 0)
+	{
+		IH::Instance()->gameSound->playWAV(unionMusic);
+		IH::Instance()->prevSong = unionMusic;
+	}
+	else
+	{
+		IH::Instance()->gameSound->playWAV(confederateMusic);
+		IH::Instance()->prevSong = unionMusic;
+	}
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -		

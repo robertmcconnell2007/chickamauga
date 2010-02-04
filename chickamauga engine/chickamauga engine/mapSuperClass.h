@@ -117,5 +117,6 @@ public:
 	void clearEnemy();
 	void deleteMap();
 	void cleanReinforce();
+	void cleanMap();
 	~mapSuperClass();
 };

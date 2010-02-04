@@ -426,9 +426,15 @@ void IH::handlePrimaryInput()
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
 						if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn)
+						{
 							canReinforce = true;
+							menuUp = true;
+						}
 						if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn)
+						{
 							canReinforce = true;
+							menuUp = true;
+						}
 					}
 					if(currentUnits[0] || currentUnits[1])
 					{	
@@ -461,6 +467,11 @@ void IH::handlePrimaryInput()
 						selectedY=actualY;
 					}	
 				}
+			}
+			else
+			{
+				exitDialog(event);
+				reinforceDialog(event);
 			}
 		}
 		break;
@@ -535,6 +546,13 @@ void IH::handlePrimaryInput()
 					yMove = -1;
 				else
 					yMove = 0;
+				if(clickedIn(event, chatRect))
+				{
+					if(chatRect.x == 0)
+						chatRect.x = screenSize.x-chatRect.w;
+					else
+						chatRect.x = 0;
+				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				mouseDown = true;
@@ -577,6 +595,10 @@ void IH::handlePrimaryInput()
 					{
 						cancelClick(map);
 					}
+				}
+				else
+				{
+					//MENUUPCOMBATPHASE
 				}
 			}
 			break;
@@ -649,17 +671,17 @@ void IH::update(int mspassed)
 			if(!playingLAN)
 			{
 				playerIam = !playerIam;
-				//IH::Instance()->gameSound->stopMusic(prevSong);
-				//if(IH::Instance()->playersTurn == 0)
-				//{
-				//	IH::Instance()->gameSound->playWAV(unionMusic);
-				//	IH::Instance()->prevSong = unionMusic;
-				//}
-				//else
-				//{
-				//	IH::Instance()->gameSound->playWAV(confederateMusic);
-				//	IH::Instance()->prevSong = confederateMusic;
-				//}
+				IH::Instance()->gameSound->stopMusic(prevSong);
+				if(IH::Instance()->playersTurn == 0)
+				{
+					IH::Instance()->gameSound->playWAV(unionMusic);
+					IH::Instance()->prevSong = unionMusic;
+				}
+				else
+				{
+					IH::Instance()->gameSound->playWAV(confederateMusic);
+					IH::Instance()->prevSong = confederateMusic;
+				}
 			}
 			else
 			{
@@ -736,7 +758,14 @@ void IH::drawAll()
 			drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
 		}
 		drawChat(chatBox,chatString,1,screen);
-		
+		if(menuUp)
+		{
+			if(canExit)
+				drawYesNo(screen);
+			if(canReinforce)
+				drawReinforce(screen);
+		}
+		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 		break;
 	case reviewingMatch:
 		break;

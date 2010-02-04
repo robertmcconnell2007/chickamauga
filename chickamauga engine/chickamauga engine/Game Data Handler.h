@@ -85,8 +85,15 @@ public:
 	//entry bool
 	bool canReinforce;
 
+	SDL_Rect yesNoBox;
+	SDL_Rect yesBox;
+	SDL_Rect noBox;
+	SDL_Rect reinforceBox;
+	SDL_Rect okBox;
+
 	//menu bool
 	bool menuUp;
+	int menuOption;
 
 	//chat box info
 	infoLog *chatBox;
@@ -133,7 +140,6 @@ public:
 	SDL_Rect GameHotseatButton;
 	SDL_Rect GameMessageBox;
 
-
 	//unit variables
 	unitClass * currentUnits[2];
 	map_node * selectedNode;
@@ -150,6 +156,7 @@ public:
 	map_node ** returnMap() {return map->getMap();}
 	void createMatch();
 	int endMatch();//returns which player won
+	int getCurrentTurn(){return currentTurn;}
 
 	bool isGameRunning()  {return runningGame;}
 	void endGame();
