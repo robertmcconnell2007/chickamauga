@@ -425,18 +425,8 @@ void IH::handlePrimaryInput()
 					if(firstX < map->width && firstY < map->height)
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
-						if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn)
-						{
-							canReinforce = true;
-							menuUp = true;
-						}
-						if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn)
-						{
-							canReinforce = true;
-							menuUp = true;
-						}
 					}
-					if(currentUnits[0] || currentUnits[1])
+					if(currentUnits[0] || currentUnits[1] && !menuUp)
 					{	
 						if(playerIam == 0 && playersTurn == 0)
 						{
@@ -456,7 +446,7 @@ void IH::handlePrimaryInput()
 						nodeGui = false;
 						cancelClick(map);
 					}
-					else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy))
+					else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy) && !menuUp)
 					{
 						nodeGui = true;
 						if(playerIam == 0)
@@ -465,7 +455,19 @@ void IH::handlePrimaryInput()
 							firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
 						selectedX=actualX;
 						selectedY=actualY;
-					}	
+					}
+					else if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn && 
+						selectedNode->reinforce < gameRules->unitMovePoints)
+					{
+						canReinforce = true;
+						menuUp = true;
+					}
+					else if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn && 
+						selectedNode->reinforce < gameRules->unitMovePoints)
+					{
+						canReinforce = true;
+						menuUp = true;
+					}
 				}
 			}
 			else

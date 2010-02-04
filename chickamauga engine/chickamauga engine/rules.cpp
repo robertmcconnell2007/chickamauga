@@ -30,6 +30,9 @@ void rules::deleteRules()
 
 rules::rules()
 {
+	numExitNodes = 0;
+	numBRNodes = 0;
+	numGRNodes = 0;
 	numRules = numDependancies = 0;
 	RCRrules = UKRrules = UERrules = 0;
 	VPRrules = ACRrules = NCRrules = 0;
@@ -75,6 +78,7 @@ void rules::loadRules(string fileName)
 		infile >> dump3;
 		exitNodes.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
 		IH::Instance()->map->getMap()[dump2][dump3].exit = true;
+		numExitNodes++;
 	}
 	infile >> dump1;
 	for(int i = 0; i < dump1; ++i)
@@ -83,6 +87,7 @@ void rules::loadRules(string fileName)
 		infile >> dump3;
 		blueEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
 		IH::Instance()->map->getMap()[dump2][dump3].reinforceBlue = true;
+		numBRNodes++;
 	}
 	infile >> dump1;
 	for(int i = 0; i < dump1; ++i)
@@ -91,6 +96,7 @@ void rules::loadRules(string fileName)
 		infile >> dump3;
 		grayEntry.push_back(&IH::Instance()->map->getMap()[dump2][dump3]);
 		IH::Instance()->map->getMap()[dump2][dump3].reinforceGrey = true;
+		numGRNodes++;
 	}
 
 

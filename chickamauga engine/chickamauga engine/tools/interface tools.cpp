@@ -6,7 +6,7 @@
 
 void reinforceDialog(SDL_Event event)
 {
-	if(IH::Instance()->canReinforce)
+	if(IH::Instance()->canReinforce && IH::Instance()->selectedNode->reinforce < IH::Instance()->gameRules->unitMovePoints)
 	{
 		if(clickedIn(event, IH::Instance()->okBox))
 		{
