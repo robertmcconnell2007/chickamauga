@@ -4,8 +4,68 @@
 #include "draw tools.h"
 #include "../messageHandler.h"
 
+void reinforceDialog(SDL_Event event)
+{
+	if(IH::Instance()->canReinforce)
+	{
+		if(clickedIn(event, IH::Instance()->okBox))
+		{
+			IH::Instance()->menuUp = false;
+			if(IH::Instance()->currentUnits[0] == NULL)
+				IH::Instance()->canReinforce = false;
+			else
+			{
+				IH::Instance()->players[IH::Instance()->playersTurn].playerArmy.moveUnit(IH::Instance()->currentUnits[0], MUFReinforce, MUTField);
+				moveUnit(IH::Instance()->currentUnits[0],IH::Instance()->map, IH::Instance()->selectedNode->row-1, IH::Instance()->selectedNode->col-1);
+				firstClick(IH::Instance()->map, IH::Instance()->selectedNode, IH::Instance()->players[IH::Instance()->playersTurn].playerArmy, IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
+				IH::Instance()->currentUnits[0]->resetMove();
+			}
+		}
+		else if(event.motion.x > IH::Instance()->reinforceBox.x + 25 && event.motion.x < 275 + IH::Instance()->reinforceBox.x && event.motion.y > IH::Instance()->reinforceBox.y + 100 && event.motion.y < 175 + IH::Instance()->reinforceBox.y)
+		{
+			int x = event.motion.x - IH::Instance()->reinforceBox.x - 25;
+			int y = event.motion.y - IH::Instance()->reinforceBox.y - 100;
+			x = x/IH::Instance()->players[0].playerArmy.armyArray[0]->getUnitRect()->w;
+			y = y/IH::Instance()->players[0].playerArmy.armyArray[0]->getUnitRect()->h;
+			int j = 0;
+			for(int i = 0; i < IH::Instance()->players[IH::Instance()->playerIam].playerArmy.reinforcementSize;i++)
+			{
+				if(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
+				{
+					j++;
+				}
+			}
+			if(x+(y*10) < j)
+				IH::Instance()->currentUnits[0] = IH::Instance()->players[IH::Instance()->playersTurn].playerArmy.reinforcements[x+(y*10)];
+		}
+	}
+}
+
+void exitDialog(SDL_Event event)
+{
+	if(IH::Instance()->canExit)
+	{
+		if(clickedIn(event, IH::Instance()->yesBox))
+		{
+			IH::Instance()->menuOption = 0;
+			IH::Instance()->menuUp = false;
+			IH::Instance()->canExit = false;
+		}
+		else if(clickedIn(event, IH::Instance()->noBox))
+		{
+			IH::Instance()->menuOption = 1;
+			IH::Instance()->menuUp = false;
+			IH::Instance()->canExit = false;
+		}
+	}
+}
+
 bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
 {
+	if(node->reinforce+1 >= 6)
+	{
+		return false;
+	}
 	cancelClick(map);
 	checkUnitStacks(map,currentArmy,enemyArmy);
 	IH::Instance()->selectedNode = node;
@@ -39,9 +99,22 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 		}
 	}
 	setEnemyNodes(enemyArmy, map);
-	moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+	if(IH::Instance()->canReinforce)
+	{
+		moveTo(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
+		node->reinforce += 1;
+		IH::Instance()->selectedNode = node;
+		IH::Instance()->canReinforce = false;
+	}
+	else
+	{
+		moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+	}
 	if(node->exit)
+	{
 		IH::Instance()->canExit = true;
+		IH::Instance()->menuUp = true;
+	}
 	if(!(IH::Instance()->currentUnits[0] || IH::Instance()->currentUnits[1]))
 		cancelClick(map);
 	return true;
@@ -74,6 +147,7 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 			if(map->getMap()[newX][newY].exit && map->getMap()[newX][newY].movement > 0)
 			{
 				IH::Instance()->canExit = true;
+				IH::Instance()->menuUp = true;
 			}
 			moveUnit(unitMoving, map, newX, newY);
 			if(IH::Instance()->playingLAN)

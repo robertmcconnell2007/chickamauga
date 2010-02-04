@@ -7,6 +7,36 @@ using namespace std;
 
 void setEnemyNodes(armyClass, mapSuperClass*);
 
+void drawReinforce(SDL_Surface* screen)
+{
+	SDL_FillRect(screen, &IH::Instance()->reinforceBox, 0x000000);
+	SDL_FillRect(screen, &IH::Instance()->okBox, 0x00ff00);
+	armyClass* currentArmy = &IH::Instance()->players[IH::Instance()->playerIam].playerArmy;
+	for(int i = 0, j = 0; i < currentArmy->reinforcementSize;i++)
+	{
+		if(currentArmy->reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
+		{
+			drawATile(currentArmy->getArmyColor(),
+				currentArmy->reinforcements[i]->getUnitRect(),
+				currentArmy->reinforcements[i]->getPower()-1,
+				screen,
+				IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),
+				IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+			j++;
+		}
+	}
+}
+
+void drawYesNo(SDL_Surface* screen)
+{
+	if(IH::Instance()->canExit)
+	{
+		SDL_FillRect(screen,&IH::Instance()->yesNoBox,0x000000);
+		SDL_FillRect(screen,&IH::Instance()->yesBox,0x00ff00);
+		SDL_FillRect(screen,&IH::Instance()->noBox,0xff0000);
+	}
+}
+
 void drawChat(infoLog* chatBox, string chatString, int scroll, SDL_Surface* screen)
 {
 	if(chatBox->size-scroll < 10)

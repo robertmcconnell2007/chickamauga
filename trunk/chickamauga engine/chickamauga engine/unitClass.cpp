@@ -82,7 +82,6 @@ bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
 			currentSize--;
 			for(i; i < currentSize; ++i)
 				armyArray[i] = armyArray[i+1];
-			return true;
 		}
 		else
 			return false;
@@ -102,7 +101,6 @@ bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
 			reinforcementSize--;
 			for(i; i < reinforcementSize; ++i)
 				reinforcements[i] = reinforcements[i+1];
-			return true;
 		}
 		else
 			return false;
@@ -124,7 +122,7 @@ bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
 		exitedSize++;
 		break;
 	}
-	return false;
+	return true;
 }
 
 void armyClass::resetAllCombat()

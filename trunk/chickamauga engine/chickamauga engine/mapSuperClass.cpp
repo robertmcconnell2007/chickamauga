@@ -2,6 +2,12 @@
 #include "mapSuperClass.h"
 #include "Game Data Handler.h"
 
+void mapSuperClass::cleanMap()
+{
+	clearEnemy();
+	clearMovement();
+	cleanReinforce();
+}
 void mapSuperClass::cleanReinforce()
 {
 	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
