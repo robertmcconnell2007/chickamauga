@@ -8,6 +8,7 @@ void mapSuperClass::cleanMap()
 	clearMovement();
 	cleanReinforce();
 }
+
 void mapSuperClass::cleanReinforce()
 {
 	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
@@ -19,6 +20,7 @@ void mapSuperClass::cleanReinforce()
 		IH::Instance()->gameRules->grayEntry[i]->reinforce = 1;
 	}
 }
+
 void mapSuperClass::clearMovement()
 {
 	for(int i = 0; i < width; i++)
