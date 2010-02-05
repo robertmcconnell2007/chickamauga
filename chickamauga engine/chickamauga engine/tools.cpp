@@ -290,9 +290,17 @@ void IH::handlePrimaryInput()
 				keysOff = true;
 				if(!amHost)
 				{
-					MessageHandler::Instance()->setupClient(output.c_str());
-					MessageHandler::Instance()->sendMessage(output, GETIP);
-					beginWait = SDL_GetTicks();
+					if(MessageHandler::Instance()->setupClient(output.c_str()))
+					{
+						MessageHandler::Instance()->sendMessage(output, GETIP);
+						beginWait = SDL_GetTicks();
+					}
+					else
+					{
+						cout << MessageHandler::Instance()->getLastUDPError() << endl;
+						output.clear();
+						keysOff = false;
+					}
 				}
 				else
 				{
@@ -498,9 +506,12 @@ void IH::handlePrimaryInput()
 							if(unit2Selected)
 								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
 						}
-						unit1Selected = unit2Selected = false;
-						nodeGui = false;
-						cancelClick(map);
+						if(!canExit)
+						{
+							unit1Selected = unit2Selected = false;
+							nodeGui = false;
+							cancelClick(map);
+						}
 					}
 					else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy) && !menuUp)
 					{
@@ -707,6 +718,7 @@ void IH::update(int mspassed)
 				waiting = false;
 				playingLAN = false;
 				amHost = false;
+				keysOff = false;
 			}
 			if(clickCancel)
 			{
@@ -719,6 +731,24 @@ void IH::update(int mspassed)
 	case atMatchPrepSecond:
 		break;
 	case matchMainPhase:
+		if(canExit && menuOption != -1)
+		{
+			if(menuOption == 0)
+			{
+				if(currentUnits[0] != NULL)
+					players[playersTurn].playerArmy.moveUnit(currentUnits[0],MUFField, MUTExited);
+				if(currentUnits[1] != NULL)
+					players[playersTurn].playerArmy.moveUnit(currentUnits[1],MUFField, MUTExited);
+			}
+			if(menuOption == 1)
+			{
+			}
+			unit1Selected = unit2Selected = false;
+			nodeGui = false;
+			cancelClick(map);
+			canExit = false;
+			menuOption = -1;
+		}
 		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0)
 			gameState = reviewingMatch;
 		break;

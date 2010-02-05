@@ -1,6 +1,7 @@
 #include "messageHandler.h"
 #include "dataPacket.h"
 #include "UDP.h"
+#include <math.h>
 
 struct dataPacket;
 
@@ -17,9 +18,48 @@ bool MessageHandler::setupHost()
 {
 	return message.start();
 }
-bool MessageHandler::setupClient(const char* targetIP)
+int stringToInt2(string str)
 {
-	return message.start(targetIP);
+	int newInt = 0;
+	int length = 0;
+
+	length = str.length();
+	for(int i = length - 1, j = 0; i >= 0; --i, ++j)
+	{
+		newInt += (int)((int)(str.c_str()[i] - '0') * pow(10.0, (double)j));
+	}
+
+	return newInt;
+}
+string validateIP(string targetIP)
+{
+	string tempstr = targetIP;
+	int tempint = 0, n = 0;
+	for(int i = 0; i < 4; i++)
+	{
+		if(i != 3)
+		{
+			n = tempstr.find(".",0);
+			tempint = stringToInt2(tempstr.substr(0,n));
+		}
+		else
+		{
+			tempint = stringToInt2(tempstr);
+			tempstr.clear();
+		}
+		if(tempint > 255)
+		{
+			return "";
+		}
+		if(i != 3)
+			tempstr = tempstr.substr(0,n);
+	}
+	return targetIP;
+}
+bool MessageHandler::setupClient(string targetIP)
+{
+	targetIP = validateIP(targetIP);
+	return message.start(targetIP.c_str());
 }
 bool MessageHandler::sendMessage(string outgoingMessage, int flag)
 {

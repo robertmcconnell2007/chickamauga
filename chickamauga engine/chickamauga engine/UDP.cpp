@@ -65,6 +65,11 @@ bool udpClass::start(const char *targetIP)
 			errorCode = SOCKETINIERROR;
 			return false;
 		}
+		if(targetIP = "")
+		{
+			errorCode = INVALIDIP;
+			return false;
+		}
 		memset(&sockAddr,0,sizeof(sockAddr));
 		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_addr.s_addr = inet_addr(targetIP);
