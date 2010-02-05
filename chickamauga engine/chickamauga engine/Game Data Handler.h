@@ -16,6 +16,7 @@ enum game_states
 	atLogo,
 	atTitleScreen,
 	atMatchPrep,
+	atMatchPrepSecond,
 	matchMainPhase,
 	matchCombatPhase,
 	reviewingMatch
@@ -56,13 +57,17 @@ private:
 	bool amHost;
 	bool runningGame;
 	bool waiting;
+	bool canPickFaction;
+	bool connected;
 	int  gameState;
 	int  screenShiftX, xMove;
 	int  screenShiftY, yMove;
 	int  prefferedFaction;
+	int  otherPrefferedFaction;
 	int  currentTurn;
 	//0 == player1, 1 == player2
 	
+	void randomizefactions();
 	//actual and first used to identify which hex the user clicks on
 	int actualX, actualY;
 	int firstX, firstY;
@@ -142,6 +147,9 @@ public:
 	SDL_Rect GameJoinButton;
 	SDL_Rect GameHotseatButton;
 	SDL_Rect GameMessageBox;
+	SDL_Rect BlueOptionBox;
+	SDL_Rect GrayOptionBox;
+	SDL_Rect RandomOptionBox;
 
 	//unit variables
 	unitClass * currentUnits[2];

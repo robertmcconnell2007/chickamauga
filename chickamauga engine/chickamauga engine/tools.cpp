@@ -247,18 +247,19 @@ void IH::handlePrimaryInput()
 				waiting = true;
 				amHost = true;
 				playingLAN = false;
-				matchFileNames.setGame("chickamauga.txt");
-				if(matchFileNames.checkFileNames())
-				{
-					matchFileNames.setFiles();
-					createMatch();
-					gameState = matchMainPhase;					
-				}
-				else
-				{
-					gameState = atTitleScreen;
-					cout << "FAILED TO LOAD FILES\n";
-				}
+				gameState = atMatchPrepSecond;
+				//matchFileNames.setGame("chickamauga.txt");
+				//if(matchFileNames.checkFileNames())
+				//{
+				//	matchFileNames.setFiles();
+				//	createMatch();
+				//	gameState = matchMainPhase;					
+				//}
+				//else
+				//{
+				//	gameState = atTitleScreen;
+				//	cout << "FAILED TO LOAD FILES\n";
+				//}
 			}
 			if(!waiting && clickedIn(event, GameHostButton))
 			{
@@ -266,13 +267,13 @@ void IH::handlePrimaryInput()
 				cout << "I'm prepping the match now\n";
 				playingLAN = true;
 				amHost = true;
-				matchFileNames.setGame("chickamauga.txt");
-				if(matchFileNames.checkFileNames())
-				{
-					matchFileNames.setFiles();
-					MessageHandler::Instance()->setupHost();
-					cout << MessageHandler::Instance()->getLastUDPError() << "\n";
-				}
+				//matchFileNames.setGame("chickamauga.txt");
+				//if(matchFileNames.checkFileNames())
+				//{
+				//	matchFileNames.setFiles();
+				MessageHandler::Instance()->setupHost();
+				//	cout << MessageHandler::Instance()->getLastUDPError() << "\n";
+				//}
 			}
 			if(!waiting && clickedIn(event, GameJoinButton))
 			{
@@ -281,15 +282,35 @@ void IH::handlePrimaryInput()
 				playingLAN = true;			
 			}
 		}
-		else if(event.type == SDL_KEYDOWN && waiting && !amHost && playingLAN && !keysOff)
+		else if(event.type == SDL_KEYDOWN && waiting && playingLAN && !keysOff)
 		{
 			switch(event.key.keysym.sym)
 			{
 			case SDLK_RETURN:
 				keysOff = true;
-				MessageHandler::Instance()->setupClient(output.c_str());
-				MessageHandler::Instance()->sendMessage(output, GETIP);
-				beginWait = SDL_GetTicks();
+				if(!amHost)
+				{
+					MessageHandler::Instance()->setupClient(output.c_str());
+					MessageHandler::Instance()->sendMessage(output, GETIP);
+					beginWait = SDL_GetTicks();
+				}
+				else
+				{
+					matchFileNames.setGame(output);
+					if(matchFileNames.checkFileNames())
+					{
+						matchFileNames.setFiles();
+						canPickFaction = true;
+						if(connected)
+						{
+							MessageHandler::Instance()->sendMessage(output, GAMEFILENAME);
+							MessageHandler::Instance()->sendMessage("OK", GETIP);
+						}
+					}
+					else
+						keysOff = false;
+				}
+				output = "";
 				break;
 			case SDLK_BACKSPACE:
 				if(output.length() > 0)
@@ -297,16 +318,50 @@ void IH::handlePrimaryInput()
 				break;
 			default:
 				if((event.key.keysym.sym >= 'a' && event.key.keysym.sym <= 'z') ||
-					(event.key.keysym.sym >= 'A' && event.key.keysym.sym <= 'Z'))
-				{
-				}
-				else if(((event.key.keysym.sym >= '0' && event.key.keysym.sym <= '9') || event.key.keysym.sym == '.') && output.length() < 15)
+					(event.key.keysym.sym >= 'A' && event.key.keysym.sym <= 'Z') || ((event.key.keysym.sym >= '0' && event.key.keysym.sym <= '9') || event.key.keysym.sym == '.'))
 				{
 					output += event.key.keysym.sym;
 				}
 				break;
 			}
 		}
+		break;
+	case atMatchPrepSecond:
+		if(event.type == SDL_MOUSEBUTTONUP && prefferedFaction == 10)
+		{
+			if(clickedIn(event, BlueOptionBox))
+			{
+				prefferedFaction = 0;
+				if(!amHost)
+					MessageHandler::Instance()->sendMessage("0", PICKFACTION); 
+			}
+			if(clickedIn(event, GrayOptionBox))
+			{
+				prefferedFaction = 1;
+				if(!amHost)
+					MessageHandler::Instance()->sendMessage("1", PICKFACTION); 
+			}
+			if(clickedIn(event, RandomOptionBox))
+			{
+				prefferedFaction = 2;
+				if(!amHost)
+					MessageHandler::Instance()->sendMessage("2", PICKFACTION); 
+			}
+			if(otherPrefferedFaction != 10)
+			{
+				if(prefferedFaction == otherPrefferedFaction)
+				{
+					randomizefactions();
+				}
+				ostringstream oss;
+				oss << otherPrefferedFaction;
+				playerIam = prefferedFaction;
+				MessageHandler::Instance()->sendMessage(oss.str(), PICKFACTION);
+				createMatch();
+				gameState = matchMainPhase;
+			}
+		}
+		
 		break;
 	case matchMainPhase:
 		switch(event.type)
@@ -661,6 +716,8 @@ void IH::update(int mspassed)
 			}
 		}
 		break;
+	case atMatchPrepSecond:
+		break;
 	case matchMainPhase:
 		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0)
 			gameState = reviewingMatch;
@@ -745,19 +802,42 @@ void IH::drawAll()
 	case atMatchPrep:
 		if(!waiting)
 		{
+			printStrings("Please choose an option.\n", GameMessageBox, screen, textColor, font1);
 			drawATile(utilityTiles5050, &u5050, 3, screen, GameHostButton.x, GameHostButton.y);
 			drawATile(utilityTiles5050, &u5050, 4, screen, GameJoinButton.x, GameJoinButton.y);
 			drawATile(utilityTiles5050, &u5050, 5, screen, GameHotseatButton.x, GameHotseatButton.y);
 		}
 		else
 		{
-			if(amHost)
+			if(amHost && canPickFaction)
 				printStrings("Waiting for other player to join\n", GameMessageBox, screen, textColor, font1);
+			else if(amHost && !canPickFaction)
+			{
+				printStrings("Please type in the name of the game to play\n", GameMessageBox, screen, textColor, font1);
+				printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
+			}
 			else
 			{
 				printStrings("Please enter the IP number of the host.", GameMessageBox, screen, textColor, font1);
 				printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
 			}
+		}
+		break;
+	case atMatchPrepSecond:
+		if(!canPickFaction)
+		{
+			printStrings("Please type in the name of the game to play.", GameMessageBox, screen, textColor, font1);
+			printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
+		}
+		else if(prefferedFaction == 10)
+			printStrings("Please choose your preffered faction.\nIf both players choose the same faction, it will be randomized.\n", GameMessageBox, screen, textColor, font1);
+		else
+			printStrings("Waiting on other player to pick their prefferred faction.\n", GameMessageBox, screen, textColor, font1);
+		if(canPickFaction)
+		{
+			drawATile(utilityTiles5050, &u5050, 10, screen, BlueOptionBox.x, BlueOptionBox.y);
+			drawATile(utilityTiles5050, &u5050, 11, screen, GrayOptionBox.x, GrayOptionBox.y);
+			drawATile(utilityTiles5050, &u5050, 12, screen, RandomOptionBox.x, RandomOptionBox.y);
 		}
 		break;
 	case matchMainPhase:
@@ -821,43 +901,47 @@ bool IH::handleMessage()
 	case GETIP:
 		if(amHost)
 		{
-			cout << "OMG I GOT A PING\n";
-			MessageHandler::Instance()->sendMessage("1", PICKFACTION);
-			MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
-			createMatch();
-			gameState = matchMainPhase;
+			//MessageHandler::Instance()->sendMessage("1", PICKFACTION);
+			//MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
+			connected = true;
+			if(canPickFaction)
+			{
+				MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
+				MessageHandler::Instance()->sendMessage("OK", GETIP);
+				gameState = atMatchPrepSecond;
+			}
 		}
 		else
 		{
+			if(currentMessage == "OK")
+				gameState = atMatchPrepSecond;
 		}
 		return true;
 		break;
 	case PICKFACTION:
-		if(amHost)
+		if(amHost && prefferedFaction != 10)
 		{
-			int otherPrefferedFaction = (int)(currentMessage.c_str()[0] - '0');
+			otherPrefferedFaction = (int)(currentMessage.c_str()[0] - '0');
 			if(prefferedFaction == otherPrefferedFaction)
-			{//choose randomly
-				if(getRandomNum() % 2 == 0)
-				{
-					prefferedFaction = 0;
-					otherPrefferedFaction = 1;
-				}
-				else
-				{
-					prefferedFaction = 1;
-					otherPrefferedFaction = 0;
-				}
+			{
+				randomizefactions();
 			}
 			ostringstream oss;
 			oss << otherPrefferedFaction;
 			playerIam = prefferedFaction;
 			MessageHandler::Instance()->sendMessage(oss.str(), PICKFACTION);
-
+			createMatch();
+			gameState = matchMainPhase;
+		}
+		else if(amHost)
+		{
+			otherPrefferedFaction = (int)(currentMessage.c_str()[0] - '0');
 		}
 		else
 		{
 			playerIam = (int)(currentMessage.c_str()[0] - '0');
+			createMatch();
+			gameState = matchMainPhase;
 		}
 		return true;
 		break;
