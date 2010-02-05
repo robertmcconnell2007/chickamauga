@@ -313,6 +313,7 @@ void IH::handlePrimaryInput()
 						{
 							MessageHandler::Instance()->sendMessage(output, GAMEFILENAME);
 							MessageHandler::Instance()->sendMessage("OK", GETIP);
+							gameState = atMatchPrepSecond;
 						}
 					}
 					else
@@ -367,6 +368,7 @@ void IH::handlePrimaryInput()
 				MessageHandler::Instance()->sendMessage(oss.str(), PICKFACTION);
 				createMatch();
 				gameState = matchMainPhase;
+				keysOff = false;
 			}
 		}
 		
@@ -774,7 +776,7 @@ void IH::update(int mspassed)
 			playersTurn = !playersTurn;
 			players[0].startTurn();
 			players[1].startTurn();
-			gameState = matchMainPhase;			
+			gameState = matchMainPhase;
 			if(!playingLAN)
 			{
 				playerIam = !playerIam;
@@ -920,8 +922,8 @@ bool IH::handleMessage()
 		if(matchFileNames.checkFileNames())
 		{
 			matchFileNames.setFiles();
-			createMatch();
-			gameState = matchMainPhase;
+			//createMatch();
+			//gameState = matchMainPhase;
 		}
 		else
 		{
@@ -968,6 +970,7 @@ bool IH::handleMessage()
 			MessageHandler::Instance()->sendMessage(oss.str(), PICKFACTION);
 			createMatch();
 			gameState = matchMainPhase;
+			keysOff = false;
 		}
 		else if(amHost)
 		{
