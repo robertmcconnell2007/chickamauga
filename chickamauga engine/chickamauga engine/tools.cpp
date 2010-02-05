@@ -472,6 +472,27 @@ void IH::handlePrimaryInput()
 			break;
 		case SDL_MOUSEBUTTONUP:
 			mouseDown = false;
+			//check for open menu
+				if(escapeMenu)
+				{
+					
+					if(clickedIn(event,menuOptions))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuVolume))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuMain))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuClose))
+					{
+						escapeMenu = false;
+					}
+				}
 			if(!menuUp)
 			{
 				if(clickedIn(event, GUIFrameRect))
@@ -563,6 +584,9 @@ void IH::handlePrimaryInput()
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.sym)
 				{
+				case SDLK_TAB:
+					escapeMenu = !escapeMenu;
+					break;
 				case SDLK_ESCAPE:
 					cancelClick(map);
 					break;
@@ -642,6 +666,28 @@ void IH::handlePrimaryInput()
 				break;
 			case SDL_MOUSEBUTTONUP:
 				mouseDown = false;
+			
+				//check for open menu
+				if(escapeMenu)
+				{
+					
+					if(clickedIn(event,menuOptions))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuVolume))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuMain))
+					{
+						escapeMenu = false;
+					}
+					if(clickedIn(event,menuClose))
+					{
+						escapeMenu = false;
+					}
+				}
 				if(!menuUp)
 				{
 					if(clickedIn(event, GUIFrameRect))
@@ -906,6 +952,7 @@ void IH::drawAll()
 		if(escapeMenu)
 		{
 			drawMenu();
+			
 		}
 		if(menuUp)
 		{
