@@ -73,6 +73,7 @@ IH::IH()
 	canExit = false;
 	canReinforce = false;
 	menuUp = false;
+	connected = false;
 	menuOption = -1;
 	if(!fullScreen)
 	{
@@ -84,7 +85,8 @@ IH::IH()
 	playersTurn = 0;
 	gameState = 0;
 
-	prefferedFaction = 0;
+	prefferedFaction = 10;
+	otherPrefferedFaction = 10;
 	
 	screenShiftX = xMove = 0;
 	screenShiftY = yMove = 0;
@@ -94,6 +96,7 @@ IH::IH()
 	runningGame = true;
 	waiting = false;
 	retreatCalled=false;
+	canPickFaction = false;
 	currentUnits[0] = NULL;
 	currentUnits[1] = NULL;
 	playersTurn = 0;
@@ -160,6 +163,12 @@ IH::IH()
 	GUIResetCombatBox.x=GUICalcCombatBox.x+60;
 	GUIResetCombatBox.y=GUICalcCombatBox.y;
 
+	BlueOptionBox.h = GrayOptionBox.h = RandomOptionBox.h = u5050.h;
+	BlueOptionBox.w = GrayOptionBox.w = RandomOptionBox.w = u5050.w;
+	BlueOptionBox.x = GrayOptionBox.x = RandomOptionBox.x = 30;
+	BlueOptionBox.y = 30;
+	GrayOptionBox.y = 80;
+	RandomOptionBox.y = 130;
 
 
 	//initializing gameSound
@@ -262,4 +271,19 @@ void IH::endGame()
 	//	//send a message to the server saying that this player quit?
 	//}
 	runningGame = false;
+}
+
+
+void IH::randomizefactions()
+{
+	if(getRandomNum() % 2 == 0)
+	{
+		prefferedFaction = 0;
+		otherPrefferedFaction = 1;
+	}
+	else
+	{
+		prefferedFaction = 1;
+		otherPrefferedFaction = 0;
+	}
 }
