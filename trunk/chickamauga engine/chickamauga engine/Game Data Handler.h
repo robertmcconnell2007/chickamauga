@@ -77,6 +77,9 @@ public:
 	battle currentBattle;
 	int  playersTurn;
 	int  playerIam;
+	Uint32 beginWait;
+	int timeOut;
+	bool clickCancel;
 	
 	//previous song
 	int prevSong;
