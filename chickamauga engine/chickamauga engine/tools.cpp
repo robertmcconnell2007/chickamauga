@@ -289,6 +289,7 @@ void IH::handlePrimaryInput()
 				keysOff = true;
 				MessageHandler::Instance()->setupClient(output.c_str());
 				MessageHandler::Instance()->sendMessage(output, GETIP);
+				beginWait = SDL_GetTicks();
 				break;
 			case SDLK_BACKSPACE:
 				if(output.length() > 0)
@@ -337,7 +338,7 @@ void IH::handlePrimaryInput()
 						startTyping = true;
 					}
 					break;
-				case SDLK_DELETE:
+				case SDLK_BACKSPACE:
 					{
 						chatString = chatString.substr(0,chatString.length()-1);
 					}
@@ -644,6 +645,21 @@ void IH::update(int mspassed)
 	case atTitleScreen:
 		break;
 	case atMatchPrep:
+		if(waiting && playingLAN)
+		{
+			if(!amHost && timeOut < SDL_GetTicks()-beginWait)
+			{
+				waiting = false;
+				playingLAN = false;
+				amHost = false;
+			}
+			if(clickCancel)
+			{
+				waiting = false;
+				playingLAN = false;
+				amHost = false;
+			}
+		}
 		break;
 	case matchMainPhase:
 		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0)
@@ -727,19 +743,21 @@ void IH::drawAll()
 		drawATile(utilityTiles5050, &u5050, 2, screen, GameQuitButton.x, GameQuitButton.y);
 		break;
 	case atMatchPrep:
-		drawATile(utilityTiles5050, &u5050, 3, screen, GameHostButton.x, GameHostButton.y);
-		drawATile(utilityTiles5050, &u5050, 4, screen, GameJoinButton.x, GameJoinButton.y);
-		drawATile(utilityTiles5050, &u5050, 5, screen, GameHotseatButton.x, GameHotseatButton.y);
-		if(waiting)
+		if(!waiting)
+		{
+			drawATile(utilityTiles5050, &u5050, 3, screen, GameHostButton.x, GameHostButton.y);
+			drawATile(utilityTiles5050, &u5050, 4, screen, GameJoinButton.x, GameJoinButton.y);
+			drawATile(utilityTiles5050, &u5050, 5, screen, GameHotseatButton.x, GameHotseatButton.y);
+		}
+		else
 		{
 			if(amHost)
 				printStrings("Waiting for other player to join\n", GameMessageBox, screen, textColor, font1);
 			else
+			{
 				printStrings("Please enter the IP number of the host.", GameMessageBox, screen, textColor, font1);
-		}
-		if(output.length())
-		{
-			printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
+				printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
+			}
 		}
 		break;
 	case matchMainPhase:

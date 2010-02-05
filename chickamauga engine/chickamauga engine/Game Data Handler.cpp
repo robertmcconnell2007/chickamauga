@@ -61,6 +61,9 @@ IH::IH()
 	prevSong = -1;
 	currentTurn = 1;
 	preppingCombat = false;
+	beginWait = 0;
+	timeOut = 10000;
+	clickCancel = false;
 	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");
 	screenSize.x = 860;
