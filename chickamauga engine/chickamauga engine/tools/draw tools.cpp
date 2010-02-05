@@ -65,11 +65,47 @@ void drawGui(map_node * node, armyClass * unionArmy, armyClass * confedArmy, uni
 	{
 		slottxt[0] << currentUnits[0]->getName() << "\n";
 		slottxt[0] << currentUnits[0]->getPower() << "\n";
+		switch(currentUnits[0]->getType())
+		{
+		case 1:
+			{
+				slottxt[0] << "Infantry\n";
+				break;
+			}
+		case 2:
+			{
+				slottxt[0] << "Calvary\n";
+				break;
+			}
+		case 3:
+			{
+				slottxt[0] << "Artillery\n";
+			}
+
+		}
 	}
 	if(currentUnits[1])
 	{
 		slottxt[1] << currentUnits[1]->getName() << "\n";
 		slottxt[1] << currentUnits[1]->getPower() << "\n";
+		switch(currentUnits[1]->getType())
+		{
+		case 1:
+			{
+				slottxt[1] << "Infantry\n";
+				break;
+			}
+		case 2:
+			{
+				slottxt[1] << "Calvary\n";
+				break;
+			}
+		case 3:
+			{
+				slottxt[1] << "Artillery\n";
+			}
+
+		}
 	}
 	if(node)
 	{
@@ -111,6 +147,7 @@ void drawCombatGui(SDL_Surface *screen)
 	battle *tempBattle;
 	int tempPower=0, tempPower2=0;
 	int odds;
+	map_node *tempNode;
 	SDL_FillRect(screen, &IH::Instance()->GUIFrameRect, 0x000000);
 	tempBattle=&IH::Instance()->currentBattle;
 	
@@ -128,7 +165,15 @@ void drawCombatGui(SDL_Surface *screen)
 	{
 		for(int i=0; i<tempBattle->defenders.size(); i++)
 		{
-			tempPower2+=tempBattle->defenders.at(i)->getPower();
+			tempNode=&IH::Instance()->map->getMap()[tempBattle->defenders.at(i)->getY()-1][tempBattle->defenders.at(i)->getX()-1];
+			if(tempNode->type==rough||tempNode->type==roughForest)
+			{
+				tempPower2+=tempBattle->defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus;
+			}
+			else
+			{
+				tempPower2+=tempBattle->defenders.at(i)->getPower();
+			}
 		}
 	}
 	slottxt[1] << tempPower2 << "\n";
@@ -196,6 +241,18 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 	if(tempBattle->attackers.size() > 0)//still attackers
 	{
 		setEnemyNodes(*dfndr,map);
+		while(tempBattle->attackers.back()->getType()==3)
+		{
+			node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
+			if(!node->enemy)
+			{
+				tempBattle->attackers.pop_back();
+			}
+			else
+			{
+				break;
+			}
+		}
 		node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
 		for(int i=0; i<6; i++)
 		{
@@ -252,7 +309,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 		map->clearEnemy();
 		return true;
 	}
-	else//funky crap about to go down
+	else//funky crap about to go down //AKA Bumping 
 	{
 		if(tempBattle->attackers.size()>0)
 		{
@@ -264,7 +321,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 					{
 						for(int k=0; k<attkrs->currentSize; k++)
 						{
-							if(attkrs->armyArray[k]->getX()==node->nodeEdges[i]->upperNode->col&&attkrs->armyArray[k]->getY()==node->nodeEdges[i]->upperNode->row)
+							if(attkrs->armyArray[k]->getType()!=3&&attkrs->armyArray[k]->getX()==node->nodeEdges[i]->upperNode->col&&attkrs->armyArray[k]->getY()==node->nodeEdges[i]->upperNode->row)
 							{
 								nodeFound=true;
 								tempBattle->attackers.push_back(attkrs->armyArray[k]);
@@ -282,7 +339,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 					{
 						for(int k=0; k<attkrs->currentSize; k++)
 						{
-							if(attkrs->armyArray[k]->getX()==node->nodeEdges[i]->lowerNode->col&&attkrs->armyArray[k]->getY()==node->nodeEdges[i]->lowerNode->row)
+							if(attkrs->armyArray[k]->getType()!=3&&attkrs->armyArray[k]->getX()==node->nodeEdges[i]->lowerNode->col&&attkrs->armyArray[k]->getY()==node->nodeEdges[i]->lowerNode->row)
 							{
 								nodeFound=true;
 								tempBattle->attackers.push_back(attkrs->armyArray[k]);

@@ -9,6 +9,8 @@ unitClass::unitClass()
 	//power=3;
 	unitRect.x=unitRect.y=0;
 	unitRect.h=unitRect.w=25;
+	typeRect.x=typeRect.y=0;
+	typeRect.h=typeRect.w=8;
 	position.x=position.y= -1;	
 }
 
@@ -29,7 +31,7 @@ SDL_Rect unitClass::getSize()
 {
 	return unitRect;
 }
-void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapHeight,SDL_Surface *a_screen,SDL_Surface *armyColors)
+void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapHeight,SDL_Surface *a_screen,SDL_Surface *armyColors,SDL_Surface *unitType)
 {
 	for(int i = 0; i < mapWidth; ++i)
 	{
@@ -40,10 +42,49 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 				if(i%2==0)
 				{
 					drawATile(armyColors,&unitRect,power-1,a_screen, (i * 50) - (i*12) + screenShiftx+12, k * 44 + screenShifty+10);
+					switch(type)
+					{
+					case 1:
+						{
+							drawATile(unitType,&typeRect,0,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+25);	
+							break;
+						}
+					case 2:
+						{
+							drawATile(unitType,&typeRect,1,a_screen, (i*50) - (i*12) +screenShiftx+22, k*44+screenShifty+25);	
+							break;
+						}
+					case 3:
+						{
+							drawATile(unitType,&typeRect,2,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+25);	
+							break;
+						}
+					}
+
 				}
 				else
 				{
 					drawATile(armyColors,&unitRect,power-1,a_screen, (i * 50) - (i*12) + screenShiftx+12, k * 44 + screenShifty+30);
+					switch(type)
+					{
+						
+					case 1:
+						{
+							drawATile(unitType,&typeRect,0,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+45);
+							break;
+						}
+					case 2:
+						{
+							drawATile(unitType,&typeRect,1,a_screen, (i*50) - (i*12) +screenShiftx+22, k*44+screenShifty+45);
+							break;
+						}
+					case 3:
+						{
+							drawATile(unitType,&typeRect,2,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+45);
+							break;
+						}
+						
+					}
 				}
 			}
 		}
@@ -178,13 +219,15 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 	deadUnits=new unitClass*[fullSize];
 	infile.close();
 	armyColors=load_my_image(armyColorFile);
+	unitType=load_my_image("Init Data/unitTypes.bmp");
+	SDL_SetColorKey(unitType, SDL_SRCCOLORKEY, 0xff00ff);
 
 }
 void armyClass::drawArmy(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen)
 {
 	for(int i=0; i<currentSize; i++)
 	{
-		armyArray[i]->drawUnit(xShift,yShift,mapWidth,mapHeight,a_screen,armyColors);
+		armyArray[i]->drawUnit(xShift,yShift,mapWidth,mapHeight,a_screen,armyColors,unitType);
 	}
 }
 

@@ -35,6 +35,7 @@ private:
 	bool alreadyCompletedCombat;
 	bool needsCombat;
 	SDL_Rect unitRect;
+	SDL_Rect typeRect;
 	vector2d position;
 	int reinforceTurn;
 	int type;
@@ -62,7 +63,7 @@ public:
 	void setPosition(int,int);
 	void setMoved();
 	bool hasMoved(); 
-	void drawUnit(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen,SDL_Surface *armyColors);
+	void drawUnit(int xShift,int yShift,int mapWidth,int mapHeight, SDL_Surface* a_screen,SDL_Surface *armyColors,SDL_Surface *unitType);
 	void resetMove();
 	void setReinforceTurn(int r){reinforceTurn=r;}
 	void resetCombat();
@@ -72,6 +73,7 @@ class armyClass
 {
 private:
 	SDL_Surface *armyColors;
+	SDL_Surface *unitType;
 public:
 	//this is a doozy
 	//this is for all units on map
