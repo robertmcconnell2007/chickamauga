@@ -49,13 +49,11 @@ void exitDialog(SDL_Event event)
 		{
 			IH::Instance()->menuOption = 0;
 			IH::Instance()->menuUp = false;
-			IH::Instance()->canExit = false;
 		}
 		else if(clickedIn(event, IH::Instance()->noBox))
 		{
 			IH::Instance()->menuOption = 1;
 			IH::Instance()->menuUp = false;
-			IH::Instance()->canExit = false;
 		}
 	}
 }
@@ -110,7 +108,7 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	{
 		moveTo(node,IH::Instance()->gameRules->unitMovePoints);
 	}
-	if(node->exit)
+	if(node->exit && ((IH::Instance()->currentUnits[0] != NULL && !IH::Instance()->currentUnits[0]->hasMoved()) || (IH::Instance()->currentUnits[1] != NULL && !IH::Instance()->currentUnits[1]->hasMoved())))
 	{
 		IH::Instance()->canExit = true;
 		IH::Instance()->menuUp = true;

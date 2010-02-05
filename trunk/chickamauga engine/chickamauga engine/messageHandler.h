@@ -44,7 +44,7 @@ private:
 	void updateArrayOut();
 public:
 	bool setupHost();
-	bool setupClient(const char* targetIP);
+	bool setupClient(string targetIP);
 	bool sendMessage(string outgoingMessage, int flag);
 	bool sendNextMessage();
 	bool checkMessages();
