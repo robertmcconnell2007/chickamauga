@@ -65,7 +65,7 @@ bool udpClass::start(const char *targetIP)
 			errorCode = SOCKETINIERROR;
 			return false;
 		}
-		if(targetIP = "")
+		if(targetIP == "")
 		{
 			errorCode = INVALIDIP;
 			return false;

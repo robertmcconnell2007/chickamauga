@@ -711,10 +711,11 @@ void IH::update(int mspassed)
 	case atTitleScreen:
 		break;
 	case atMatchPrep:
-		if(waiting && playingLAN)
+		if(waiting && playingLAN && beginWait > 0)
 		{
 			if(!amHost && timeOut < SDL_GetTicks()-beginWait)
 			{
+				beginWait = 0;
 				waiting = false;
 				playingLAN = false;
 				amHost = false;
@@ -722,6 +723,7 @@ void IH::update(int mspassed)
 			}
 			if(clickCancel)
 			{
+				beginWait = 0;
 				waiting = false;
 				playingLAN = false;
 				amHost = false;
@@ -854,7 +856,7 @@ void IH::drawAll()
 		}
 		break;
 	case atMatchPrepSecond:
-		if(!canPickFaction)
+		if(!canPickFaction && amHost)
 		{
 			printStrings("Please type in the name of the game to play.", GameMessageBox, screen, textColor, font1);
 			printStrings("\n" + output, GameMessageBox, screen, textColor, font1);
@@ -862,7 +864,7 @@ void IH::drawAll()
 		else if(prefferedFaction == 10)
 			printStrings("Please choose your preffered faction.\nIf both players choose the same faction, it will be randomized.\n", GameMessageBox, screen, textColor, font1);
 		else
-			printStrings("Waiting on other player to pick their prefferred faction.\n", GameMessageBox, screen, textColor, font1);
+			printStrings("Waiting on other player to pick their preffered faction.\n", GameMessageBox, screen, textColor, font1);
 		if(canPickFaction)
 		{
 			drawATile(utilityTiles5050, &u5050, 10, screen, BlueOptionBox.x, BlueOptionBox.y);
@@ -944,7 +946,11 @@ bool IH::handleMessage()
 		else
 		{
 			if(currentMessage == "OK")
+			{
+				connected = true;
 				gameState = atMatchPrepSecond;
+				canPickFaction = true;
+			}
 		}
 		return true;
 		break;
