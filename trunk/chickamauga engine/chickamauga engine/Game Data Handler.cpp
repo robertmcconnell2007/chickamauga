@@ -162,11 +162,13 @@ IH::IH()
 	//menu button dimensions
 	//275+55 = middle of the screen roughly, plus the offset for center of the scroll
 	 menuVolume.x = menuOptions.x = menuMain.x = menuClose.x = (275+55);
-	 
 	 menuOptions.y = 140;
 	 menuVolume.y = 140+90;
 	 menuMain.y = 140+180;
 	 menuClose.y = 140+270;
+	 menuVolume.h = menuOptions.h = menuMain.h = menuClose.h = 60;
+	 menuVolume.w = menuOptions.w = menuMain.w = menuClose.w = 200;
+
 
 	//
 	GUICalcCombatBox.h=GUICalcCombatBox.w=50;
