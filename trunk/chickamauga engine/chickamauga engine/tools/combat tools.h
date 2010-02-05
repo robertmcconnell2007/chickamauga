@@ -9,3 +9,4 @@ bool canFightOther(map_node * node, armyClass * army);
 bool alreadyInAttkDef(unitClass * unit);
 void networkRetreat(string unitName);
 void resetCombat();
+bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherArmy);

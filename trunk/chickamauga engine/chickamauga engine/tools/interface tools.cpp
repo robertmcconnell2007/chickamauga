@@ -174,7 +174,7 @@ bool clickedIn(SDL_Event event, SDL_Rect rect)
 
 bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defenderArmy)
 {
-	bool foundOtherCombatant = false;
+	bool foundOtherCombatant = false, clickedArtillary = false;
 	unitClass * unit1 = NULL, * unit2 = NULL;
 	if(IH::Instance()->currentBattle.attackers.size() == 0)
 	{
@@ -199,7 +199,19 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 				foundOtherCombatant = true;
 		}
 		if(!foundOtherCombatant)
-			return false;
+		{
+			getUnitsOnNode(node, attackerArmy, unit1, unit2);
+			if(unit1->getType() == 3 || unit2->getType() == 3)
+			{
+				//check for artillary combat
+				if(foundDistantCombat(node, 3, defenderArmy))
+					clickedArtillary = true;
+				else
+					return false;
+			}
+			else
+				return false;
+		}
 	}
 	if(!getUnitsOnNode(node, attackerArmy, unit1, unit2))
 	{
@@ -210,12 +222,12 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 		if(unit1 == IH::Instance()->currentBattle.attackers.at(i))
 			return false;
 	}
-	if(unit1 != NULL)
+	if(unit1 != NULL && !(clickedArtillary && unit1->getType() != 3))
 	{
 		unit1->setComPrep(true);
 		IH::Instance()->currentBattle.attackers.push_back(unit1);
 	}
-	if(unit2 != NULL)
+	if(unit2 != NULL && !(clickedArtillary && unit2->getType() != 3))
 	{
 		unit2->setComPrep(true);
 		IH::Instance()->currentBattle.attackers.push_back(unit2);

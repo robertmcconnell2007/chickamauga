@@ -2,7 +2,35 @@
 #include "draw tools.h"
 #include "../messageHandler.h"
 
-
+bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherArmy)
+{
+	//if found a unit not in combat return true, with combatPrep true
+	//loop through each edge and call this function with distance--
+	//if any of those return true, return true
+	//at end return false
+	if(distance < 0)
+		return false;
+	unitClass * unit1 = NULL, * unit2 = NULL;
+	getUnitsOnNode(currentNode, otherArmy, unit1, unit2);
+	if(unit1 && !unit1->completedCombat() && unit1->comPrep())
+		return true;
+	if(unit2 && !unit2->completedCombat() && unit2->comPrep())
+		return true;
+	for(int i = 0; i < 6; ++i)
+	{
+		if(i < 3)
+		{
+			if(foundDistantCombat(currentNode->nodeEdges[i]->upperNode, distance - 1, otherArmy))
+				return true;
+		}
+		else
+		{
+			if(foundDistantCombat(currentNode->nodeEdges[i]->lowerNode, distance - 1, otherArmy))
+				return true;
+		}
+	}
+	return false;
+}
 
 
 void resetCombat()
