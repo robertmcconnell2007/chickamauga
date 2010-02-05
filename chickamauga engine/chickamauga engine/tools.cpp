@@ -776,6 +776,7 @@ void IH::update(int mspassed)
 			playersTurn = !playersTurn;
 			players[0].startTurn();
 			players[1].startTurn();
+			keysOff = false;
 			gameState = matchMainPhase;
 			if(!playingLAN)
 			{
@@ -981,6 +982,7 @@ bool IH::handleMessage()
 			playerIam = (int)(currentMessage.c_str()[0] - '0');
 			createMatch();
 			gameState = matchMainPhase;
+			keysOff = false;
 		}
 		return true;
 		break;
