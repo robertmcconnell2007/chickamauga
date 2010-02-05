@@ -20,5 +20,7 @@ struct FileInfo
 	string army2;
 	string army2colors;
 	string u5050tiles;
+	string menu;
+	string menuOptions;
 	void loadFileInfo(string filename);
 };

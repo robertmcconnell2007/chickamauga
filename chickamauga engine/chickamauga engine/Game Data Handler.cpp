@@ -75,6 +75,7 @@ IH::IH()
 	menuUp = false;
 	connected = false;
 	menuOption = -1;
+	escapeMenu = false;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		
@@ -117,6 +118,8 @@ IH::IH()
 	titleScreen = load_my_image(fileNames.title.c_str());
 	ourLogo     = load_my_image(fileNames.logo.c_str());
 	utilityTiles5050 = load_my_image(fileNames.u5050tiles.c_str());
+	menu = load_my_image(fileNames.menu.c_str());
+	menuTiles = load_my_image(fileNames.menuOptions.c_str());
 	GUIGameFrame         = NULL;
 	map = NULL;
 	GUIFrameRect.h = 70;
@@ -132,6 +135,8 @@ IH::IH()
 	}
 	textColor.r = textColor.g = textColor.b = 0xFF;
 	u5050.h = u5050.w = 50;
+	u20060.h = 60;
+	u20060.w = 200;
 	GUIEndTurnBox.x = GUIFrameRect.x + GUIFrameRect.w - 60;
 	GUIEndTurnBox.y = GUIFrameRect.y + 10;
 	GUIEndTurnBox.h = GUIEndTurnBox.w = 50;
@@ -153,6 +158,15 @@ IH::IH()
 	GameMessageBox.h = 50;
 	GameMessageBox.x = screen->w - GameMessageBox.w;
 	GameMessageBox.y = 0;
+
+	//menu button dimensions
+	//275+55 = middle of the screen roughly, plus the offset for center of the scroll
+	 menuVolume.x = menuOptions.x = menuMain.x = menuClose.x = (275+55);
+	 
+	 menuOptions.y = 140;
+	 menuVolume.y = 140+90;
+	 menuMain.y = 140+180;
+	 menuClose.y = 140+270;
 
 	//
 	GUICalcCombatBox.h=GUICalcCombatBox.w=50;
@@ -286,4 +300,17 @@ void IH::randomizefactions()
 		prefferedFaction = 1;
 		otherPrefferedFaction = 0;
 	}
+}
+
+void IH::drawMenu()
+{
+	SDL_SetColorKey(menu,SDL_SRCCOLORKEY,0xffffff);
+	SDL_Rect tempRect;
+	tempRect.x = 275;
+	tempRect.y = 50;
+	SDL_BlitSurface(menu, NULL, screen , &tempRect);
+	drawATile(menuTiles, &u20060, 0, screen, menuOptions.x,menuOptions.y);
+	drawATile(menuTiles, &u20060, 1, screen, menuVolume.x, menuVolume.y);
+	drawATile(menuTiles, &u20060, 2, screen, menuMain.x, menuMain.y);
+	drawATile(menuTiles, &u20060, 3, screen, menuClose.x, menuClose.y);
 }
