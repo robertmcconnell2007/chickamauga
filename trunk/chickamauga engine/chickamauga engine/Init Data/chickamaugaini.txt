@@ -13,3 +13,5 @@ army1colors#Init Data/unionArmy.bmp
 army2#Init Data/rebelArmyUnits.txt
 army2colors#Init Data/rebelArmy.bmp
 u5050tiles#Init Data/utility5050tiles.bmp
+menu#Init Data/parchment4.bmp
+menuOptions#Init Data/menuOptions200x60.bmp

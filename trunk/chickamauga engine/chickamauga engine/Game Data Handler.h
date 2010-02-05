@@ -76,6 +76,7 @@ private:
 	bool nodeGui;
 	int selectedX;
 	int selectedY;
+	void drawMenu();
 public:
 	mapSuperClass * map;
 	sound * gameSound;
@@ -101,6 +102,7 @@ public:
 
 	//menu bool
 	bool menuUp;
+	bool escapeMenu;
 	int menuOption;
 
 	//chat box info
@@ -132,6 +134,8 @@ public:
 	SDL_Surface * titleScreen;
 	SDL_Surface * GUIGameFrame;
 	SDL_Surface * utilityTiles5050;
+	SDL_Surface * menu;
+	SDL_Surface * menuTiles;
 	
 	//SDL_Rect GUIGameFrame;
 
@@ -141,6 +145,11 @@ public:
 	SDL_Rect GUICalcCombatBox;
 	SDL_Rect GUIResetCombatBox;
 	SDL_Rect u5050;
+	SDL_Rect u20060;
+	SDL_Rect menuVolume;
+	SDL_Rect menuOptions;
+	SDL_Rect menuMain;
+	SDL_Rect menuClose;
 	SDL_Rect GameStartButton;
 	SDL_Rect GameQuitButton;
 	SDL_Rect GameHostButton;

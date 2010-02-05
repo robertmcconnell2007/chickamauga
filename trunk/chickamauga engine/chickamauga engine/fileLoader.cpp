@@ -74,6 +74,14 @@ void FileInfo::loadFileInfo(string filename)
 		{
 			getline(infile, u5050tiles);
 		}
+		else if(name == "menu")
+		{
+			getline(infile,menu);
+		}
+		else if(name == "menuOptions")
+		{
+			getline(infile,menuOptions);
+		}
 		//infile.ignore();
 		getline(infile,name,'#');
 	}

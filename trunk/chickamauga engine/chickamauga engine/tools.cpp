@@ -247,7 +247,8 @@ void IH::handlePrimaryInput()
 				waiting = true;
 				amHost = true;
 				playingLAN = false;
-				gameState = atMatchPrepSecond;
+				//gameState = atMatchPrepSecond;
+				
 				//matchFileNames.setGame("chickamauga.txt");
 				//if(matchFileNames.checkFileNames())
 				//{
@@ -282,7 +283,7 @@ void IH::handlePrimaryInput()
 				playingLAN = true;			
 			}
 		}
-		else if(event.type == SDL_KEYDOWN && waiting && playingLAN && !keysOff)
+		else if(event.type == SDL_KEYDOWN && waiting /*&& playingLAN*/ && !keysOff)
 		{
 			switch(event.key.keysym.sym)
 			{
@@ -309,6 +310,12 @@ void IH::handlePrimaryInput()
 					{
 						matchFileNames.setFiles();
 						canPickFaction = true;
+						if(!playingLAN)
+						{
+							createMatch();
+							keysOff = false;
+							gameState = matchMainPhase;
+						}
 						if(connected)
 						{
 							MessageHandler::Instance()->sendMessage(output, GAMEFILENAME);
@@ -379,6 +386,9 @@ void IH::handlePrimaryInput()
 		case SDL_KEYDOWN:
 			switch(event.key.keysym.sym)
 			{
+				case SDLK_TAB:
+				escapeMenu = !escapeMenu;
+				break;
 			case SDLK_ESCAPE:
 				cancelClick(map);
 				break;
@@ -893,6 +903,10 @@ void IH::drawAll()
 			drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
 		}
 		drawChat(chatBox,chatString,1,screen);
+		if(escapeMenu)
+		{
+			drawMenu();
+		}
 		if(menuUp)
 		{
 			if(canExit)
