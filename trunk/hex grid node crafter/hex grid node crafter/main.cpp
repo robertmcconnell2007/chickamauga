@@ -60,8 +60,8 @@ int main(int argc, char ** argv)
 
 	screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_FULLSCREEN | SDL_HWSURFACE);//
 
-	mapSuperClass MapClass("mapData/mapData/customMapData.txt");
-	//mapSuperClass MapClass("mapData/mapData/ChickamaugaMapData.txt");
+	//mapSuperClass MapClass("mapData/mapData/customMapData.txt");
+	mapSuperClass MapClass("mapData/mapData/ChickamaugaMapData.txt");
 	//mapSuperClass MapClass(25,28);
 
 	armyClass unionArmy("unionArmyUnits.txt","unionArmy.bmp");
