@@ -474,8 +474,7 @@ void IH::handlePrimaryInput()
 			mouseDown = false;
 			//check for open menu
 				if(escapeMenu)
-				{
-					
+				{					
 					if(clickedIn(event,menuOptions))
 					{
 						escapeMenu = false;
@@ -553,8 +552,8 @@ void IH::handlePrimaryInput()
 							firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
 						else
 							firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
-						selectedX=actualX;
-						selectedY=actualY;
+						selectedX = actualX;
+						selectedY = actualY;
 					}
 					else if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn && 
 						selectedNode->reinforce < gameRules->unitMovePoints)
@@ -670,7 +669,6 @@ void IH::handlePrimaryInput()
 				//check for open menu
 				if(escapeMenu)
 				{
-					
 					if(clickedIn(event,menuOptions))
 					{
 						escapeMenu = false;
@@ -731,6 +729,17 @@ void IH::handlePrimaryInput()
 			break;
 		}
 	case reviewingMatch:
+		{
+			switch(event.type)
+			{
+			case SDL_MOUSEBUTTONUP:
+				if(clickedIn(event, ReturnToMenuBox))
+				{
+					_resetAll();
+				}
+				break;
+			}
+		}
 		break;		
 	}	
 }
@@ -809,8 +818,11 @@ void IH::update(int mspassed)
 			canExit = false;
 			menuOption = -1;
 		}
-		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0)
+		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0 || currentTurn > gameRules->numGameTurns)
+		{
+			gameRules->calcAllRules();
 			gameState = reviewingMatch;
+		}
 		break;
 	case matchCombatPhase:
 		if(playerIam == playersTurn)
@@ -872,9 +884,7 @@ void IH::update(int mspassed)
 	MessageHandler::Instance()->checkMessages();
 	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
-		IH::Instance()->handleMessage();
-
-	
+		IH::Instance()->handleMessage();	
 }
 
 void IH::drawAll()
@@ -951,8 +961,7 @@ void IH::drawAll()
 		drawChat(chatBox,chatString,1,screen);
 		if(escapeMenu)
 		{
-			drawMenu();
-			
+			drawMenu();			
 		}
 		if(menuUp)
 		{
@@ -964,6 +973,21 @@ void IH::drawAll()
 		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 		break;
 	case reviewingMatch:
+		ostringstream oss;
+		oss << "Blue player scored ";
+		oss << players[0].pointsEarned;
+		oss << " points\n\n";
+		oss << "Gray player scored ";
+		oss << players[1].pointsEarned;
+		oss << " points\n\n";
+		if(players[0].pointsEarned == players[1].pointsEarned)
+			oss << "The game was a tie\n\n";
+		else if(players[0].pointsEarned > players[1].pointsEarned)
+			oss << "Blue player has won\n\n";
+		else
+			oss << "Gray player has won\n\n";
+		printStrings(oss.str(), matchEndOutputBox, screen, textColor, font1);
+		drawATile(menuTiles, &u20060, 4, screen, ReturnToMenuBox.x, ReturnToMenuBox.y);
 		break;
 	}
 	if(SDL_Flip(screen) == -1)
@@ -1154,6 +1178,7 @@ bool IH::handleMessage()
 	case QUIT:
 		cout << currentMessage << "\n";
 		chatBox->addString(currentMessage);
+		gameRules->calcAllRules();
 		gameState = reviewingMatch;
 		return true;
 		break;

@@ -11,6 +11,8 @@ static const int SCREEN_WIDTH = 860;
 static const int SCREEN_HEIGHT = 640;
 static const int SCREEN_BPP = 32;
 
+
+
 int main(int argc, char ** argv)
 {
 	if(SDL_Init( SDL_INIT_EVERYTHING) == -1)

@@ -5,11 +5,20 @@
 #include <string>
 #include "infoLog.h"
 //#define DEBUG
-
+//#define ENDGAMEDEBUG
 
 gameFileHandler::gameFileHandler(string name)
 {
 	setGame(name);
+}
+
+void gameFileHandler::_clearAll()
+{
+	gameName = "";
+	mapName = "";
+	rulesName = "";
+	blue_army = "";
+	gray_army = "";
 }
 
 bool gameFileHandler::checkFileNames()
@@ -158,16 +167,19 @@ IH::IH()
 	GameMessageBox.h = 50;
 	GameMessageBox.x = screen->w - GameMessageBox.w;
 	GameMessageBox.y = 0;
+	matchEndOutputBox.x = matchEndOutputBox.y = 0;
+	matchEndOutputBox.w = 300;
+	matchEndOutputBox.h = 500;
 
 	//menu button dimensions
 	//275+55 = middle of the screen roughly, plus the offset for center of the scroll
-	 menuVolume.x = menuOptions.x = menuMain.x = menuClose.x = (275+55);
-	 menuOptions.y = 140;
-	 menuVolume.y = 140+90;
-	 menuMain.y = 140+180;
-	 menuClose.y = 140+270;
-	 menuVolume.h = menuOptions.h = menuMain.h = menuClose.h = 60;
-	 menuVolume.w = menuOptions.w = menuMain.w = menuClose.w = 200;
+	menuVolume.x = menuOptions.x = menuMain.x = menuClose.x = (275+55);
+	menuOptions.y = 140;
+	menuVolume.y = 140+90;
+	menuMain.y = 140+180;
+	menuClose.y = 140+270;
+	menuVolume.h = menuOptions.h = menuMain.h = menuClose.h = 60;
+	menuVolume.w = menuOptions.w = menuMain.w = menuClose.w = 200;
 
 
 	//
@@ -208,8 +220,18 @@ IH::IH()
 	okBox.x = reinforceBox.x + 25;
 	okBox.y = reinforceBox.y + 25;
 
+	ReturnToMenuBox.w = u20060.w;
+	ReturnToMenuBox.h = u20060.h;
+	ReturnToMenuBox.x = screen->w - ReturnToMenuBox.w;
+	ReturnToMenuBox.y = screen->h - ReturnToMenuBox.h;
+
 #ifdef DEBUG
 	output = "5.243.77.115";
+#endif
+
+#ifdef ENDGAMEDEBUG
+	output = "chickamauga.txt";
+	currentTurn = 14;
 #endif
 }
 
@@ -248,6 +270,7 @@ void IH::createMatch()
 	//set up the players ip address, and any other neccessary data for them
 	players[0].playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
 	players[1].playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
+	currentTurn = 1;
 	// Start the sound when the game begins 
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -
@@ -315,4 +338,40 @@ void IH::drawMenu()
 	drawATile(menuTiles, &u20060, 1, screen, menuVolume.x, menuVolume.y);
 	drawATile(menuTiles, &u20060, 2, screen, menuMain.x, menuMain.y);
 	drawATile(menuTiles, &u20060, 3, screen, menuClose.x, menuClose.y);
+}
+
+void IH::_resetAll()
+{
+	amHost = false;
+	waiting = false;
+	canPickFaction = false;
+	connected = false;
+	gameState = atTitleScreen;
+	prefferedFaction = 10;
+	otherPrefferedFaction = 10;
+	currentTurn = 0;
+	map->deleteMap();
+	map = NULL;
+	if(currentBattle.attackers.size() > 0)
+		currentBattle.attackers.clear();
+	if(currentBattle.defenders.size() > 0)
+		currentBattle.defenders.clear();
+	canReinforce = false;
+	canExit = false;
+	menuUp = false;
+	escapeMenu = false;
+	menuOption = 0;
+	matchFileNames._clearAll();
+	gameRules->deleteRules();
+	gameRules = NULL;
+	retreatCalled = false;
+	enemyUnitsSelected = false;
+	unit1Selected = false;
+	unit2Selected = false;
+	currentUnits[0] = NULL;
+	currentUnits[1] = NULL;
+	selectedNode = NULL;
+	playingLAN = false;
+	preppingCombat = false;
+	keysOff = false;
 }

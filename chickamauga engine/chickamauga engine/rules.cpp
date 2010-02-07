@@ -743,22 +743,40 @@ void rules::calcAllRules()
 	points[0] = points[1] = 0;
 	for(int i = 0; i < 2; ++i)
 	{
-		for(int i = 0; i < RCRrules; ++i)
+		for(int j = 0; j < RERrules; ++j)
 		{
-			if(!RER[i].controlRule)
-				points[i] = RER[i].calculateRule(i);
-			if(!RCR[i].controlRule)
-				points[i] = RCR[i].calculateRule(i);
-			if(!UKR[i].controlRule)
-				points[i] = UKR[i].calculateRule(i);
-			if(!UER[i].controlRule)
-				points[i] = UER[i].calculateRule(i);
-			if(!VPR[i].controlRule)
-				points[i] = VPR[i].calculateRule(i);
-			if(!ACR[i].controlRule)
-				points[i] = ACR[i].calculateRule(i);
-			if(!NCR[i].controlRule)
-				points[i] = NCR[i].calculateRule(i);
+			if(RERrules && !RER[j].controlRule)
+				points[i] += RER[j].calculateRule(i);
+		}
+		for(int j = 0; j < RCRrules; ++j)
+		{
+			if(RCRrules && !RCR[j].controlRule)
+				points[i] += RCR[j].calculateRule(i);
+		}
+		for(int j = 0; j < UKRrules; ++j)
+		{
+			if(UKRrules && !UKR[j].controlRule)
+				points[i] += UKR[j].calculateRule(i);
+		}
+		for(int j = 0; j < UERrules; ++j)
+		{
+			if(UERrules && !UER[j].controlRule)
+				points[i] += UER[j].calculateRule(i);
+		}
+		for(int j = 0; j < VPRrules; ++j)
+		{
+			if(VPRrules && !VPR[j].controlRule)
+				points[i] += VPR[j].calculateRule(i);
+		}
+		for(int j = 0; j < ACRrules; ++j)
+		{
+			if(ACRrules && !ACR[j].controlRule)
+				points[i] += ACR[j].calculateRule(i);
+		}
+		for(int j = 0; j < NCRrules; ++j)
+		{
+			if(NCRrules && !NCR[j].controlRule)
+				points[i] += NCR[j].calculateRule(i);
 		}
 	}
 	IH::Instance()->players[0].pointsEarned = points[0];

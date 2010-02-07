@@ -34,6 +34,7 @@ struct gameFileHandler
 	bool checkFileNames();
 	void setGame(string name);
 	void setFiles();
+	void _clearAll();
 };
 
 struct battle
@@ -159,6 +160,8 @@ public:
 	SDL_Rect BlueOptionBox;
 	SDL_Rect GrayOptionBox;
 	SDL_Rect RandomOptionBox;
+	SDL_Rect ReturnToMenuBox;
+	SDL_Rect matchEndOutputBox;
 
 	//unit variables
 	unitClass * currentUnits[2];
@@ -180,10 +183,12 @@ public:
 
 	bool isGameRunning()  {return runningGame;}
 	void endGame();
+	void _resetAll();
 
 	//these functions are defined in the tools.cpp file!
 	void handlePrimaryInput();
 	void update(int mspassed);
 	void drawAll();
 	bool handleMessage();
+	
 };
