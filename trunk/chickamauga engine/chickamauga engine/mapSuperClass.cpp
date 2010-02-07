@@ -33,6 +33,7 @@ void mapSuperClass::clearMovement()
 		}
 	}
 }
+
 void mapSuperClass::setEnemy(int x, int y)
 {
 	showEnemyControl = true;
@@ -52,6 +53,7 @@ void mapSuperClass::setEnemy(int x, int y)
 		}
 	}
 }
+
 void mapSuperClass::clearEnemy()
 {
 	showEnemyControl = false;
@@ -63,6 +65,7 @@ void mapSuperClass::clearEnemy()
 		}
 	}
 }
+
 void mapSuperClass::exportMap()
 {
 	int typeOut;
@@ -117,10 +120,12 @@ void mapSuperClass::exportMap()
 	}
 	outfile.close();
 }
+
 mapSuperClass::~mapSuperClass()
 {
 	deleteMap();
 }
+
 void mapSuperClass::deleteMap()
 {
 	for(int i = 0; i < width; i++)
