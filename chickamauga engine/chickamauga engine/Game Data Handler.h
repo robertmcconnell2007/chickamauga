@@ -87,6 +87,8 @@ public:
 	Uint32 beginWait;
 	int timeOut;
 	bool clickCancel;
+	int pingTime;
+	bool connection;
 	
 	//previous song
 	int prevSong;

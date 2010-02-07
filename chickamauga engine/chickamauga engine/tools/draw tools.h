@@ -9,3 +9,4 @@ bool showRetreater(mapSuperClass *map,armyClass * attkrs,armyClass *dfndr);
 void drawChat(infoLog* chatBox, string chatString, int scroll, SDL_Surface* screen);
 void drawYesNo(SDL_Surface* screen);
 void drawCombatGui(SDL_Surface * screen);void drawReinforce(SDL_Surface* screen);
+void drawReinforce(SDL_Surface* screen);

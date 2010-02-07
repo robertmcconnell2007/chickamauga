@@ -72,6 +72,8 @@ IH::IH()
 	preppingCombat = false;
 	beginWait = 0;
 	timeOut = 10000;
+	pingTime = 2000;
+	connection = true;
 	clickCancel = false;
 	keysOff = false;
 	fileNames.loadFileInfo("Init Data/chickamaugaini.txt");

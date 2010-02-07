@@ -51,6 +51,7 @@ public:
 	bool checkMessages();
 	bool getMessage(string* incommingMessage, int *flag);
 	int getLastUDPError();
+	void shutDown();
 	static MessageHandler* Instance()
 	{
 		static MessageHandler instance;

@@ -58,4 +58,5 @@ public:
 	bool sendMessage(const dataPacket* info);
 	bool checkMessage(dataPacket* info);
 	int getLastError();
+	void shutDown();
 };
