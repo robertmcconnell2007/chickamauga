@@ -60,10 +60,6 @@ void exitDialog(SDL_Event event)
 
 bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyClass enemyArmy)
 {
-	if(node->reinforce+1 >= 6)
-	{
-		return false;
-	}
 	cancelClick(map);
 	checkUnitStacks(map,currentArmy,enemyArmy);
 	IH::Instance()->selectedNode = node;
@@ -97,16 +93,26 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 		}
 	}
 	setEnemyNodes(enemyArmy, map);
+	if(node->reinforce+1 >= 6)
+	{
+		return false;
+	}
 	if(IH::Instance()->canReinforce)
 	{
-		moveTo(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
+		if(IH::Instance()->currentUnits[0]->getType() == 0)
+			moveTrain(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
+		else
+			moveTo(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
 		node->reinforce += 1;
 		IH::Instance()->selectedNode = node;
 		IH::Instance()->canReinforce = false;
 	}
 	else
 	{
-		moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+		if(IH::Instance()->currentUnits[0]->getType() == 0)
+			moveTrain(node,IH::Instance()->gameRules->unitMovePoints);
+		else
+			moveTo(node,IH::Instance()->gameRules->unitMovePoints);
 	}
 	if(node->exit && ((IH::Instance()->currentUnits[0] != NULL && !IH::Instance()->currentUnits[0]->hasMoved()) || (IH::Instance()->currentUnits[1] != NULL && !IH::Instance()->currentUnits[1]->hasMoved())))
 	{
@@ -436,4 +442,144 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 	map->clearMovement();
 	showRetreater(map,&IH::Instance()->players[IH::Instance()->playersTurn].playerArmy,&IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
 	map->clearEnemy();
+}
+
+int checkEdgeTrain(node_edge* edge, int pos)
+{
+	if(edge == NULL)
+		return -1;
+	map_node* nodePointer;
+	if(pos > 2)
+		nodePointer = edge->lowerNode;
+	else
+		nodePointer = edge->upperNode;
+	int numOccupy = nodePointer->numOfUnits;
+	if(numOccupy > 0)
+		return -1;
+	if(edge->road_edge || (nodePointer->type == clear && edge->trail_edge))
+		return 1;
+	if(edge->trail_edge)
+		return 2;
+}
+
+int checkEdge(node_edge* edge, int pos)
+{
+	if(edge == NULL)
+		return -1;
+	map_node* nodePointer;
+	if(pos > 2)
+		nodePointer = edge->lowerNode;
+	else
+		nodePointer = edge->upperNode;
+	int numOccupy = nodePointer->numOfUnits;
+	if(numOccupy >= 2)
+		return -1;
+	int movementRequired = 0;
+	bool cleartype = false;
+	bool foresttype = false;
+	bool roughtype = false;
+	bool roughforesttype = false;
+	bool rivertype = false;
+	bool roadtype = edge->road_edge;
+	bool trailtype = edge->trail_edge;
+	bool fordtype = edge->ford_edge;
+	bool creektype = edge->creek_edge;
+	bool bridgetype = edge->bridge_edge;
+	if(nodePointer->type == clear)
+		cleartype = true;
+	if(nodePointer->type == forest)
+		foresttype = true;
+	if(nodePointer->type == rough)
+		roughtype = true;
+	if(nodePointer->type == roughForest)
+		roughforesttype = true;
+	if(nodePointer->type == river)
+		rivertype = true;
+	if(creektype || rivertype)
+	{
+		movementRequired = IH::Instance()->gameRules->unitMovePoints + 1;
+	}
+	else if(cleartype || roadtype)
+	{
+		movementRequired = IH::Instance()->gameRules->roadCost;
+	}
+	else if(trailtype)
+	{
+		movementRequired = IH::Instance()->gameRules->trailCost;
+	}
+	else if(foresttype)
+	{
+		movementRequired = IH::Instance()->gameRules->forestMovePenalty;
+	}
+	else if(roughtype)
+	{
+		movementRequired = IH::Instance()->gameRules->roughMovePenalty;
+	}
+	else if(roughforesttype)
+	{
+		movementRequired = IH::Instance()->gameRules->forestroughMovePenalty;
+	}
+	if(fordtype)
+	{
+		movementRequired += IH::Instance()->gameRules->fordMovePenalty;
+	}
+	return movementRequired;
+}
+
+void moveTo(map_node* node,int movement)
+{
+	if(node->movement < movement)
+		node->movement = movement;
+	else
+		return;
+	if(movement == 0 || node->enemy)
+		return;
+	int tempMove;
+	for(int i = 0; i < 6; i++)
+	{
+		tempMove = checkEdge(node->nodeEdges[i],i);
+		if(tempMove != -1)
+		{
+			if(i > 2)
+			{
+				if(node->nodeEdges[i]->lowerNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->lowerNode->movement)
+					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
+				else if(tempMove != -1 && movement-tempMove >= 0)
+					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
+			}
+			else
+			{
+				if(node->nodeEdges[i]->upperNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->upperNode->movement)
+					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
+				else if(tempMove != -1 && movement-tempMove >= 0)
+					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
+			}
+		}
+	}
+}
+
+void moveTrain(map_node* node,int movement)
+{
+	if(node->movement < movement)
+		node->movement = movement;
+	else
+		return;
+	if(movement == 0 || node->enemy)
+		return;
+	int tempMove;
+	for(int i = 0; i < 6; i++)
+	{
+		tempMove = checkEdgeTrain(node->nodeEdges[i],i);
+		if(tempMove != -1 || tempMove > movement)
+		{
+			if(i > 2)
+			{
+				moveTrain(node->nodeEdges[i]->lowerNode, movement-tempMove);
+			}
+			else
+			{
+				moveTrain(node->nodeEdges[i]->upperNode, movement-tempMove);
+			}
+		}
+	}
 }

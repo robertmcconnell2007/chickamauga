@@ -1,4 +1,5 @@
 #include "battleCalc.h"
+#include "graphicsloader.h"
 
 battleCalculator::battleCalculator()
 {
@@ -53,7 +54,7 @@ int battleCalculator::doBattle(int attackerPower,int defenderPower)
 		attackerAdvantage=false;
 		odds=defenderPower/attackerPower;
 	}
-	roll=rand()%6;
+	roll=getRandomNum()%6;
 
 	if(attackerAdvantage)
 	{

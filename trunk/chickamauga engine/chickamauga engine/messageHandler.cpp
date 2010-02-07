@@ -132,3 +132,7 @@ int MessageHandler::getLastUDPError()
 { 
 	return message.getLastError(); 
 }
+void MessageHandler::shutDown()
+{
+	message.shutDown();
+}

@@ -1,5 +1,6 @@
 #include "draw tools.h"
 #include "../infoLog.h"
+#include "../Game Data Handler.h"
 
 #include <string>
 #include <sstream>
@@ -9,45 +10,53 @@ void setEnemyNodes(armyClass, mapSuperClass*);
 
 void drawReinforce(SDL_Surface* screen)
 {
-	SDL_FillRect(screen, &IH::Instance()->reinforceBox, 0x000000);
-	SDL_FillRect(screen, &IH::Instance()->okBox, 0x00ff00);
+	int j = 0;
 	armyClass* currentArmy = &IH::Instance()->players[IH::Instance()->playerIam].playerArmy;
-	for(int i = 0, j = 0; i < currentArmy->reinforcementSize;i++)
+	for(int i = 0; i < currentArmy->reinforcementSize;i++)
 	{
 		if(currentArmy->reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
 		{
-			drawATile(currentArmy->getArmyColor(),
-				currentArmy->reinforcements[i]->getUnitRect(),
-				currentArmy->reinforcements[i]->getPower()-1,
-				screen,
-				IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),
-				IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
-
-					switch(currentArmy->reinforcements[i]->getType())
-					{
-						case 0:
-						{
-							drawATile(currentArmy->getArmyColor(),currentArmy->reinforcements[i]->getUnitRect(),8,screen, IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
-							break;
-						}
-						case 1:
-						{
-							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),0,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
-							break;
-						}
-						case 2:
-						{
-							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),1,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
-							break;
-						}
-						case 3:
-						{
-							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),2,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
-							break;
-						}
-					}
-
-
+			j++;
+		}
+	}
+	if(j == 0)
+	{
+		IH::Instance()->menuUp = false;
+		IH::Instance()->canReinforce = false;
+		return;
+	}
+	j = 0;
+	SDL_FillRect(screen, &IH::Instance()->reinforceBox, 0x000000);
+	printStrings("Select a unit to reinforce.", IH::Instance()->reinforceBox, screen, IH::Instance()->textColor, IH::Instance()->font1);
+	drawATile(IH::Instance()->utilityTiles5050,&IH::Instance()->okBox, 8, screen, IH::Instance()->okBox.x,IH::Instance()->okBox.y);
+	for(int i = 0; i < currentArmy->reinforcementSize;i++)
+	{
+		if(currentArmy->reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
+		{
+			drawATile(currentArmy->getArmyColor(),currentArmy->reinforcements[i]->getUnitRect(),currentArmy->reinforcements[i]->getPower()-1,screen,IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+			switch(currentArmy->reinforcements[i]->getType())
+			{
+				case 0:
+				{
+					drawATile(currentArmy->getArmyColor(),currentArmy->reinforcements[i]->getUnitRect(),8,screen, IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+					break;
+				}
+				case 1:
+				{
+					drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),0,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+					break;
+				}
+				case 2:
+				{
+					drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),1,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+					break;
+				}
+				case 3:
+				{
+					drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),2,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+					break;
+				}
+			}
 			j++;
 		}
 	}
@@ -58,8 +67,9 @@ void drawYesNo(SDL_Surface* screen)
 	if(IH::Instance()->canExit)
 	{
 		SDL_FillRect(screen,&IH::Instance()->yesNoBox,0x000000);
-		SDL_FillRect(screen,&IH::Instance()->yesBox,0x00ff00);
-		SDL_FillRect(screen,&IH::Instance()->noBox,0xff0000);
+		printStrings("Would you like to exit this unit from the map?", IH::Instance()->yesNoBox, screen, IH::Instance()->textColor, IH::Instance()->font1);
+		drawATile(IH::Instance()->utilityTiles5050,&IH::Instance()->yesBox, 8, screen, IH::Instance()->yesBox.x,IH::Instance()->yesBox.y);
+		drawATile(IH::Instance()->utilityTiles5050,&IH::Instance()->noBox, 9, screen, IH::Instance()->noBox.x,IH::Instance()->noBox.y);
 	}
 }
 

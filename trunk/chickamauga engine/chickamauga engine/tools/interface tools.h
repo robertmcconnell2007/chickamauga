@@ -13,3 +13,8 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY);
 void exitDialog(SDL_Event event);
 void reinforceDialog(SDL_Event event);
+void moveTrain(map_node* node,int movement);
+void moveTo(map_node* node,int movement);
+int checkEdge(node_edge* edge, int pos);
+int checkEdgeTrain(node_edge* edge, int pos);
+

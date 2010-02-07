@@ -445,10 +445,6 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 						}
 					}
 				}
-				if(mapPointer[i][k].movement >=  0)
-				{
-					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
-				}
 				if(mapPointer[i][k].selected)
 				{
 					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
@@ -456,6 +452,10 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 				if(mapPointer[i][k].enemy && (mapPointer[i][k].selected || showEnemyControl))
 				{
 					drawATile(statusTiles, &hexSize, 1, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
+				}
+				if(mapPointer[i][k].movement >=  0)
+				{
+					drawATile(statusTiles, &hexSize, 2, screen, (i * 50) - (i*12) + screenShiftx, (k * 44) + 21 + screenShifty);
 				}
 			}
 			else
@@ -510,10 +510,6 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 						}
 					}
 				}
-				if(mapPointer[i][k].movement >= 0)
-				{
-					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
-				}
 				if(mapPointer[i][k].selected)
 				{
 					drawATile(statusTiles, &hexSize, 0, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
@@ -521,6 +517,10 @@ void mapSuperClass::drawMap(int screenShiftx, int screenShifty, SDL_Surface * sc
 				if(mapPointer[i][k].enemy && (mapPointer[i][k].selected || showEnemyControl))
 				{
 					drawATile(statusTiles, &hexSize, 1, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
+				}
+				if(mapPointer[i][k].movement >= 0)
+				{
+					drawATile(statusTiles, &hexSize, 2, screen, (i * 50) - (i*12) + screenShiftx, k * 44 + screenShifty);
 				}
 			}
 		}

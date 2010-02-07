@@ -158,3 +158,11 @@ int udpClass::getLastError()
 {
 	return errorCode;
 }
+void udpClass::shutDown()
+{
+	if(ready)
+	{
+		ready = false;
+		WSACleanup();
+	}
+}

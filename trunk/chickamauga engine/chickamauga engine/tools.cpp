@@ -66,102 +66,6 @@ bool isUnits(map_node * node, armyClass * unionArmy, armyClass * confedArmy)
 	return false;
 }
 
-int checkEdge(node_edge* edge, int pos)
-{
-	if(edge == NULL)
-		return -1;
-	map_node* nodePointer;
-	if(pos > 2)
-		nodePointer = edge->lowerNode;
-	else
-		nodePointer = edge->upperNode;
-	int numOccupy = nodePointer->numOfUnits;
-	if(numOccupy >= 2)
-		return -1;
-	int movementRequired = 0;
-	bool cleartype = false;
-	bool foresttype = false;
-	bool roughtype = false;
-	bool roughforesttype = false;
-	bool rivertype = false;
-	bool roadtype = edge->road_edge;
-	bool trailtype = edge->trail_edge;
-	bool fordtype = edge->ford_edge;
-	bool creektype = edge->creek_edge;
-	bool bridgetype = edge->bridge_edge;
-	if(nodePointer->type == clear)
-		cleartype = true;
-	if(nodePointer->type == forest)
-		foresttype = true;
-	if(nodePointer->type == rough)
-		roughtype = true;
-	if(nodePointer->type == roughForest)
-		roughforesttype = true;
-	if(nodePointer->type == river)
-		rivertype = true;
-	if(creektype || rivertype)
-	{
-		movementRequired = IH::Instance()->gameRules->unitMovePoints + 1;
-	}
-	else if(cleartype || roadtype)
-	{
-		movementRequired = IH::Instance()->gameRules->roadCost;
-	}
-	else if(trailtype)
-	{
-		movementRequired = IH::Instance()->gameRules->trailCost;
-	}
-	else if(foresttype)
-	{
-		movementRequired = IH::Instance()->gameRules->forestMovePenalty;
-	}
-	else if(roughtype)
-	{
-		movementRequired = IH::Instance()->gameRules->roughMovePenalty;
-	}
-	else if(roughforesttype)
-	{
-		movementRequired = IH::Instance()->gameRules->forestroughMovePenalty;
-	}
-	if(fordtype)
-	{
-		movementRequired += IH::Instance()->gameRules->fordMovePenalty;
-	}
-	return movementRequired;
-}
-
-void moveTo(map_node* node,int movement)
-{
-	if(node->movement < movement)
-		node->movement = movement;
-	else
-		return;
-	if(movement == 0 || node->enemy)
-		return;
-	int tempMove;
-	for(int i = 0; i < 6; i++)
-	{
-		tempMove = checkEdge(node->nodeEdges[i],i);
-		if(tempMove != -1)
-		{
-			if(i > 2)
-			{
-				if(node->nodeEdges[i]->lowerNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->lowerNode->movement)
-					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
-				else if(tempMove != -1 && movement-tempMove >= 0)
-					moveTo(node->nodeEdges[i]->lowerNode,movement-tempMove);
-			}
-			else
-			{
-				if(node->nodeEdges[i]->upperNode->movement >= 0 && tempMove != -1 && movement-tempMove > node->nodeEdges[i]->upperNode->movement)
-					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
-				else if(tempMove != -1 && movement-tempMove >= 0)
-					moveTo(node->nodeEdges[i]->upperNode,movement-tempMove);
-			}
-		}
-	}
-}
-
 void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 {
 	for(int k = 0; k < enemyArmy.currentSize; k++)
@@ -182,6 +86,10 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 				if(first.armyArray[f]->getX()-1 == j && first.armyArray[f]->getY()-1 == i)
 				{
 					mapPointer[i][j].numOfUnits += 1;
+					if(first.armyArray[f]->getType() == 0)
+					{
+						mapPointer[i][j].numOfUnits += 1;
+					}
 				}
 			}
 			for(int s = 0; s < second.currentSize; s++)
@@ -189,6 +97,10 @@ void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 				if(second.armyArray[s]->getX()-1 == j && second.armyArray[s]->getY()-1 == i)
 				{
 					mapPointer[i][j].numOfUnits += 1;
+					if(second.armyArray[s]->getType() == 0)
+					{
+						mapPointer[i][j].numOfUnits += 1;
+					}
 				}
 			}
 		}
@@ -441,15 +353,15 @@ void IH::handlePrimaryInput()
 				actualY = (actualY)/44;
 			else
 				actualY = (actualY-22)/44;
-			if(event.motion.x < 15)
+			if(event.motion.x < 30)
 				xMove = 1;
-			else if(event.motion.x >= screenSize.x - 15)
+			else if(event.motion.x >= screenSize.x - 30)
 				xMove = -1;
 			else
 				xMove = 0;
-			if(event.motion.y < 15)
+			if(event.motion.y < 30)
 				yMove = 1;
-			else if(event.motion.y >= screenSize.y - 15)
+			else if(event.motion.y >= screenSize.y - 30)
 				yMove = -1;
 			else
 				yMove = 0;
@@ -518,54 +430,54 @@ void IH::handlePrimaryInput()
 				}
 				else if(firstX == actualX && firstY == actualY)
 				{
-					if(firstX < map->width && firstY < map->height)
+					if(firstX < map->width && firstY < map->height && firstX >= 0 && firstY >= 0)
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
-					}
-					if(currentUnits[0] || currentUnits[1] && !menuUp)
-					{	
-						if(playerIam == 0 && playersTurn == 0)
-						{
-							if(unit1Selected)
-								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
-							if(unit2Selected)
-								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
+						if(currentUnits[0] || currentUnits[1] && !menuUp)
+						{	
+							if(playerIam == 0 && playersTurn == 0)
+							{
+								if(unit1Selected)
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
+								if(unit2Selected)
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
+							}
+							else if (playerIam == 1 && playersTurn == 1)
+							{
+								if(unit1Selected)
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
+								if(unit2Selected)
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
+							}
+							if(!canExit)
+							{
+								unit1Selected = unit2Selected = false;
+								nodeGui = false;
+								cancelClick(map);
+							}
 						}
-						else if (playerIam == 1 && playersTurn == 1)
+						else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy) && !menuUp)
 						{
-							if(unit1Selected)
-								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
-							if(unit2Selected)
-								secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
+							nodeGui = true;
+							if(playerIam == 0)
+								firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
+							else
+								firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
+							selectedX = actualX;
+							selectedY = actualY;
 						}
-						if(!canExit)
+						else if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn && 
+							selectedNode->reinforce < gameRules->unitMovePoints)
 						{
-							unit1Selected = unit2Selected = false;
-							nodeGui = false;
-							cancelClick(map);
+							canReinforce = true;
+							menuUp = true;
 						}
-					}
-					else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy) && !menuUp)
-					{
-						nodeGui = true;
-						if(playerIam == 0)
-							firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
-						else
-							firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
-						selectedX = actualX;
-						selectedY = actualY;
-					}
-					else if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn && 
-						selectedNode->reinforce < gameRules->unitMovePoints)
-					{
-						canReinforce = true;
-						menuUp = true;
-					}
-					else if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn && 
-						selectedNode->reinforce < gameRules->unitMovePoints)
-					{
-						canReinforce = true;
-						menuUp = true;
+						else if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn && 
+							selectedNode->reinforce < gameRules->unitMovePoints)
+						{
+							canReinforce = true;
+							menuUp = true;
+						}
 					}
 				}
 			}
@@ -714,7 +626,6 @@ void IH::handlePrimaryInput()
 							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 						}
-
 					}
 					if(!retreatCalled)
 					{
@@ -884,7 +795,20 @@ void IH::update(int mspassed)
 	MessageHandler::Instance()->checkMessages();
 	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
-		IH::Instance()->handleMessage();	
+		IH::Instance()->handleMessage();
+	//if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
+	//{
+	//	beginWait = SDL_GetTicks();
+	//	if(connection == true)
+	//	{
+	//		connection = false;
+	//		MessageHandler::Instance()->sendMessage("Yo!", PING);
+	//	}
+	//	else
+	//	{
+	//		//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
+	//	}
+	//}
 }
 
 void IH::drawAll()
