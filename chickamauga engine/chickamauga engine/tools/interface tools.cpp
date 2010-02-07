@@ -97,6 +97,10 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 	{
 		return false;
 	}
+	if(IH::Instance()->currentUnits[0] != NULL && IH::Instance()->currentUnits[0]->hasMoved() && IH::Instance()->currentUnits[1] != NULL && IH::Instance()->currentUnits[1]->hasMoved())
+	{
+		return false;
+	}
 	if(IH::Instance()->canReinforce)
 	{
 		if(IH::Instance()->currentUnits[0]->getType() == 0)
