@@ -67,6 +67,8 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	attackerTotalPower=0;
+	defenderTotalPower=0;
 	prevSong = -1;
 	currentTurn = 1;
 	preppingCombat = false;

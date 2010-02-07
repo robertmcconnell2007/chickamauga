@@ -181,54 +181,33 @@ void drawCombatGui(SDL_Surface *screen)
 	for(int i = 0; i < 3; ++i)
 		slottxt[i] << "";
 	battle *tempBattle;
-	int tempPower=0, tempPower2=0;
 	int odds;
+	double tempOdds;
 	map_node *tempNode;
 	SDL_FillRect(screen, &IH::Instance()->GUIFrameRect, 0x000000);
 	tempBattle=&IH::Instance()->currentBattle;
 	
 	slottxt[0] << "Attackers Strength\n";
-	if(tempBattle->attackers.size()>0)
-	{
-		for(int i=0; i<tempBattle->attackers.size(); i++)
-		{
-			tempPower+=tempBattle->attackers.at(i)->getPower();
-		}
-	}
-	slottxt[0] << tempPower << "\n";
+	slottxt[0] << IH::Instance()->attackerTotalPower << "\n";
 	slottxt[1] << "Defenders Strength\n";
-	if(tempBattle->defenders.size()>0)
-	{
-		for(int i=0; i<tempBattle->defenders.size(); i++)
-		{
-			tempNode=&IH::Instance()->map->getMap()[tempBattle->defenders.at(i)->getY()-1][tempBattle->defenders.at(i)->getX()-1];
-			if(tempNode->type==rough||tempNode->type==roughForest)
-			{
-				tempPower2+=tempBattle->defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus;
-			}
-			else
-			{
-				tempPower2+=tempBattle->defenders.at(i)->getPower();
-			}
-		}
-	}
-	slottxt[1] << tempPower2 << "\n";
+	slottxt[1] << IH::Instance()->defenderTotalPower<< "\n";
 
 	slottxt[2] << "odds\n";
 	//attacker advantage
-	if(tempPower > tempPower2)
+	if(IH::Instance()->attackerTotalPower > IH::Instance()->defenderTotalPower)
 	{
-		if(tempPower2>0)
+		if(IH::Instance()->defenderTotalPower>0)
 		{
-			odds= tempPower/tempPower2;
+			odds=IH::Instance()->attackerTotalPower/IH::Instance()->defenderTotalPower;
 			slottxt[2] << odds << " : 1\n";
 		}
 	}
-	else if(tempPower2> tempPower)
+	else if(IH::Instance()->defenderTotalPower> IH::Instance()->attackerTotalPower)
 	{
-		if(tempPower>0)
+		if(IH::Instance()->attackerTotalPower)
 		{
-			odds= tempPower2/tempPower;
+			tempOdds= (double)IH::Instance()->defenderTotalPower/(double)IH::Instance()->attackerTotalPower;
+			odds=tempOdds+0.5;
 			slottxt[2] << "1 : "<< odds << "\n";
 		}
 	}

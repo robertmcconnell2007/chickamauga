@@ -175,6 +175,8 @@ public:
 	bool playingLAN;
 	bool preppingCombat;
 	bool keysOff;
+	int attackerTotalPower;
+	int defenderTotalPower;
 	SDL_Event event;
 	//public functions
 	static IH * Instance();

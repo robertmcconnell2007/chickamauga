@@ -34,6 +34,37 @@ enum terrainTypes;
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 
+
+void updatePowers()
+{
+	IH::Instance()->attackerTotalPower=0;
+	IH::Instance()->defenderTotalPower=0;
+	battle *tempBattle;
+	map_node *tempNode;
+	tempBattle=&IH::Instance()->currentBattle;
+	if(tempBattle->attackers.size()>0)
+	{
+		for(int i=0; i<tempBattle->attackers.size(); i++)
+		{
+			IH::Instance()->attackerTotalPower+=tempBattle->attackers.at(i)->getPower();
+		}
+	}
+	if(tempBattle->defenders.size()>0)
+	{
+		for(int i=0; i<tempBattle->defenders.size(); i++)
+		{
+			tempNode=&IH::Instance()->map->getMap()[tempBattle->defenders.at(i)->getY()-1][tempBattle->defenders.at(i)->getX()-1];
+			if(tempNode->type==rough||tempNode->type==roughForest)
+			{
+				IH::Instance()->defenderTotalPower+=tempBattle->defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus;
+			}
+			else
+			{
+				IH::Instance()->defenderTotalPower+=tempBattle->defenders.at(i)->getPower();
+			}
+		}
+	}
+}
 int stringToInt(string str)
 {
 	int newInt = 0;
@@ -47,7 +78,6 @@ int stringToInt(string str)
 
 	return newInt;
 }
-
 
 
 //checks the clicked node to see if there are any units on it
@@ -625,6 +655,7 @@ void IH::handlePrimaryInput()
 						{
 							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
 							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+							updatePowers();
 						}
 					}
 					if(!retreatCalled)
@@ -750,6 +781,8 @@ void IH::update(int mspassed)
 		}
 		if(switchState && !retreatCalled)
 		{
+			attackerTotalPower=0;
+			defenderTotalPower=0;
 			if(playersTurn == 1)
 				currentTurn++;
 			playersTurn = !playersTurn;
