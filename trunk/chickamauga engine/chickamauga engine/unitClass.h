@@ -45,6 +45,7 @@ public:
 	bool retreat;
 	int getReinforceTurn(){return reinforceTurn;}
 	SDL_Rect* getUnitRect(){return &unitRect;}
+	SDL_Rect* getTypeRect(){return &typeRect;}
 	void setType(int t) {type=t;}
 	int getType(){return type;}
 	int getX(){return position.x;}
@@ -94,6 +95,7 @@ public:
 	int deadStrength();
 	int reinforcingStrength();
 	SDL_Surface* getArmyColor(){return armyColors;}
+	SDL_Surface* getUnitType(){return unitType;}
 	void resetMoves();
 	void loadArmy(char * unitFile,char * armyColorFile);
 	void drawArmy(int xShift,int yShift,int mapWidth,int maHeight, SDL_Surface* a_screen);

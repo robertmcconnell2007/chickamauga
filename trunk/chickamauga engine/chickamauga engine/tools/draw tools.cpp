@@ -22,6 +22,32 @@ void drawReinforce(SDL_Surface* screen)
 				screen,
 				IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),
 				IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+
+					switch(currentArmy->reinforcements[i]->getType())
+					{
+						case 0:
+						{
+							drawATile(currentArmy->getArmyColor(),currentArmy->reinforcements[i]->getUnitRect(),8,screen, IH::Instance()->reinforceBox.x + 25 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 50 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+							break;
+						}
+						case 1:
+						{
+							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),0,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+							break;
+						}
+						case 2:
+						{
+							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),1,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+							break;
+						}
+						case 3:
+						{
+							drawATile(currentArmy->getUnitType(),currentArmy->reinforcements[i]->getTypeRect(),2,screen, IH::Instance()->reinforceBox.x + 34 +(currentArmy->reinforcements[i]->getUnitRect()->w*(j%10)),IH::Instance()->reinforceBox.y + 65 + IH::Instance()->okBox.h + (currentArmy->reinforcements[i]->getUnitRect()->h*(j/10)));
+							break;
+						}
+					}
+
+
 			j++;
 		}
 	}

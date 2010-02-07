@@ -44,6 +44,11 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 					drawATile(armyColors,&unitRect,power-1,a_screen, (i * 50) - (i*12) + screenShiftx+12, k * 44 + screenShifty+10);
 					switch(type)
 					{
+						case 0:
+						{
+							drawATile(armyColors,&unitRect,8,a_screen, (i*50) -(i*12) + screenShiftx+12, k*44 + screenShifty+10);
+							break;
+						}
 					case 1:
 						{
 							drawATile(unitType,&typeRect,0,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+25);	
@@ -68,6 +73,11 @@ void unitClass::drawUnit(int screenShiftx,int screenShifty,int mapWidth,int mapH
 					switch(type)
 					{
 						
+					case 0:
+						{
+							drawATile(armyColors,&unitRect,8,a_screen, (i*50) -(i*12) + screenShiftx+12, k*44 + screenShifty+30);
+							break;
+						}
 					case 1:
 						{
 							drawATile(unitType,&typeRect,0,a_screen, (i*50) - (i*12) +screenShiftx+21, k*44+screenShifty+45);
