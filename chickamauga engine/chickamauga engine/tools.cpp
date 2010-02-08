@@ -833,16 +833,20 @@ void IH::update(int mspassed)
 	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
 		IH::Instance()->handleMessage();
+	if(playingLAN && connected && (SDL_GetTicks()/1000)%2)
+	{
+		MessageHandler::Instance()->sendMessage("Yo!", PING);
+	}
 	if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
 	{
 		beginWait = SDL_GetTicks();
 		if(connection == true)
 		{
 			connection = false;
-			MessageHandler::Instance()->sendMessage("Yo!", PING);
 		}
 		else
 		{
+			int i = 0;
 			//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
 		}
 	}
@@ -985,6 +989,9 @@ bool IH::handleMessage()
 			//MessageHandler::Instance()->sendMessage("1", PICKFACTION);
 			//MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
 			connected = true;
+			beginWait = SDL_GetTicks();
+			connection = true;
+			MessageHandler::Instance()->sendMessage("Yo!",PING);
 			if(canPickFaction)
 			{
 				MessageHandler::Instance()->sendMessage(matchFileNames.gameName, GAMEFILENAME);
@@ -997,6 +1004,8 @@ bool IH::handleMessage()
 			if(currentMessage == "OK")
 			{
 				connected = true;
+				beginWait = SDL_GetTicks();
+				connection = true;
 				gameState = atMatchPrepSecond;
 				canPickFaction = true;
 			}
