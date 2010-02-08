@@ -37,6 +37,7 @@ enum terrainTypes;
 
 void updatePowers()
 {
+	ostringstream oss;
 	IH::Instance()->attackerTotalPower=0;
 	IH::Instance()->defenderTotalPower=0;
 	battle *tempBattle;
@@ -64,6 +65,8 @@ void updatePowers()
 			}
 		}
 	}
+	oss << IH::Instance()->attackerTotalPower << "#" << IH::Instance()->defenderTotalPower;
+	MessageHandler::Instance()->sendMessage(oss.str(),COMBATUPDATE);
 }
 int stringToInt(string str)
 {
@@ -106,6 +109,7 @@ void setEnemyNodes(armyClass enemyArmy, mapSuperClass* map)
 
 void checkUnitStacks(mapSuperClass* map, armyClass first, armyClass second)
 {
+	map->cleanStacks();
 	map_node** mapPointer = map->getMap();
 	for(int i = 0; i < map->height; i++)
 	{
@@ -829,19 +833,19 @@ void IH::update(int mspassed)
 	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
 		IH::Instance()->handleMessage();
-	//if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
-	//{
-	//	beginWait = SDL_GetTicks();
-	//	if(connection == true)
-	//	{
-	//		connection = false;
-	//		MessageHandler::Instance()->sendMessage("Yo!", PING);
-	//	}
-	//	else
-	//	{
-	//		//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
-	//	}
-	//}
+	if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
+	{
+		beginWait = SDL_GetTicks();
+		if(connection == true)
+		{
+			connection = false;
+			MessageHandler::Instance()->sendMessage("Yo!", PING);
+		}
+		else
+		{
+			//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
+		}
+	}
 }
 
 void IH::drawAll()
@@ -1138,6 +1142,15 @@ bool IH::handleMessage()
 		gameRules->calcAllRules();
 		gameState = reviewingMatch;
 		return true;
+		break;
+	case COMBATUPDATE:
+		n = currentMessage.find('#', 0);
+		newX = stringToInt(currentMessage.substr(0,n));
+		currentMessage = currentMessage.substr(n+1, -1);
+		newY = stringToInt(currentMessage);
+		break;
+	case PING:
+		connection = true;
 		break;
 	}
 	return false;

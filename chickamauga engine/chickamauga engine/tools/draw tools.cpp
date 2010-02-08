@@ -207,7 +207,7 @@ void drawCombatGui(SDL_Surface *screen)
 		if(IH::Instance()->attackerTotalPower)
 		{
 			tempOdds= (double)IH::Instance()->defenderTotalPower/(double)IH::Instance()->attackerTotalPower;
-			odds=tempOdds+0.5;
+			odds=tempOdds+0.9999;
 			slottxt[2] << "1 : "<< odds << "\n";
 		}
 	}

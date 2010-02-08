@@ -26,6 +26,8 @@ enum messagerFlags
 	CHATMESSAGE,
 	QUIT,
 	GAMEBEGIN,
+	COMBATUPDATE,
+	PING,
 };
 
 class MessageHandler

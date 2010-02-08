@@ -118,5 +118,6 @@ public:
 	void deleteMap();
 	void cleanReinforce();
 	void cleanMap();
+	void cleanStacks();
 	~mapSuperClass();
 };

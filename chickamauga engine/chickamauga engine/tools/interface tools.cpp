@@ -150,7 +150,9 @@ bool secondClick(mapSuperClass* map, map_node* node,int newX,int newY, armyClass
 {
 	checkUnitStacks(map,currentArmy,enemyArmy);
 	map->clearEnemy();
-	if(IH::Instance()->enemyUnitsSelected)
+	if(node->numOfUnits > 1)
+		cancelClick(map);
+	else if(IH::Instance()->enemyUnitsSelected)
 		cancelClick(map);
 	else if(map->getMap()[newX][newY].movement>=0)
 	{
