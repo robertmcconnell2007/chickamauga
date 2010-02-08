@@ -74,7 +74,7 @@ IH::IH()
 	preppingCombat = false;
 	beginWait = 0;
 	timeOut = 10000;
-	pingTime = 2000;
+	pingTime = 4000;
 	connection = true;
 	clickCancel = false;
 	keysOff = false;
