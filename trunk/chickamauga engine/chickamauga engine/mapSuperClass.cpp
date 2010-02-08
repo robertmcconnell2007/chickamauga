@@ -9,6 +9,17 @@ void mapSuperClass::cleanMap()
 	cleanReinforce();
 }
 
+void mapSuperClass::cleanStacks()
+{
+	for(int i = 0; i < width; i++)
+	{
+		for(int j = 0; j < height; j++)
+		{
+			mapPointer[i][j].numOfUnits = 0;
+		}
+	}
+}
+
 void mapSuperClass::cleanReinforce()
 {
 	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
