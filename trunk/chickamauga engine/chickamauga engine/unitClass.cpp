@@ -199,6 +199,7 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		infile>>px;
 		infile>>pow;
 		infile>>type;
+		infile.ignore(1);
 		getline(infile,name,'#');
 		temp->setPosition(px,py);
 		temp->setPower(pow);
@@ -216,6 +217,7 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		infile>>pow;
 		infile>>turn;
 		infile>>type;
+		infile.ignore(1);
 		getline(infile,name,'#');
 		temp->setPosition(-1,-1);
 		temp->setPower(pow);

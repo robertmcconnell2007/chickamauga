@@ -45,6 +45,10 @@ rules::rules()
 	VPR = NULL;
 	ACR = NULL;
 	RER = NULL;
+	rulesWindow.w = 400;
+	rulesWindow.h = 500;
+	rulesWindow.x = (IH::Instance()->screen->w / 2) - 150;
+	rulesWindow.y = 50;
 }
 
 void rules::loadRules(string fileName)
@@ -190,7 +194,7 @@ void rules::loadRules(string fileName)
 			infile.ignore(1);
 			getline(infile, temp, '\n');
 			//ask the army for that unit and set the pointer to it
-			VPR[totVPR].specialUnit = IH::Instance()->players[1].playerArmy.findUnit(temp);			
+			VPR[totVPR].specialUnit = IH::Instance()->players[VPR[totVPR].unitOwner].playerArmy.findUnit(temp);			
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
@@ -318,6 +322,141 @@ void rules::loadRules(string fileName)
 			totUKR++;
 		}
 	}
+//	printStrings("TESTING TESTING TESTING", rulesWindow, rulesDisplay, IH::Instance()->textColor, IH::Instance()->font1);
+}
+
+void rules::printRules(int page)
+{
+	ostringstream masterstring;
+	masterstring << "Game Rules:\n\n";
+	for(int i = 0; i < 	RCRrules; ++i)
+	{
+		if(!RCR[i].controlRule)
+		{
+			masterstring << RCR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&RCR[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i <  UKRrules; ++i)
+	{
+		if(!UKR[i].controlRule)
+		{
+			masterstring << UKR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&UKR[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i <  RERrules; ++i)
+	{
+		if(!RER[i].controlRule)
+		{
+			masterstring << RER[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&RER[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	UERrules; ++i)
+	{
+		if(!UER[i].controlRule)
+		{
+			masterstring << UER[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&UER[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	VPRrules; ++i)
+	{
+		if(!VPR[i].controlRule)
+		{
+			masterstring << VPR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&VPR[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	ACRrules; ++i)
+	{
+		if(!ACR[i].controlRule)
+		{
+			masterstring << ACR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&ACR[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	for(int i = 0; i < 	NCRrules; ++i)
+	{
+		if(!NCR[i].controlRule)
+		{
+			masterstring << NCR[i].returnRule() << "\n";
+			for(int k = 0; k < numDependancies; ++k)
+			{
+				if(&NCR[i] == DPD[k].dependantRule)
+				{
+					masterstring << "And is dependant on this rule:\n" << DPD[k].controlRule->returnRule() << "\n";
+				}
+			}
+		}
+	}
+	//29
+	string piece = "", tempTotal = masterstring.str();
+	//int place = 0, end = 0;
+	//for(int i = 0; i < 29 && place != -1; ++i)
+	//{
+	//	place = tempTotal.find('\n', 0);
+	//	end += place;
+	//	if(place != -1)
+	//		tempTotal = tempTotal.substr(place + 1, -1);
+	//}
+	int counter = 0, end = 0;
+	for(int i = 0; i < page; ++i)
+	{
+		end = 0;
+		counter = 0;
+		while(counter < 29 && end < tempTotal.length())
+		{
+			if(tempTotal[end] == '\n')
+				counter++;
+			end++;
+		}
+		if(end == tempTotal.length())
+		{
+			IH::Instance()->maxPages = IH::Instance()->currentPage;
+			end--;
+		}
+		piece = tempTotal.substr(0, end);
+		tempTotal = tempTotal.substr(end + 1, -1);		
+	}	
+	printStrings(piece, rulesWindow, IH::Instance()->screen, IH::Instance()->textColor, IH::Instance()->font1);
 }
 
 void rules::coutRules()
@@ -593,7 +732,7 @@ string VIPRule::returnRule()
 		oss << " and/or alive";
 		break;
 	}
-	oss << " at end of match";
+	oss << " at end of match.\n";
 	return oss.str();
 }
 //	no,
