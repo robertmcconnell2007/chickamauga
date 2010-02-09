@@ -5,9 +5,10 @@ sound::~sound(){}
 
 bool sound::fillMusic()
 {
-	musicArray = new string[2];
+	musicArray = new string[3];
 	musicArray[0] = "ourSound/paddy.wav";
 	musicArray[1] = "ourSound/ConfederateBattleMusic.wav";
+	musicArray[2] = "ourSound/endGameMusic.wav";
 	return true;
 }
 void sound::playWAV(int wav)

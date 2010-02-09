@@ -11,7 +11,7 @@ using namespace std;
 
 enum SoundFX
 {
-	unionMusic, confederateMusic
+	unionMusic, confederateMusic, endGameMusic
 };
 
 class sound

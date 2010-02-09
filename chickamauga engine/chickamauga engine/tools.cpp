@@ -676,6 +676,7 @@ void IH::handlePrimaryInput()
 		}
 	case reviewingMatch:
 		{
+			
 			switch(event.type)
 			{
 			case SDL_MOUSEBUTTONUP:
@@ -767,6 +768,9 @@ void IH::update(int mspassed)
 		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0 || currentTurn > gameRules->numGameTurns)
 		{
 			gameRules->calcAllRules();
+			IH::gameSound->stopMusic(prevSong);
+			IH::gameSound->playWAV(endGameMusic);
+			IH::Instance()->prevSong = endGameMusic;
 			gameState = reviewingMatch;
 		}
 		break;
@@ -1149,6 +1153,9 @@ bool IH::handleMessage()
 		cout << currentMessage << "\n";
 		chatBox->addString(currentMessage);
 		gameRules->calcAllRules();
+		IH::gameSound->stopMusic(prevSong);
+			IH::gameSound->playWAV(endGameMusic);
+			IH::Instance()->prevSong = endGameMusic;
 		gameState = reviewingMatch;
 		return true;
 		break;
