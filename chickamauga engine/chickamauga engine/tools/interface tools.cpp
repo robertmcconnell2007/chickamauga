@@ -6,7 +6,7 @@
 
 void reinforceDialog(SDL_Event event)
 {
-	if(IH::Instance()->canReinforce && IH::Instance()->selectedNode->reinforce < IH::Instance()->gameRules->unitMovePoints)
+	if(IH::Instance()->canReinforce && IH::Instance()->selectedNode->reinforce <= IH::Instance()->gameRules->unitMovePoints)
 	{
 		if(clickedIn(event, IH::Instance()->okBox))
 		{
@@ -17,8 +17,11 @@ void reinforceDialog(SDL_Event event)
 			{
 				IH::Instance()->players[IH::Instance()->playersTurn].playerArmy.moveUnit(IH::Instance()->currentUnits[0], MUFReinforce, MUTField);
 				moveUnit(IH::Instance()->currentUnits[0],IH::Instance()->map, IH::Instance()->selectedNode->row-1, IH::Instance()->selectedNode->col-1);
-				firstClick(IH::Instance()->map, IH::Instance()->selectedNode, IH::Instance()->players[IH::Instance()->playersTurn].playerArmy, IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
+				//firstClick(IH::Instance()->map, IH::Instance()->selectedNode, IH::Instance()->players[IH::Instance()->playersTurn].playerArmy, IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
 				IH::Instance()->currentUnits[0]->resetMove();
+				IH::Instance()->selectedNode->reinforce += 1;
+				cancelClick(IH::Instance()->map);
+				IH::Instance()->canReinforce = false;
 			}
 		}
 		else if(event.motion.x > IH::Instance()->reinforceBox.x + 25 && event.motion.x < 275 + IH::Instance()->reinforceBox.x && event.motion.y > IH::Instance()->reinforceBox.y + 100 && event.motion.y < 175 + IH::Instance()->reinforceBox.y)
@@ -93,10 +96,6 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 		}
 	}
 	setEnemyNodes(enemyArmy, map);
-	if(node->reinforce+1 >= 6)
-	{
-		return false;
-	}
 	if(IH::Instance()->currentUnits[0] != NULL && IH::Instance()->currentUnits[0]->hasMoved())
 	{
 		if(!IH::Instance()->currentUnits[1])
@@ -105,23 +104,17 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 			return false;
 		
 	}
-	if(IH::Instance()->canReinforce)
-	{
-		if(IH::Instance()->currentUnits[0]->getType() == 0)
-			moveTrain(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
-		else
-			moveTo(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce+1));
-		node->reinforce += 1;
-		IH::Instance()->selectedNode = node;
-		IH::Instance()->canReinforce = false;
-	}
+	if(IH::Instance()->currentUnits[0]->getType() == 0)
+		moveTrain(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce));
 	else
-	{
-		if(IH::Instance()->currentUnits[0]->getType() == 0)
-			moveTrain(node,IH::Instance()->gameRules->unitMovePoints);
-		else
-			moveTo(node,IH::Instance()->gameRules->unitMovePoints);
-	}
+		moveTo(node,(IH::Instance()->gameRules->unitMovePoints)-(node->reinforce));
+	//else
+	//{
+	//	if(IH::Instance()->currentUnits[0]->getType() == 0)
+	//		moveTrain(node,IH::Instance()->gameRules->unitMovePoints);
+	//	else
+	//		moveTo(node,IH::Instance()->gameRules->unitMovePoints);
+	//}
 	if(node->exit && ((IH::Instance()->currentUnits[0] != NULL && !IH::Instance()->currentUnits[0]->hasMoved()) || (IH::Instance()->currentUnits[1] != NULL && !IH::Instance()->currentUnits[1]->hasMoved())))
 	{
 		IH::Instance()->canExit = true;
@@ -401,7 +394,10 @@ void cancelClick(mapSuperClass * map)
 	//need to clear the unit array.
 	IH::Instance()->currentUnits[0] = NULL;
 	IH::Instance()->currentUnits[1] = NULL;
-	IH::Instance()->selectedNode    = NULL;
+	if(!IH::Instance()->canReinforce)
+	{
+		IH::Instance()->selectedNode    = NULL;
+	}
 	IH::Instance()->unit1Selected   = false;
 	IH::Instance()->unit2Selected   = false;
 	//currentUnits[1] = NULL;

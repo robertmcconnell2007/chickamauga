@@ -18,17 +18,25 @@ void mapSuperClass::cleanStacks()
 			mapPointer[i][j].numOfUnits = 0;
 		}
 	}
+	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
+	{
+		IH::Instance()->gameRules->blueEntry[i]->numOfUnits = 2;
+	}
+	for(int i = 0; i < IH::Instance()->gameRules->numGRNodes; ++i)
+	{
+		IH::Instance()->gameRules->grayEntry[i]->numOfUnits = 2;
+	}
 }
 
 void mapSuperClass::cleanReinforce()
 {
 	for(int i = 0; i < IH::Instance()->gameRules->numBRNodes; ++i)
 	{
-		IH::Instance()->gameRules->blueEntry[i]->reinforce = 1;
+		IH::Instance()->gameRules->blueEntry[i]->reinforce = 0;
 	}
 	for(int i = 0; i < IH::Instance()->gameRules->numGRNodes; ++i)
 	{
-		IH::Instance()->gameRules->grayEntry[i]->reinforce = 1;
+		IH::Instance()->gameRules->grayEntry[i]->reinforce = 0;
 	}
 }
 

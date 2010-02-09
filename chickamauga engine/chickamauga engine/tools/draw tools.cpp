@@ -16,9 +16,9 @@ void drawBasicRules()
 	oss << "Each player has units that they move across the map.\nThe numbers on the units denote their strength points.\n";
 	oss << "The different unit types are Infantry, Cavalry, Artillary, and Trains.\n";
 	oss << "Different map tiles have different movement costs associated with them\n";
-	oss << "Look for roads on spaces, there is no movement penalty for moving from\na space with a road to another space with a road.\n";
+	oss << "Look for roads on spaces, there is no movement penalty for moving from\na space with a road to a space with a connecting road.\n";
 	oss << "Paths are similar, and reduce the penalty for moving.\n";
-	oss << "Some space offer a defensive bonus, while others can't be crossed.\n";
+	oss << "Some spaces offer a defensive bonus, while others can't be crossed.\n";
 	oss << "Watch out for enemy zones of control,\nIf one of your units enters one, it will have to do combat.\n";
 	oss << "Complete combat by clicking on the units you want to participate in that combat.\n";
 	oss << "Be careful though, all units able to, must do combat each round.\n";
@@ -28,7 +28,7 @@ void drawBasicRules()
 	oss << "You can select any space to see what type it is and what units are on it at the bottom.\n";
 	oss << "To begin a match in Hotseat, or as a Host, you must know the name of the game\nyou want to play.\n";
 	oss << "The basic game is called \"chickamauga.txt\"\n";
-	oss << "To being a match as a second player, you must know the IP of the host.\n";
+	oss << "To join another player's game online, you must know the IP address of the host.\n";
 
 	printStrings(oss.str(), IH::Instance()->basicRulesBox, IH::Instance()->screen, IH::Instance()->textColor, IH::Instance()->font1);
 

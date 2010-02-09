@@ -523,8 +523,11 @@ void IH::handlePrimaryInput()
 						else if(selectedNode->reinforceBlue && playersTurn == 0 && playerIam == playersTurn && 
 							selectedNode->reinforce < gameRules->unitMovePoints)
 						{
-							canReinforce = true;
-							menuUp = true;
+							if(!canReinforce)
+							{
+								canReinforce = true;
+								menuUp = true;
+							}
 						}
 						else if(selectedNode->reinforceGrey && playersTurn == 1 && playerIam == playersTurn && 
 							selectedNode->reinforce < gameRules->unitMovePoints)
@@ -962,8 +965,8 @@ void IH::drawAll()
 				drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
 			}
 		}
-		
-		drawChat(chatBox,chatString,1,screen);
+		if(playingLAN)
+			drawChat(chatBox,chatString,1,screen);
 		if(escapeMenu)
 		{
 			drawMenu();			
