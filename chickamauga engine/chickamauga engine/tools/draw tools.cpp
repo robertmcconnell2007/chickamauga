@@ -269,22 +269,47 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			}
 		}
 		node=&map->getMap()[tempBattle->attackers.back()->getY()-1][tempBattle->attackers.back()->getX()-1];
-		for(int i=0; i<6; i++)
+		if(tempBattle->attackers.back()->getType()==0)
 		{
-			if(i<3)
+			for(int i=0; i<6; i++)
 			{
-				if(!node->nodeEdges[i]->upperNode->enemy && !node->nodeEdges[i]->creek_edge && node->nodeEdges[i]->upperNode->numOfUnits < 2)
+				if(i<3)
 				{
-					node->nodeEdges[i]->upperNode->selected=true;
-					nodeFound=true;
+					if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					{
+						node->nodeEdges[i]->upperNode->selected=true;
+						nodeFound=true;
+					}
+				}
+				else
+				{
+					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					{
+						node->nodeEdges[i]->lowerNode->selected=true;
+						nodeFound=true;
+					}
 				}
 			}
-			else
+		}
+		else
+		{
+			for(int i=0; i<6; i++)
 			{
-				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+				if(i<3)
 				{
-					node->nodeEdges[i]->lowerNode->selected=true;
-					nodeFound=true;
+					if(!node->nodeEdges[i]->upperNode->enemy && !node->nodeEdges[i]->creek_edge && node->nodeEdges[i]->upperNode->numOfUnits < 2)
+					{
+						node->nodeEdges[i]->upperNode->selected=true;
+						nodeFound=true;
+					}
+				}
+				else
+				{
+					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+					{
+						node->nodeEdges[i]->lowerNode->selected=true;
+						nodeFound=true;
+					}
 				}
 			}
 		}
@@ -293,22 +318,47 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 	{
 		setEnemyNodes(*attkrs,map);
 		node=&map->getMap()[tempBattle->defenders.back()->getY()-1][tempBattle->defenders.back()->getX()-1];
-		for(int i=0; i<6; i++)
+		if(tempBattle->defenders.back()->getType()==0)
 		{
-			if(i<3)
+			for(int i=0; i<6; i++)
 			{
-				if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<2)
+				if(i<3)
 				{
-					node->nodeEdges[i]->upperNode->selected=true;
-					nodeFound=true;
+					if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					{
+						node->nodeEdges[i]->upperNode->selected=true;
+						nodeFound=true;
+					}
+				}
+				else
+				{
+					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					{
+						node->nodeEdges[i]->lowerNode->selected=true;
+						nodeFound=true;
+					}
 				}
 			}
-			else
+		}
+		else
+		{
+			for(int i=0; i<6; i++)
 			{
-				if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+				if(i<3)
 				{
-					node->nodeEdges[i]->lowerNode->selected=true;
-					nodeFound=true;
+					if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<2)
+					{
+						node->nodeEdges[i]->upperNode->selected=true;
+						nodeFound=true;
+					}
+				}
+				else
+				{
+					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+					{
+						node->nodeEdges[i]->lowerNode->selected=true;
+						nodeFound=true;
+					}
 				}
 			}
 		}
