@@ -34,6 +34,61 @@ enum terrainTypes;
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
 
+void roadScore(map_node* node, armyClass enemyUnits)
+{
+	for(int i = 0; i < enemyUnits.currentSize; i++)
+	{
+		if(node->col == enemyUnits.armyArray[i]->getX() && node->row == enemyUnits.armyArray[i]->getY())
+			return;
+	}
+	node->movement = 1;
+	for(int i = 0; i < 6; i++)
+	{
+		if(i < 3)
+		{
+			if(node->nodeEdges[i] != NULL && node->nodeEdges[i]->road_edge && node->nodeEdges[i]->upperNode->movement != 1)
+				roadScore(node->nodeEdges[i]->upperNode,enemyUnits);
+		}
+		else
+		{
+			if(node->nodeEdges[i] != NULL && node->nodeEdges[i]->road_edge && node->nodeEdges[i]->lowerNode->movement != 1)
+				roadScore(node->nodeEdges[i]->lowerNode,enemyUnits);
+		}
+	}
+}
+
+bool closeToRoad(map_node* node, int distanceLeft)
+{
+	if(distanceLeft < 0)
+		return false;
+	if(node->movement == 1)
+	{
+		node->selected = true;
+		return true;
+	}
+	for(int i = 0; i < 6; i++)
+	{
+		if(i < 3)
+		{
+			if(node->nodeEdges[i] != NULL && node->nodeEdges[i]->upperNode->selected != true && !node->nodeEdges[i]->creek_edge)
+				if(distanceLeft-1 >= 0 && closeToRoad(node->nodeEdges[i]->upperNode, distanceLeft-1))
+				{
+					node->selected = true;
+					return true;
+				}
+		}
+		else
+		{
+			if(node->nodeEdges[i] != NULL && node->nodeEdges[i]->lowerNode->selected != true && !node->nodeEdges[i]->creek_edge)
+				if(distanceLeft-1 >= 0 && closeToRoad(node->nodeEdges[i]->lowerNode, distanceLeft-1))
+				{
+					node->selected = true;
+					return true;
+				}
+		}
+	}
+	return false;
+}
 
 void updatePowers()
 {
@@ -487,6 +542,10 @@ void IH::handlePrimaryInput()
 					if(firstX < map->width && firstY < map->height && firstX >= 0 && firstY >= 0)
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
+						if(event.button.button == 1)
+							roadScore(selectedNode, players[1].playerArmy); // TESTROADSCORE (left click on a road)
+						else
+							closeToRoad(selectedNode, 10); // TESTCLOSETOROAD (any other click on a node currently without a unit cause it'll clear the selection)
 						if(currentUnits[0] || currentUnits[1] && !menuUp)
 						{	
 							if(playerIam == 0 && playersTurn == 0)
