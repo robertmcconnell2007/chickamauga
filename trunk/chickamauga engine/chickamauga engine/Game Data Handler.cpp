@@ -346,6 +346,7 @@ void IH::drawMenu()
 
 void IH::_resetAll()
 {
+	gameSound->stopMusic(prevSong);
 	amHost = false;
 	waiting = false;
 	canPickFaction = false;
