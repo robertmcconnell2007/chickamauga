@@ -29,6 +29,10 @@ void drawBasicRules()
 	oss << "To begin a match in Hotseat, or as a Host, you must know the name of the game\nyou want to play.\n";
 	oss << "The basic game is called \"chickamauga.txt\"\n";
 	oss << "To join another player's game online, you must know the IP address of the host.\n";
+	oss << "Press the Tab key to open the menu.\n";
+	oss << "There are several pages of scoring rules, click the mouse button to continue to next page.\n";
+	oss << "the top left cell of the map is 1,1 (x,y).\n";
+	oss << "x increases as you move to the right, and y increases as you move down.\n";
 
 	printStrings(oss.str(), IH::Instance()->basicRulesBox, IH::Instance()->screen, IH::Instance()->textColor, IH::Instance()->font1);
 
