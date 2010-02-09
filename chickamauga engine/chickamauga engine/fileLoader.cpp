@@ -82,6 +82,10 @@ void FileInfo::loadFileInfo(string filename)
 		{
 			getline(infile,menuOptions);
 		}
+		else if(name == "blackBox")
+		{
+			getline(infile,blackBox);
+		}
 		//infile.ignore();
 		getline(infile,name,'#');
 	}

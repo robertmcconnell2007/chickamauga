@@ -2,6 +2,7 @@
 #include "battleCalc.h"
 #include "mapSuperClass.h"
 #include <vector>
+#include "SDL.h"
 
 enum playerSpecificity
 {
@@ -111,6 +112,7 @@ struct roadExitRule : public masterRule
 
 struct rules
 {
+	SDL_Rect      rulesWindow;
 	int numExitNodes;
 	int numBRNodes;//blue reinforcement nodes
 	int numGRNodes;//gray reinforcement nodes
@@ -152,6 +154,7 @@ struct rules
 	//functionality
 	rules();
 	void loadRules(string fileName);
+	void printRules(int page);
 	void coutRules();
 	void calcAllRules();
 	void deleteRules();

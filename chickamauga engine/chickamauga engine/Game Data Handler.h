@@ -89,6 +89,9 @@ public:
 	bool clickCancel;
 	int pingTime;
 	bool connection;
+
+	int currentPage;
+	int maxPages;
 	
 	//previous song
 	int prevSong;
@@ -106,6 +109,8 @@ public:
 	//menu bool
 	bool menuUp;
 	bool escapeMenu;
+	bool initialRulesDisplay;
+	bool specificRulesDisplay;
 	int menuOption;
 
 	//chat box info
@@ -164,6 +169,8 @@ public:
 	SDL_Rect RandomOptionBox;
 	SDL_Rect ReturnToMenuBox;
 	SDL_Rect matchEndOutputBox;
+	SDL_Rect basicRulesButton;
+	SDL_Rect basicRulesBox;
 
 	//unit variables
 	unitClass * currentUnits[2];
@@ -193,6 +200,5 @@ public:
 	void handlePrimaryInput();
 	void update(int mspassed);
 	void drawAll();
-	bool handleMessage();
-	
+	bool handleMessage();	
 };

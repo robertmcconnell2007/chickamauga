@@ -89,6 +89,8 @@ IH::IH()
 	connected = false;
 	menuOption = -1;
 	escapeMenu = false;
+	initialRulesDisplay = false;
+	specificRulesDisplay = false;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		
@@ -155,8 +157,8 @@ IH::IH()
 	GUIEndTurnBox.h = GUIEndTurnBox.w = 50;
 	UIbkColor = 0x05000;
 
-	GameHotseatButton.h = GameJoinButton.h = GameHostButton.h = GameStartButton.h = GameQuitButton.h = u5050.h;
-	GameHotseatButton.w = GameJoinButton.w = GameHostButton.w = GameStartButton.w = GameQuitButton.w = u5050.w;
+	GameHotseatButton.h = GameJoinButton.h = GameHostButton.h = GameStartButton.h = basicRulesButton.h = GameQuitButton.h = u5050.h;
+	GameHotseatButton.w = GameJoinButton.w = GameHostButton.w = GameStartButton.w = basicRulesButton.w = GameQuitButton.w = u5050.w;
 	GameStartButton.x = 30;
 	GameStartButton.y = screen->h - 10 - GameStartButton.h;
 	GameQuitButton.x = screen->w - 30 - GameQuitButton.w;
@@ -174,6 +176,15 @@ IH::IH()
 	matchEndOutputBox.x = matchEndOutputBox.y = 0;
 	matchEndOutputBox.w = 300;
 	matchEndOutputBox.h = 500;
+	basicRulesButton.x = (screen->w / 2) - (basicRulesButton.w / 2);
+	basicRulesButton.y = screen->h - 10 - basicRulesButton.h;
+
+	basicRulesBox.h = 500;
+	basicRulesBox.w = 600;
+	basicRulesBox.x = (screen->w / 2) - (basicRulesBox.w / 2);
+	basicRulesBox.y = 25;
+
+	initialRulesDisplay = false;
 
 	//menu button dimensions
 	//275+55 = middle of the screen roughly, plus the offset for center of the scroll
@@ -229,6 +240,9 @@ IH::IH()
 	ReturnToMenuBox.x = screen->w - ReturnToMenuBox.w;
 	ReturnToMenuBox.y = screen->h - ReturnToMenuBox.h;
 
+	currentPage = 1;
+	maxPages = -1;
+
 #ifdef DEBUG
 	output = "5.243.77.115";
 #endif
@@ -269,11 +283,11 @@ void IH::createMatch()
 	gameRules = new rules;
 	//map object = new map(mapName)
 	map = new mapSuperClass(fileNames.map.c_str());
-	gameRules->loadRules(fileNames.rules);
-	gameRules->coutRules();
 	//set up the players ip address, and any other neccessary data for them
 	players[0].playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
 	players[1].playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
+	gameRules->loadRules(fileNames.rules);
+	gameRules->coutRules();
 	currentTurn = 1;
 	// Start the sound when the game begins 
 	//- - -- - - - - -   -- -- - -- -- -- -- --  - - -- - - -

@@ -183,6 +183,11 @@ void IH::handlePrimaryInput()
 			{
 				endGame();
 			}
+			if(initialRulesDisplay && clickedIn(event, basicRulesBox))
+				initialRulesDisplay = !initialRulesDisplay;
+			if(clickedIn(event, basicRulesButton))
+				initialRulesDisplay = !initialRulesDisplay;
+			
 		}
 		break;
 	case atMatchPrep:
@@ -332,7 +337,7 @@ void IH::handlePrimaryInput()
 		case SDL_KEYDOWN:
 			switch(event.key.keysym.sym)
 			{
-				case SDLK_TAB:
+			case SDLK_TAB:
 				escapeMenu = !escapeMenu;
 				break;
 			case SDLK_ESCAPE:
@@ -419,25 +424,40 @@ void IH::handlePrimaryInput()
 		case SDL_MOUSEBUTTONUP:
 			mouseDown = false;
 			//check for open menu
-				if(escapeMenu)
-				{					
-					if(clickedIn(event,menuOptions))
+			if(specificRulesDisplay)
+			{
+				if(clickedIn(event, IH::Instance()->gameRules->rulesWindow))
+				{
+					if(currentPage == maxPages)
 					{
-						escapeMenu = false;
+						specificRulesDisplay = false;
+						currentPage = 1;
 					}
-					if(clickedIn(event,menuVolume))
+					else
 					{
-						escapeMenu = false;
-					}
-					if(clickedIn(event,menuMain))
-					{
-						escapeMenu = false;
-					}
-					if(clickedIn(event,menuClose))
-					{
-						escapeMenu = false;
+						currentPage++;
 					}
 				}
+			}
+			else if(escapeMenu)
+			{					
+				if(clickedIn(event,menuOptions))
+				{
+					escapeMenu = false;
+				}
+				if(clickedIn(event,menuVolume))
+				{
+					specificRulesDisplay = true;
+				}
+				if(clickedIn(event,menuMain))
+				{
+					escapeMenu = false;
+				}
+				if(clickedIn(event,menuClose))
+				{
+					escapeMenu = false;
+				}
+			}
 			if(!menuUp)
 			{
 				if(clickedIn(event, GUIFrameRect))
@@ -613,7 +633,12 @@ void IH::handlePrimaryInput()
 				mouseDown = false;
 			
 				//check for open menu
-				if(escapeMenu)
+				if(specificRulesDisplay)
+				{
+					if(clickedIn(event, IH::Instance()->gameRules->rulesWindow))
+						specificRulesDisplay = false;
+				}
+				else if(escapeMenu)
 				{
 					if(clickedIn(event,menuOptions))
 					{
@@ -868,6 +893,12 @@ void IH::drawAll()
 		apply_surface(0,0,titleScreen,screen);
 		drawATile(utilityTiles5050, &u5050, 1, screen, GameStartButton.x, GameStartButton.y);
 		drawATile(utilityTiles5050, &u5050, 2, screen, GameQuitButton.x, GameQuitButton.y);
+		drawATile(utilityTiles5050, &u5050, 13, screen, basicRulesButton.x, basicRulesButton.y);
+		if(initialRulesDisplay)
+		{
+			SDL_FillRect(screen, &basicRulesBox, 0x000000);
+			drawBasicRules();
+		}
 		break;
 	case atMatchPrep:
 		if(!waiting)
@@ -912,6 +943,7 @@ void IH::drawAll()
 		break;
 	case matchMainPhase:
 	case matchCombatPhase:
+		drawATile(utilityTiles5050, &u5050, 6, GUIGameFrame, 0,0);
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
@@ -924,9 +956,13 @@ void IH::drawAll()
 		else if(!IH::Instance()->retreatCalled)
 		{
 			drawCombatGui(screen);
-			drawATile(utilityTiles5050, &u5050, 6, screen, GUICalcCombatBox.x, GUICalcCombatBox.y);
-			drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
+			if(playerIam == playersTurn)
+			{
+				drawATile(utilityTiles5050, &u5050, 6, screen, GUICalcCombatBox.x, GUICalcCombatBox.y);
+				drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
+			}
 		}
+		
 		drawChat(chatBox,chatString,1,screen);
 		if(escapeMenu)
 		{
@@ -940,6 +976,13 @@ void IH::drawAll()
 				drawReinforce(screen);
 		}
 		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+		if(specificRulesDisplay)
+		{
+			SDL_FillRect(screen, &gameRules->rulesWindow, 0x0000000);
+			//drawATile(gameRules->rulesDisplay, &gameRules->rulesWindow, 0, screen, gameRules->rulesWindow.x, gameRules->rulesWindow.y);
+			gameRules->printRules(currentPage);
+			//SDL_BlitSurface(gameRules->rulesDisplay, &gameRules->rulesWindow, screen, &screen->clip_rect);
+		}
 		break;
 	case reviewingMatch:
 		ostringstream oss;
