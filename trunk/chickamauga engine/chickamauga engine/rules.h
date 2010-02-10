@@ -6,9 +6,9 @@
 
 enum playerSpecificity
 {
-	none,
 	blue,
-	gray
+	gray,
+	none
 };
 
 enum effect
@@ -106,6 +106,8 @@ struct nodeControlRule : public masterRule
 struct roadExitRule : public masterRule
 {
 	int howManySpacesToRoad;
+	int howManyEntryPoints;
+	map_node ** entryNodes;
 	string returnRule();
 	int calculateRule(int player);
 };
