@@ -740,7 +740,8 @@ void IH::handlePrimaryInput()
 						}
 						if(retreatCalled)
 						{
-							doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+							if((playingLAN && playersTurn != playerIam) || !playingLAN)
+								doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
 						}
 						else if(playersTurn == playerIam && !keysOff)
 						{
