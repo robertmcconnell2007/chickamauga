@@ -22,6 +22,7 @@ struct FileInfo
 	string u5050tiles;
 	string menu;
 	string menuOptions;
+	string turnCounter;
 	string blackBox;
 	void loadFileInfo(string filename);
 };

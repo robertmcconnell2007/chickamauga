@@ -144,6 +144,7 @@ public:
 	SDL_Surface * utilityTiles5050;
 	SDL_Surface * menu;
 	SDL_Surface * menuTiles;
+	SDL_Surface * turnTile;
 	
 	//SDL_Rect GUIGameFrame;
 
@@ -171,6 +172,7 @@ public:
 	SDL_Rect matchEndOutputBox;
 	SDL_Rect basicRulesButton;
 	SDL_Rect basicRulesBox;
+	SDL_Rect turnRect;
 
 	//unit variables
 	unitClass * currentUnits[2];

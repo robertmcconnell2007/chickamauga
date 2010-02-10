@@ -82,6 +82,10 @@ void FileInfo::loadFileInfo(string filename)
 		{
 			getline(infile,menuOptions);
 		}
+		else if(name == "turnCounter")
+		{
+			getline(infile,turnCounter);
+		}
 		else if(name == "blackBox")
 		{
 			getline(infile,blackBox);

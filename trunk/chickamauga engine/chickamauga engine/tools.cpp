@@ -506,6 +506,7 @@ void IH::handlePrimaryInput()
 				}
 				if(clickedIn(event,menuMain))
 				{
+					//IH::_resetAll();
 					escapeMenu = false;
 				}
 				if(clickedIn(event,menuClose))
@@ -1019,6 +1020,7 @@ void IH::drawAll()
 		{
 			drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
 			drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+			drawATile(turnTile,&turnRect,IH::Instance()->getCurrentTurn()-1, screen,0,570);
 		}
 		else if(!IH::Instance()->retreatCalled)
 		{
@@ -1029,6 +1031,7 @@ void IH::drawAll()
 				drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
 			}
 		}
+
 		if(playingLAN)
 			drawChat(chatBox,chatString,1,screen);
 		if(escapeMenu)
