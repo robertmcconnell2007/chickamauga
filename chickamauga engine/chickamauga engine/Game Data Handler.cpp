@@ -69,7 +69,7 @@ IH::IH()
 {
 	attackerTotalPower=0;
 	defenderTotalPower=0;
-	prevSong = -1;
+	prevSong = 0;
 	currentTurn = 1;
 	preppingCombat = false;
 	beginWait = 0;
@@ -135,6 +135,7 @@ IH::IH()
 	utilityTiles5050 = load_my_image(fileNames.u5050tiles.c_str());
 	menu = load_my_image(fileNames.menu.c_str());
 	menuTiles = load_my_image(fileNames.menuOptions.c_str());
+	turnTile = load_my_image(fileNames.turnCounter.c_str());
 	GUIGameFrame         = NULL;
 	map = NULL;
 	GUIFrameRect.h = 70;
@@ -239,6 +240,12 @@ IH::IH()
 	ReturnToMenuBox.h = u20060.h;
 	ReturnToMenuBox.x = 0;//screen->w - ReturnToMenuBox.w;
 	ReturnToMenuBox.y = screen->h - ReturnToMenuBox.h;
+
+//box for current turn
+	//turnRect.x = 0;
+	//turnRect.y = 550;
+	turnRect.w = 75;
+	turnRect.h = 75;
 
 	currentPage = 1;
 	maxPages = -1;

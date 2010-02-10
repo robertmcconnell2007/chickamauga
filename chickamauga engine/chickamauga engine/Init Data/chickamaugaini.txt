@@ -15,4 +15,5 @@ army2colors#Init Data/rebelArmy.bmp
 u5050tiles#Init Data/utility5050tiles.bmp
 menu#Init Data/parchment4.bmp
 menuOptions#Init Data/menuOptions200x60.bmp
+turnCounter#Init Data/turns.bmp
 blackBox#Init Data/blackBox.bmp
