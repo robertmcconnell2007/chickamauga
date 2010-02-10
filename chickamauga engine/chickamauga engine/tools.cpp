@@ -542,10 +542,10 @@ void IH::handlePrimaryInput()
 					if(firstX < map->width && firstY < map->height && firstX >= 0 && firstY >= 0)
 					{
 						selectedNode = &map->getMap()[firstX][firstY];
-						if(event.button.button == 1)
-							roadScore(selectedNode, players[1].playerArmy); // TESTROADSCORE (left click on a road)
-						else
-							closeToRoad(selectedNode, 10); // TESTCLOSETOROAD (any other click on a node currently without a unit cause it'll clear the selection)
+						//if(event.button.button == 1)
+						//	roadScore(selectedNode, players[0].playerArmy); // TESTROADSCORE (left click on a road)
+						//else
+						//	closeToRoad(selectedNode, 10); // TESTCLOSETOROAD (any other click on a node currently without a unit cause it'll clear the selection)
 						if(currentUnits[0] || currentUnits[1] && !menuUp)
 						{	
 							if(playerIam == 0 && playersTurn == 0)
@@ -854,6 +854,10 @@ void IH::update(int mspassed)
 		}
 		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0 || currentTurn > gameRules->numGameTurns)
 		{
+			//TEMPTEMP flash the screen to a wait message
+			//this is a temp version
+			SDL_FillRect(screen, &screen->clip_rect, 0x00000);
+			SDL_Flip(screen);
 			gameRules->calcAllRules();
 			IH::gameSound->stopMusic(prevSong);
 			IH::gameSound->playWAV(endGameMusic);

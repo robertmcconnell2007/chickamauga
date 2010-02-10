@@ -33,17 +33,21 @@ UKR
 none
 
 RER
-2
+1
 10
+3
+24 2
+24 11
+24 16
 none
 
 UER
-2
+1
 10
 if
 
 RCR
-2
+1
 2
 2
 00 00 00 10
@@ -51,12 +55,12 @@ RCR
 none
 
 UER
-1
+0
 1
 none
 
 VPR
-2
+1
 0
 1
 2
@@ -66,57 +70,57 @@ Train
 none
 
 NCR
-1
+0
 10
-2
+1
 0
 18 19
 none
 
 NCR
-1
+0
 20
-2
+1
 0
 22 10
 none
 
 NCR
-2
-20
 1
+20
+0
 0
 01 10
 none
 
 NCR
-2
-20
 1
+20
+0
 0
 04 01
 none
 
 NCR
-0
+2
 5
-1
+0
 0
 07 21
 none
 
 NCR
-0
+2
 5
-1
+0
 0
 11 06
 none
 
 NCR
-0
+2
 5
-1
+0
 0
 10 14
 none

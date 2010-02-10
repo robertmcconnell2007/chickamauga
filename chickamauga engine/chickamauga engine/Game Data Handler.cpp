@@ -237,7 +237,7 @@ IH::IH()
 
 	ReturnToMenuBox.w = u20060.w;
 	ReturnToMenuBox.h = u20060.h;
-	ReturnToMenuBox.x = screen->w - ReturnToMenuBox.w;
+	ReturnToMenuBox.x = 0;//screen->w - ReturnToMenuBox.w;
 	ReturnToMenuBox.y = screen->h - ReturnToMenuBox.h;
 
 	currentPage = 1;
