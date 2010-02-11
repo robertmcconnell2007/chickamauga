@@ -242,8 +242,8 @@ IH::IH()
 	ReturnToMenuBox.y = screen->h - ReturnToMenuBox.h;
 
 //box for current turn
-	//turnRect.x = 0;
-	//turnRect.y = 550;
+	turnRect.x = 0;
+	turnRect.y = 570;
 	turnRect.w = 75;
 	turnRect.h = 75;
 
