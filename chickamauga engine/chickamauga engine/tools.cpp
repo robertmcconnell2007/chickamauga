@@ -1020,7 +1020,13 @@ void IH::drawAll()
 		{
 			drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
 			drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
-			drawATile(turnTile,&turnRect,IH::Instance()->getCurrentTurn()-1, screen,0,570);
+			//creates a black rec
+			SDL_FillRect(screen,&turnRect,0x000000);
+			ostringstream oss;
+			//loads turn: # of # into oss
+			oss << "Turn: " << IH::Instance()->getCurrentTurn() << " of " << IH::Instance()->gameRules->numGameTurns;
+			//prints the oss onto the rectangle
+			printStrings(oss.str(),turnRect,screen,IH::textColor,IH::font1);
 		}
 		else if(!IH::Instance()->retreatCalled)
 		{
