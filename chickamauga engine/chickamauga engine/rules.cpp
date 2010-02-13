@@ -288,20 +288,12 @@ void rules::loadRules(string fileName)
 			int tempX, tempY;
 			infile >> RCR[totRCR].playerSpecific;
 			infile >> RCR[totRCR].numEnterNodes;
-			infile >> RCR[totRCR].numExitNodes;
 			RCR[totRCR].enterNodes = new map_node*[RCR[totRCR].numEnterNodes];
-			RCR[totRCR].exitNodes  = new map_node*[RCR[totRCR].numExitNodes];
 			for(int k = 0; k < RCR[totRCR].numEnterNodes; ++k)
 			{
 				infile >> tempX;
 				infile >> tempY;
 				RCR[totRCR].enterNodes[k] = &IH::Instance()->returnMap()[tempX][tempY];
-			}
-			for(int k = 0; k < RCR[totRCR].numExitNodes; ++k)
-			{
-				infile >> tempX;
-				infile >> tempY;
-				RCR[totRCR].exitNodes[k] = &IH::Instance()->returnMap()[tempX][tempY];
 			}
 			infile.ignore(1);
 			getline(infile, tester, '\n');
@@ -593,19 +585,15 @@ string roadControlRule::returnRule()
 	{
 		oss << "Player must control an unblocked road between start nodes:\n";
 		for(int i = 0; i < numEnterNodes; ++i)
-			oss << "X: " << enterNodes[i]->col << ", Y: " << enterNodes[i]->row << ", ";
-		oss << "\nAnd these end nodes:\n";
-		for(int i = 0; i < numExitNodes; ++i)
-			oss << "X: " << exitNodes[i]->col << ", Y: " << exitNodes[i]->row << ", ";
+			oss << "X: " << enterNodes[i]->row << ", Y: " << enterNodes[i]->col << ", ";
+		oss << "\nAnd any of the exit points off the map\n";
 	}
 	else
 	{
 		oss << pointValue << " points will be awarded for control of an\nunblocked road between start nodes:\n";
 		for(int i = 0; i < numEnterNodes; ++i)
-			oss << "X: " << enterNodes[i]->col << ", Y: " << enterNodes[i]->row << ", ";
-		oss << "\nAnd these end nodes:\n";
-		for(int i = 0; i < numExitNodes; ++i)
-			oss << "X: " << exitNodes[i]->col << ", Y: " << exitNodes[i]->row << ", ";
+			oss << "X: " << enterNodes[i]->row << ", Y: " << enterNodes[i]->col << ", ";
+		oss << "\nAnd any of the exit points off the map\n";
 	}
 	oss << "\n";
 	return oss.str();
@@ -626,9 +614,9 @@ int roadControlRule::calculateRule(int player)
 	{
 		cancelClick(IH::Instance()->map);
 		roadScore(enterNodes[i], IH::Instance()->players[player].playerArmy);
-		for(int j = 0; j < numExitNodes; ++j)
+		for(int j = 0; j < IH::Instance()->gameRules->numExitNodes; ++j)
 		{
-			if(exitNodes[j]->movement)
+			if(IH::Instance()->gameRules->exitNodes.at(j)->movement)//exitNodes[j]->movement)
 				foundViableRoad = true;
 		}
 	}

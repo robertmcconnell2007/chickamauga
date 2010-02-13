@@ -31,7 +31,7 @@ void drawBasicRules()
 	oss << "To join another player's game online, you must know the IP address of the host.\n";
 	oss << "Press the Tab key to open the menu.\n";
 	oss << "There are several pages of scoring rules, click the mouse button on the rules to continue to next page.\n";
-	oss << "the top left cell of the map is 1,1 (X,Y).\n";
+	oss << "The top left cell of the map is 1,1 (X,Y).\n";
 	oss << "X increases as you move to the right, and Y increases as you move down.\n";
 
 	printStrings(oss.str(), IH::Instance()->basicRulesBox, IH::Instance()->screen, IH::Instance()->textColor, IH::Instance()->font1);

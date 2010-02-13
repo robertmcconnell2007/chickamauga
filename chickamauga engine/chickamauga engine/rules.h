@@ -51,9 +51,7 @@ struct dependancy
 struct roadControlRule : public masterRule
 {
 	int numEnterNodes;
-	int numExitNodes;
 	map_node ** enterNodes;
-	map_node ** exitNodes;
 	string returnRule();
 	int calculateRule(int player);
 };
