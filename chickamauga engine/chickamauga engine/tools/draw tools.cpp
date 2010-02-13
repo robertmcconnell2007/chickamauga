@@ -327,7 +327,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(i<3)
 				{
-					if(!node->nodeEdges[i]->upperNode->enemy && !node->nodeEdges[i]->creek_edge && node->nodeEdges[i]->upperNode->numOfUnits < 2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->upperNode->enemy && !node->nodeEdges[i]->creek_edge && node->nodeEdges[i]->upperNode->numOfUnits < 2)
 					{
 						node->nodeEdges[i]->upperNode->selected=true;
 						nodeFound=true;
@@ -335,7 +335,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 				}
 				else
 				{
-					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
 					{
 						node->nodeEdges[i]->lowerNode->selected=true;
 						nodeFound=true;
@@ -354,7 +354,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(i<3)
 				{
-					if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
 					{
 						node->nodeEdges[i]->upperNode->selected=true;
 						nodeFound=true;
@@ -362,7 +362,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 				}
 				else
 				{
-					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<1&&(node->nodeEdges[i]->road_edge||node->nodeEdges[i]->trail_edge))
 					{
 						node->nodeEdges[i]->lowerNode->selected=true;
 						nodeFound=true;
@@ -376,7 +376,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(i<3)
 				{
-					if(!node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->upperNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->upperNode->numOfUnits<2)
 					{
 						node->nodeEdges[i]->upperNode->selected=true;
 						nodeFound=true;
@@ -384,7 +384,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 				}
 				else
 				{
-					if(!node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->lowerNode->enemy&&!node->nodeEdges[i]->creek_edge&&node->nodeEdges[i]->lowerNode->numOfUnits<2)
 					{
 						node->nodeEdges[i]->lowerNode->selected=true;
 						nodeFound=true;
@@ -412,7 +412,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(i<3)
 				{
-					if(!node->nodeEdges[i]->upperNode->enemy&&node->nodeEdges[i]->upperNode->numOfUnits==2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->upperNode->enemy&&node->nodeEdges[i]->upperNode->numOfUnits==2)
 					{
 						for(int k=0; k<attkrs->currentSize; k++)
 						{
@@ -430,7 +430,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 				}
 				else
 				{
-					if(!node->nodeEdges[i]->lowerNode->enemy&&node->nodeEdges[i]->lowerNode->numOfUnits==2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->lowerNode->enemy&&node->nodeEdges[i]->lowerNode->numOfUnits==2)
 					{
 						for(int k=0; k<attkrs->currentSize; k++)
 						{
@@ -454,7 +454,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(i<3)
 				{
-					if(!node->nodeEdges[i]->upperNode->enemy&&node->nodeEdges[i]->upperNode->numOfUnits==2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->upperNode->enemy&&node->nodeEdges[i]->upperNode->numOfUnits==2)
 					{
 						for(int k=0; k<dfndr->currentSize; k++)
 						{
@@ -472,7 +472,7 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 				}
 				else
 				{
-					if(!node->nodeEdges[i]->lowerNode->enemy&&node->nodeEdges[i]->lowerNode->numOfUnits==2)
+					if(node->nodeEdges[i] != NULL && !node->nodeEdges[i]->lowerNode->enemy&&node->nodeEdges[i]->lowerNode->numOfUnits==2)
 					{
 						for(int k=0; k<dfndr->currentSize; k++)
 						{

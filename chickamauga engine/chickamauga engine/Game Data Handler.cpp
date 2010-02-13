@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
-//#define DEBUG
+#define DEBUG
 //#define ENDGAMEDEBUG
 
 gameFileHandler::gameFileHandler(string name)
@@ -98,7 +98,7 @@ IH::IH()
 	}
 	else
 	{
-		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE | SDL_FULLSCREEN);	
+		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE | SDL_FULLSCREEN);
 	}
 	playersTurn = 0;
 	gameState = 0;
@@ -253,7 +253,7 @@ IH::IH()
 	maxPages = -1;
 
 #ifdef DEBUG
-	output = "5.243.77.115";
+	output = "69.229.149.86";
 #endif
 
 #ifdef ENDGAMEDEBUG

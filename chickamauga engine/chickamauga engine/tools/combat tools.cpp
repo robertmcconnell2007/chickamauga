@@ -20,7 +20,7 @@ bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherA
 	{
 		if(i < 3)
 		{
-			if(currentNode->nodeEdges[i]->upperNode!=NULL)
+			if(currentNode->nodeEdges[i] != NULL)
 			{
 				if(foundDistantCombat(currentNode->nodeEdges[i]->upperNode, distance - 1, otherArmy))
 				{
@@ -31,7 +31,7 @@ bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherA
 		}
 		else
 		{
-			if(currentNode->nodeEdges[i]->lowerNode!=NULL)
+			if(currentNode->nodeEdges[i] != NULL)
 			{
 				if(foundDistantCombat(currentNode->nodeEdges[i]->lowerNode, distance - 1, otherArmy))
 				{
@@ -92,7 +92,7 @@ bool getUnitsAroundNode(map_node * node, int path, armyClass * army, unitClass *
 	{
 		if(path < 3)
 		{
-			if(army->armyArray[i]->getX() == node->nodeEdges[path]->upperNode->col &&
+			if(node->nodeEdges[path] != NULL && army->armyArray[i]->getX() == node->nodeEdges[path]->upperNode->col &&
 				army->armyArray[i]->getY() == node->nodeEdges[path]->upperNode->row)
 			{
 				if(!foundUnit1)
@@ -106,7 +106,7 @@ bool getUnitsAroundNode(map_node * node, int path, armyClass * army, unitClass *
 		}
 		else
 		{
-			if(army->armyArray[i]->getX() == node->nodeEdges[path]->lowerNode->col &&
+			if(node->nodeEdges[path] != NULL && army->armyArray[i]->getX() == node->nodeEdges[path]->lowerNode->col &&
 				army->armyArray[i]->getY() == node->nodeEdges[path]->lowerNode->row)
 			{
 				if(!foundUnit1)
