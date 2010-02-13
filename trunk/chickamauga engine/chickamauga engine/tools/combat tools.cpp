@@ -20,13 +20,24 @@ bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherA
 	{
 		if(i < 3)
 		{
-			if(foundDistantCombat(currentNode->nodeEdges[i]->upperNode, distance - 1, otherArmy))
-				return true;
+			if(currentNode->nodeEdges[i]->upperNode!=NULL)
+			{
+				if(foundDistantCombat(currentNode->nodeEdges[i]->upperNode, distance - 1, otherArmy))
+				{
+					return true;
+				}
+			}
+			
 		}
 		else
 		{
-			if(foundDistantCombat(currentNode->nodeEdges[i]->lowerNode, distance - 1, otherArmy))
-				return true;
+			if(currentNode->nodeEdges[i]->lowerNode!=NULL)
+			{
+				if(foundDistantCombat(currentNode->nodeEdges[i]->lowerNode, distance - 1, otherArmy))
+				{
+					return true;
+				}
+			}
 		}
 	}
 	return false;
