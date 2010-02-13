@@ -3,7 +3,7 @@
 #pragma once
 #include <string>
 #include <windows.h>
-#include "SDL.h"
+#include "sdl/SDL.h"
 #include "GraphicsLoader.h"
 #include "mapSuperClass.h"
 #include "unitClass.h"

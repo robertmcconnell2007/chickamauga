@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 using namespace std;
-#include "SDL.h"
+#include "sdl/SDL.h"
 #include "GraphicsLoader.h"
 
 struct node_edge;
