@@ -56,17 +56,17 @@ int battleCalculator::doBattle(int attackerPower,int defenderPower)
 	}
 	roll=getRandomNum()%6;
 
+	if(odds > 5)
+		odds = 5;
+	if(odds < -3)
+		odds = -3;
 	
 	if(attackerAdvantage)
 	{
-		if(odds > 5)
-			odds = 5;
 		return oddsArray[roll][odds+3];//odds is offset
 	}
 	else
 	{
-		if(odds < 5)
-			odds = 5;
 		return oddsArray[roll][5-odds];
 	}
 }
