@@ -208,7 +208,7 @@ bool clickAttacker(map_node * node, armyClass * attackerArmy, armyClass * defend
 		if(!foundOtherCombatant)
 		{
 			getUnitsOnNode(node, attackerArmy, unit1, unit2);
-			if(unit1->getType() == 3 || unit2->getType() == 3)
+			if((unit1 && unit1->getType() == 3) || (unit2 && unit2->getType() == 3))
 			{
 				//check for artillary combat
 				if(foundDistantCombat(node, 3, defenderArmy))
