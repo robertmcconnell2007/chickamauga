@@ -30,7 +30,7 @@ void drawBasicRules()
 	oss << "The basic game is called \"chickamauga.txt\"\n";
 	oss << "To join another player's game online, you must know the IP address of the host.\n";
 	oss << "Press the Tab key to open the menu.\n";
-	oss << "There are several pages of scoring rules, click the mouse button on the rules to continue to next page.\n";
+	oss << "There are several pages of scoring rules, click the mouse button on the rules to continue.\n";
 	oss << "The top left cell of the map is 1,1 (X,Y).\n";
 	oss << "X increases as you move to the right, and Y increases as you move down.\n";
 
@@ -211,8 +211,8 @@ void drawCombatGui(SDL_Surface *screen)
 	for(int i = 0; i < 3; ++i)
 		slottxt[i] << "";
 	battle *tempBattle;
-	int odds;
-	double tempOdds;
+	int odds = 0;
+	double tempOdds = 0;
 	map_node *tempNode;
 	SDL_FillRect(screen, &IH::Instance()->GUIFrameRect, 0x000000);
 	tempBattle=&IH::Instance()->currentBattle;
