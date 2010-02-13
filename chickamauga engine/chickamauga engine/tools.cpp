@@ -1026,7 +1026,7 @@ void IH::drawAll()
 		break;
 	case matchMainPhase:
 	case matchCombatPhase:
-		drawATile(utilityTiles5050, &u5050, 6, GUIGameFrame, 0,0);
+		//drawATile(utilityTiles5050, &u5050, 6, GUIGameFrame, 0,0);
 		map->drawMap(screenShiftX, screenShiftY, screen);
 		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
@@ -1034,7 +1034,7 @@ void IH::drawAll()
 		if(gameState==matchMainPhase)
 		{
 			drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
-			drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+			drawATile(utilityTiles5050, &u5050, 14, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 			//creates a black rec
 			SDL_FillRect(screen,&turnRect,0x000000);
 			ostringstream oss;
@@ -1043,7 +1043,7 @@ void IH::drawAll()
 			//prints the oss onto the rectangle
 			printStrings(oss.str(),turnRect,screen,IH::textColor,IH::font1);
 		}
-		else if(!IH::Instance()->retreatCalled)
+		else
 		{
 			drawCombatGui(screen);
 			if(playerIam == playersTurn)
@@ -1066,7 +1066,7 @@ void IH::drawAll()
 			if(canReinforce)
 				drawReinforce(screen);
 		}
-		drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
+		//drawATile(utilityTiles5050, &u5050, 0, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 		if(specificRulesDisplay)
 		{
 			SDL_FillRect(screen, &gameRules->rulesWindow, 0x0000000);
