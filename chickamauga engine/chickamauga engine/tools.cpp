@@ -228,6 +228,11 @@ void IH::handlePrimaryInput()
 		}
 		break;
 	case atTitleScreen:
+		if(event.type == SDL_QUIT)
+		{
+			endGame();
+			break;
+		}
 		if(event.type == SDL_MOUSEBUTTONUP)
 		{
 			if(clickedIn(event, GameStartButton))
@@ -246,6 +251,11 @@ void IH::handlePrimaryInput()
 		}
 		break;
 	case atMatchPrep:
+		if(event.type == SDL_QUIT)
+		{
+			endGame();
+			break;
+		}
 		if(event.type == SDL_MOUSEBUTTONUP)
 		{
 			if(!waiting && clickedIn(event, GameHotseatButton))
@@ -349,6 +359,11 @@ void IH::handlePrimaryInput()
 		}
 		break;
 	case atMatchPrepSecond:
+		if(event.type == SDL_QUIT)
+		{
+			endGame();
+			break;
+		}
 		if(event.type == SDL_MOUSEBUTTONUP && prefferedFaction == 10)
 		{
 			if(clickedIn(event, BlueOptionBox))
