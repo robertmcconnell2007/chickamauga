@@ -31,7 +31,7 @@ bool udpClass::start()
 			errorCode = GETHOSTIPERROR;
 			return false;
 		}
-		memcpy(&compAddress, phe->h_addr_list[1], sizeof(struct in_addr));
+		memcpy(&compAddress, phe->h_addr_list[0], sizeof(struct in_addr));
 		memset(&sockAddr,0,sizeof(sockAddr));
 		sockAddr.sin_family = AF_INET;
 		sockAddr.sin_addr.s_addr = inet_addr(inet_ntoa(compAddress));

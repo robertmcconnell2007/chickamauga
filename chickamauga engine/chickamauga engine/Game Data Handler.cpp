@@ -91,12 +91,14 @@ IH::IH()
 	escapeMenu = false;
 	initialRulesDisplay = false;
 	specificRulesDisplay = false;
+	fullScreen = false;
 	if(!fullScreen)
 	{
 		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE);		
 	}
 	else
 	{
+		screen = SDL_SetVideoMode(screenSize.x, screenSize.y, bitsperpixel, SDL_SWSURFACE | SDL_FULLSCREEN);	
 	}
 	playersTurn = 0;
 	gameState = 0;
@@ -106,7 +108,7 @@ IH::IH()
 	
 	screenShiftX = xMove = 0;
 	screenShiftY = yMove = 0;
-	fullScreen = false;
+
 	nodeGui = false;
 	mouseDown = false;
 	runningGame = true;
