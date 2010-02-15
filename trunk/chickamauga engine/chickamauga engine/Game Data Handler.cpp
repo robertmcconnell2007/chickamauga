@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
-#define DEBUG
+//#define DEBUG
 //#define ENDGAMEDEBUG
 
 gameFileHandler::gameFileHandler(string name)
@@ -363,7 +363,7 @@ void IH::drawMenu()
 	SDL_BlitSurface(menu, NULL, screen , &tempRect);
 	drawATile(menuTiles, &u20060, 0, screen, menuOptions.x,menuOptions.y);
 	drawATile(menuTiles, &u20060, 1, screen, menuVolume.x, menuVolume.y);
-	drawATile(menuTiles, &u20060, 2, screen, menuMain.x, menuMain.y);
+	drawATile(menuTiles, &u20060, 5, screen, menuMain.x, menuMain.y);
 	drawATile(menuTiles, &u20060, 3, screen, menuClose.x, menuClose.y);
 }
 
