@@ -384,6 +384,10 @@ void IH::_resetAll()
 		currentBattle.attackers.clear();
 	if(currentBattle.defenders.size() > 0)
 		currentBattle.defenders.clear();
+	players[0].playerArmy._deleteAll();
+	players[1].playerArmy._deleteAll();
+	players[0].pointsEarned = 0;
+	players[1].pointsEarned = 0;
 	canReinforce = false;
 	canExit = false;
 	menuUp = false;

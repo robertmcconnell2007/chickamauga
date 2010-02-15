@@ -33,6 +33,7 @@ void drawBasicRules()
 	oss << "There are several pages of scoring rules, click the mouse button on the rules to continue.\n";
 	oss << "The top left cell of the map is 1,1 (X,Y).\n";
 	oss << "X increases as you move to the right, and Y increases as you move down.\n";
+	oss << "Move the cursor to the edge of the screen to scroll around the map.\n";
 
 	printStrings(oss.str(), IH::Instance()->basicRulesBox, IH::Instance()->screen, IH::Instance()->textColor, IH::Instance()->font1);
 

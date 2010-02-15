@@ -523,6 +523,17 @@ void IH::handlePrimaryInput()
 				{
 					//IH::_resetAll();
 					escapeMenu = false;
+					if(playingLAN)
+					{
+						MessageHandler::Instance()->sendMessage("Other player has quit.\n", QUIT);
+					}
+					SDL_FillRect(screen, &screen->clip_rect, 0x00000);
+					SDL_Flip(screen);
+					IH::gameSound->stopMusic(prevSong);
+					IH::gameSound->playWAV(endGameMusic);
+					IH::Instance()->prevSong = endGameMusic;
+					gameRules->calcAllRules();
+					gameState = reviewingMatch;
 				}
 				if(clickedIn(event,menuClose))
 				{
@@ -724,10 +735,21 @@ void IH::handlePrimaryInput()
 					}
 					if(clickedIn(event,menuVolume))
 					{
-						escapeMenu = false;
+						specificRulesDisplay = true;
 					}
 					if(clickedIn(event,menuMain))
 					{
+						if(playingLAN)
+						{
+							MessageHandler::Instance()->sendMessage("Other player has quit.\n", QUIT);
+						}
+						SDL_FillRect(screen, &screen->clip_rect, 0x00000);
+						SDL_Flip(screen);
+						IH::gameSound->stopMusic(prevSong);
+						IH::gameSound->playWAV(endGameMusic);
+						IH::Instance()->prevSong = endGameMusic;
+						gameRules->calcAllRules();
+						gameState = reviewingMatch;
 						escapeMenu = false;
 					}
 					if(clickedIn(event,menuClose))
@@ -875,10 +897,12 @@ void IH::update(int mspassed)
 			//this is a temp version
 			SDL_FillRect(screen, &screen->clip_rect, 0x00000);
 			SDL_Flip(screen);
-			gameRules->calcAllRules();
+			if(playingLAN)
+				MessageHandler::Instance()->sendMessage("Well I reached the end of the game, I hope you did too.\n", QUIT);
 			IH::gameSound->stopMusic(prevSong);
 			IH::gameSound->playWAV(endGameMusic);
 			IH::Instance()->prevSong = endGameMusic;
+			gameRules->calcAllRules();
 			gameState = reviewingMatch;
 		}
 		break;
@@ -1288,8 +1312,8 @@ bool IH::handleMessage()
 		chatBox->addString(currentMessage);
 		gameRules->calcAllRules();
 		IH::gameSound->stopMusic(prevSong);
-			IH::gameSound->playWAV(endGameMusic);
-			IH::Instance()->prevSong = endGameMusic;
+		IH::gameSound->playWAV(endGameMusic);
+		IH::Instance()->prevSong = endGameMusic;
 		gameState = reviewingMatch;
 		return true;
 		break;

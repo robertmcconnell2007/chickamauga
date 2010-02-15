@@ -90,6 +90,7 @@ public:
 	int reinforcementSize;
 	int deadSize;
 	int exitedSize;
+	armyClass();
 	int currentStrength();
 	int exitedStrength();
 	int deadStrength();
@@ -104,4 +105,5 @@ public:
 	int checkStatus(unitClass* unit);
 	bool moveUnit(unitClass* unit, int moveFrom, int moveTo);
 	void resetAllCombat();
+	void _deleteAll();
 };

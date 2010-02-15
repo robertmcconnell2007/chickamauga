@@ -112,6 +112,18 @@ MUTKilled,
 	MUFField,
 	MUFReinforce,
 */
+
+armyClass::armyClass()
+{
+	armyColors = NULL;
+	unitType = NULL;
+	armyArray = NULL;
+	exitedUnits = NULL;
+	deadUnits = NULL;
+	reinforcements = NULL;
+	fullSize = currentSize = reinforcementSize = deadSize = exitedSize = 0;
+}
+
 bool armyClass::moveUnit(unitClass* unit, int moveFrom, int moveTo)
 {
 	bool found = false;
@@ -210,7 +222,7 @@ void armyClass::loadArmy(char * fileName, char * armyColorFile)
 		armyArray[i] = temp;
 	}
 	infile>>reinforcementSize;
-	reinforcements=new unitClass*[reinforcementSize];
+	reinforcements = new unitClass*[reinforcementSize];
 	for(int i=0; i<reinforcementSize; i++)
 	{
 		temp= new unitClass;
@@ -349,4 +361,18 @@ int armyClass::reinforcingStrength()
 		calc += reinforcements[i]->getPower();
 	}
 	return calc;
+}
+
+void armyClass::_deleteAll()
+{
+	if(armyArray)
+		delete armyArray;
+	if(exitedUnits)
+		delete exitedUnits;
+	if(deadUnits)
+		delete deadUnits;
+	if(reinforcements)
+		delete reinforcements;
+	armyArray = exitedUnits = deadUnits = reinforcements = NULL;
+	fullSize = currentSize = reinforcementSize = deadSize = exitedSize = 0;
 }
