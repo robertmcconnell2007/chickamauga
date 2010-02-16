@@ -1,6 +1,7 @@
 #include "draw tools.h"
 #include "../infoLog.h"
 #include "../Game Data Handler.h"
+#include "../messageHandler.h"
 
 #include <string>
 #include <sstream>
@@ -501,10 +502,12 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 	{
 		if(tempBattle->attackers.size() > 0)
 		{
-			for(int k=0; k<attkrs->currentSize; k++)
+			for(int k=0; k < attkrs->currentSize; k++)
 			{
 				if(attkrs->armyArray[k]==tempBattle->attackers.back())
 				{
+					if(IH::Instance()->playingLAN)
+						MessageHandler::Instance()->sendMessage(attkrs->armyArray[k]->getName(), KILLUNIT);
 					attkrs->moveUnit(attkrs->armyArray[k],MUFField,MUTKilled);
 					tempBattle->attackers.pop_back();
 					break;
@@ -517,6 +520,8 @@ bool showRetreater(mapSuperClass *map, armyClass * attkrs, armyClass *dfndr)
 			{
 				if(dfndr->armyArray[k]==tempBattle->defenders.back())
 				{
+					if(IH::Instance()->playingLAN)
+						MessageHandler::Instance()->sendMessage(dfndr->armyArray[k]->getName(), KILLUNIT);
 					dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
 					tempBattle->defenders.pop_back();
 					break;

@@ -418,7 +418,8 @@ int battle::calcBattle()
 				{
 					if(dfndr->armyArray[k]==defenders.at(i))
 					{
-						MessageHandler::Instance()->sendMessage(dfndr->armyArray[k]->getName(), KILLUNIT);
+						if(IH::Instance()->playingLAN)
+							MessageHandler::Instance()->sendMessage(dfndr->armyArray[k]->getName(), KILLUNIT);
 						dfndr->moveUnit(dfndr->armyArray[k],MUFField,MUTKilled);
 					}
 				}
@@ -436,7 +437,8 @@ int battle::calcBattle()
 						{
 							if(attkr->armyArray[k]==attackers.at(i))
 							{
-								MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
+								if(IH::Instance()->playingLAN)
+									MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
 								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
 							}
 						}
@@ -456,7 +458,8 @@ int battle::calcBattle()
 						{
 							if(attkr->armyArray[k]==attackers.at(i))
 							{
-								MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
+								if(IH::Instance()->playingLAN)
+									MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(), KILLUNIT);
 								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
 							}
 						}
