@@ -359,7 +359,8 @@ int battle::calcBattle()
 	case defendRetreat:
 		{
 			cout << "Defender Retreat\n";
-			IH::Instance()->retreatCalled = true;
+			if(!IH::Instance()->playingLAN)
+				IH::Instance()->retreatCalled = true;
 			if(IH::Instance()->playingLAN)
 			{
 				IH::Instance()->keysOff = true;
