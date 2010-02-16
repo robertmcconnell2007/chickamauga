@@ -24,6 +24,14 @@ int main(int argc, char ** argv)
 		printf("could not initialize True Type Fonts\n");
 		return 2;
 	}
+	fstream outFile;
+	outFile.open("sendFile.txt",fstream::out);
+	outFile << "Data Send File\n";
+	outFile.close();
+	fstream outFile2;
+	outFile2.open("recvFile.txt",fstream::out);
+	outFile2 << "Data Recv File\n";
+	outFile2.close();
 	//MessageHandler::Instance()->setupHost();
 	Uint32 then = SDL_GetTicks(), now;
 	int msPassed = 0, updateTimer = 0, drawTimer = 0;

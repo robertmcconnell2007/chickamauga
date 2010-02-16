@@ -79,6 +79,7 @@ private:
 	int selectedY;
 	void drawMenu();
 public:
+	int gameStart;
 	mapSuperClass * map;
 	sound * gameSound;
 	battle currentBattle;
