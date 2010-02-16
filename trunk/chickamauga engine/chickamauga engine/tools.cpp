@@ -969,23 +969,23 @@ void IH::update(int mspassed)
 	MessageHandler::Instance()->sendNextMessage();
 	if(MessageHandler::Instance()->getMessage(&IH::Instance()->currentMessage, &IH::Instance()->currentMessageFlag))
 		IH::Instance()->handleMessage();
-	if(playingLAN && connected && (SDL_GetTicks()/1000)%2)
-	{
-		MessageHandler::Instance()->sendMessage("Yo!", PING);
-	}
-	if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
-	{
-		beginWait = SDL_GetTicks();
-		if(connection == true)
-		{
-			connection = false;
-		}
-		else
-		{
-			int i = 0;
-			//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
-		}
-	}
+	//if(playingLAN && connected && (SDL_GetTicks()/1000)%2)
+	//{
+	//	MessageHandler::Instance()->sendMessage("Yo!", PING);
+	//}
+	//if(playingLAN && connected && pingTime < SDL_GetTicks()-beginWait)
+	//{
+	//	beginWait = SDL_GetTicks();
+	//	if(connection == true)
+	//	{
+	//		connection = false;
+	//	}
+	//	else
+	//	{
+	//		int i = 0;
+	//		//OMGQUITNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!
+	//	}
+	//}
 }
 
 void IH::drawAll()
