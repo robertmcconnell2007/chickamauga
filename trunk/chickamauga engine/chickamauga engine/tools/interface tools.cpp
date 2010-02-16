@@ -136,7 +136,7 @@ void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY)
 	//uncomment below line to restrict units to
 	//one move per turn
 	if(map->getMap()[newX][newY].control)
-		map->getMap()[newX][newY].controlBlue = !IH::Instance()->playerIam;
+		map->getMap()[newX][newY].controlBlue = !IH::Instance()->playersTurn;
 	unitToMove->setMoved();
 	map->clearEnemy();
 }

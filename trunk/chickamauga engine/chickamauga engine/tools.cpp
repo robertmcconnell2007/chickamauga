@@ -959,7 +959,7 @@ void IH::update(int mspassed)
 			}
 			switchState = false;			
 		}
-		else if(retreatCalled) //!playingLAN
+		else if(retreatCalled && !playingLAN)
 		{
 			showRetreater(map,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
 		}
@@ -1329,6 +1329,8 @@ bool IH::handleMessage()
 		newX = stringToInt(currentMessage.substr(0,n));
 		currentMessage = currentMessage.substr(n+1, -1);
 		newY = stringToInt(currentMessage);
+		IH::Instance()->attackerTotalPower = newX;
+		IH::Instance()->defenderTotalPower = newY;
 		break;
 	case PING:
 		connection = true;
