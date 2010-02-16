@@ -25,6 +25,8 @@
 #include "tools/combat tools.h"
 #include "tools/draw tools.h"
 
+
+
 using namespace std;
 enum terrainTypes;
 
@@ -390,6 +392,11 @@ void IH::handlePrimaryInput()
 				{
 					randomizefactions();
 				}
+				else if(prefferedFaction == 2)
+					prefferedFaction = !otherPrefferedFaction;
+				else if(otherPrefferedFaction == 2)
+					otherPrefferedFaction = !prefferedFaction;
+
 				ostringstream oss;
 				oss << otherPrefferedFaction;
 				playerIam = prefferedFaction;
@@ -952,12 +959,9 @@ void IH::update(int mspassed)
 			}
 			switchState = false;			
 		}
-		else
+		else if(retreatCalled) //!playingLAN
 		{
-			if(retreatCalled && !playingLAN)
-			{
-				showRetreater(map,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
-			}
+			showRetreater(map,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
 		}
 		break;
 	case reviewingMatch:
@@ -1076,7 +1080,6 @@ void IH::drawAll()
 				drawATile(utilityTiles5050, &u5050, 7, screen, GUIResetCombatBox.x, GUIResetCombatBox.y);
 			}
 		}
-
 		if(playingLAN)
 			drawChat(chatBox,chatString,1,screen);
 		if(escapeMenu)

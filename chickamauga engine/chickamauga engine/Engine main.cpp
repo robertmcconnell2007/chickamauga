@@ -15,6 +15,7 @@ static const int SCREEN_BPP = 32;
 
 
 
+
 int main(int argc, char ** argv)
 {
 	if(SDL_Init( SDL_INIT_EVERYTHING) == -1)
@@ -35,6 +36,10 @@ int main(int argc, char ** argv)
 	outFile2.open("recvFile.txt",fstream::out);
 	outFile2 << "Data Recv File\n";
 	outFile2.close();
+	fstream outFile3;
+	outFile3.open("playingLAN states.txt", fstream::out);
+	outFile3 << "Playing Lan states\n";
+	outFile3.close();
 #endif
 	//MessageHandler::Instance()->setupHost();
 	Uint32 then = SDL_GetTicks(), now;

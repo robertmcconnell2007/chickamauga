@@ -7,6 +7,8 @@
 #include <sstream>
 using namespace std;
 
+
+
 void setEnemyNodes(armyClass, mapSuperClass*);
 
 void drawBasicRules()
