@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
-//#define DEBUG
+#define DEBUG
 //#define ENDGAMEDEBUG
 
 gameFileHandler::gameFileHandler(string name)
@@ -254,7 +254,7 @@ IH::IH()
 	maxPages = -1;
 
 #ifdef DEBUG
-	output = "69.229.149.86";
+	output = "192.168.1.101";
 #endif
 
 #ifdef ENDGAMEDEBUG

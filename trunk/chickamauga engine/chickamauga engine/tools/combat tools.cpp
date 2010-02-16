@@ -478,16 +478,14 @@ int battle::calcBattle()
 //can be retreated
 void networkRetreat(string unitName)
 {
-	armyClass *tempArmy;
-	tempArmy=&IH::Instance()->players[IH::Instance()->playerIam].playerArmy;
-	for(int i=0; i<tempArmy->currentSize; i++)
+	for(int i=0; i<IH::Instance()->players[IH::Instance()->playerIam].playerArmy.currentSize; i++)
 	{
-		if(tempArmy->armyArray[i]->getName()==unitName)
+		if(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->getName()==unitName)
 		{
 			cout << unitName << " added to retreat buffer.\n";
-			tempArmy->armyArray[i]->retreat = true;
-			tempArmy->armyArray[i]->needCombat();
-			IH::Instance()->currentBattle.defenders.push_back(tempArmy->armyArray[i]);
+			IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->retreat = true;
+			IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->needCombat();
+			IH::Instance()->currentBattle.defenders.push_back(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]);
 		}
 	}
 }
