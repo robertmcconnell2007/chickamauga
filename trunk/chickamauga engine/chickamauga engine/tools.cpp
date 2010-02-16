@@ -573,7 +573,7 @@ void IH::handlePrimaryInput()
 						//	roadScore(selectedNode, players[0].playerArmy); // TESTROADSCORE (left click on a road)
 						//else
 						//	closeToRoad(selectedNode, 10); // TESTCLOSETOROAD (any other click on a node currently without a unit cause it'll clear the selection)
-						if(currentUnits[0] || currentUnits[1] && !menuUp)
+						if((currentUnits[0] || currentUnits[1]) && !menuUp)
 						{	
 							if(playerIam == 0 && playersTurn == 0)
 							{
@@ -1182,6 +1182,10 @@ bool IH::handleMessage()
 			{
 				randomizefactions();
 			}
+			else if(prefferedFaction == 2)
+				prefferedFaction = !otherPrefferedFaction;
+			else if(otherPrefferedFaction == 2)
+				otherPrefferedFaction = !prefferedFaction;
 			ostringstream oss;
 			oss << otherPrefferedFaction;
 			playerIam = prefferedFaction;
