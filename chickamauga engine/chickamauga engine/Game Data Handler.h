@@ -199,6 +199,8 @@ public:
 	void endGame();
 	void _resetAll();
 
+	void networkRetreat(string unitName);
+
 	//these functions are defined in the tools.cpp file!
 	void handlePrimaryInput();
 	void update(int mspassed);
