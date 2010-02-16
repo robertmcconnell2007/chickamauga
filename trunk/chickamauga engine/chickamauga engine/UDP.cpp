@@ -160,7 +160,7 @@ bool udpClass::checkMessage(dataPacket* info)
 			errorCode = RECVSUCCESSFUL;
 			fstream outFile;
 			outFile.open("recvFile.txt",fstream::out | fstream::app);
-			outFile << SDL_GetTicks()-IH::Instance()->gameStart << " : Recv message successful : " << dataLength << "/" << sizeof(dataPacket) << " : recv:\n";
+			outFile << SDL_GetTicks()-IH::Instance()->gameStart << " : Recv message successful : " << dataLength << "/" << sizeof(dataPacket) << " : flagged : " << info->flag << " : containing :" << info->stuff << ":\n";
 			outFile.close();
 			return true;
 		}
