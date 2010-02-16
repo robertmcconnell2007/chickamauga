@@ -1,8 +1,11 @@
 #include "UDP.h"
 #include "dataPacket.h"
+#define MSGDEBUG
 
+#ifdef MSGDEBUG
 #include "Game Data Handler.h"
 #include <fstream>
+#endif
 
 #include <string>
 using namespace std;
@@ -93,10 +96,12 @@ bool udpClass::sendMessage(const dataPacket* info)
 	if(ready)
 	{
 		dataBuffer = (char*)info;
+#ifdef MSGDEBUG
 		fstream outFile;
 		outFile.open("sendFile.txt",fstream::out | fstream::app);
 		outFile << SDL_GetTicks()-IH::Instance()->gameStart << " : Send message flagged:" << info->flag << ": Containing :" << info ->stuff << ":\n";
 		outFile.close();
+#endif
 		if(isHost)
 		{
 			sockAddrLen = sizeof(client);
@@ -118,10 +123,12 @@ bool udpClass::sendMessage(const dataPacket* info)
 		}
 		if(dataLength > 0)
 		{
+#ifdef MSGDEBUG
 			fstream outFile2;
 			outFile2.open("sendFile.txt",fstream::out | fstream::app);
 			outFile2 << SDL_GetTicks()-IH::Instance()->gameStart << " : Send message successful : " << dataLength << "/" << sizeof(dataPacket) << " : sent\n";
 			outFile2.close();
+#endif
 			errorCode = SENDSUCCESSFUL;
 			return true;
 		}
@@ -158,10 +165,12 @@ bool udpClass::checkMessage(dataPacket* info)
 		{
 			*info = *(dataPacket*)dataBuffer;
 			errorCode = RECVSUCCESSFUL;
+#ifdef MSGDEBUG
 			fstream outFile;
 			outFile.open("recvFile.txt",fstream::out | fstream::app);
 			outFile << SDL_GetTicks()-IH::Instance()->gameStart << " : Recv message successful : " << dataLength << "/" << sizeof(dataPacket) << " : flagged : " << info->flag << " : containing :" << info->stuff << ":\n";
 			outFile.close();
+#endif
 			return true;
 		}
 		return false;

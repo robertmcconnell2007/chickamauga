@@ -11,6 +11,8 @@ static const int SCREEN_WIDTH = 860;
 static const int SCREEN_HEIGHT = 640;
 static const int SCREEN_BPP = 32;
 
+#define mainDebug
+
 
 
 int main(int argc, char ** argv)
@@ -24,6 +26,7 @@ int main(int argc, char ** argv)
 		printf("could not initialize True Type Fonts\n");
 		return 2;
 	}
+#ifdef mainDebug
 	fstream outFile;
 	outFile.open("sendFile.txt",fstream::out);
 	outFile << "Data Send File\n";
@@ -32,6 +35,7 @@ int main(int argc, char ** argv)
 	outFile2.open("recvFile.txt",fstream::out);
 	outFile2 << "Data Recv File\n";
 	outFile2.close();
+#endif
 	//MessageHandler::Instance()->setupHost();
 	Uint32 then = SDL_GetTicks(), now;
 	int msPassed = 0, updateTimer = 0, drawTimer = 0;
