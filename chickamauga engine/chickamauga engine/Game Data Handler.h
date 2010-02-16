@@ -125,7 +125,7 @@ public:
 	int currentMessageFlag;
 	string output;
 	//2 player objects
-	player players[2];
+	player * players[2];
 	//rules object
 	rules * gameRules;
 	//file names

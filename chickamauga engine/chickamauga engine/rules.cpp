@@ -205,7 +205,7 @@ void rules::loadRules(string fileName)
 			infile.ignore(1);
 			getline(infile, temp, '\n');
 			//ask the army for that unit and set the pointer to it
-			VPR[totVPR].specialUnit = IH::Instance()->players[VPR[totVPR].unitOwner].playerArmy.findUnit(temp);			
+			VPR[totVPR].specialUnit = IH::Instance()->players[VPR[totVPR].unitOwner]->playerArmy.findUnit(temp);			
 			getline(infile, tester, '\n');
 			if(tester == "if")
 			{
@@ -613,7 +613,7 @@ int roadControlRule::calculateRule(int player)
 	for(int i = 0; i < numEnterNodes; ++i)
 	{
 		cancelClick(IH::Instance()->map);
-		roadScore(enterNodes[i], IH::Instance()->players[player].playerArmy);
+		roadScore(enterNodes[i], IH::Instance()->players[player]->playerArmy);
 		for(int j = 0; j < IH::Instance()->gameRules->numExitNodes; ++j)
 		{
 			if(IH::Instance()->gameRules->exitNodes.at(j)->movement)//exitNodes[j]->movement)
@@ -658,7 +658,7 @@ int unitKillRule::calculateRule(int player)
 	if(canCalc && ((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
 		(player == 1 && (playerSpecific == none || playerSpecific == gray))))
 	{
-		return (IH::Instance()->players[!player].playerArmy.deadStrength() * pointValue);
+		return (IH::Instance()->players[!player]->playerArmy.deadStrength() * pointValue);
 	}
 	return 0;
 }
@@ -693,7 +693,7 @@ int unitExitRule::calculateRule(int player)
 	if(canCalc && ((player == 0 && (playerSpecific == none || playerSpecific == blue)) ||
 		(player == 1 && (playerSpecific == none || playerSpecific == gray))))
 	{
-		return IH::Instance()->players[player].playerArmy.exitedStrength() * pointValue;
+		return IH::Instance()->players[player]->playerArmy.exitedStrength() * pointValue;
 	}
 	return 0;
 }
@@ -774,9 +774,9 @@ int VIPRule::calculateRule(int player)
 	if(canCalc && ((player == blue && (playerSpecific == none || playerSpecific == blue)) ||
 		(player == gray && (playerSpecific == none || playerSpecific == gray))))
 	{
-		if( (requisiteEffect1 != no || requisiteEffect1 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)) ||
-			(requisiteEffect2 != no || requisiteEffect2 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)) ||
-			(requisiteEffect3 != no || requisiteEffect3 == IH::Instance()->players[player].playerArmy.checkStatus(specialUnit)))
+		if( (requisiteEffect1 != no || requisiteEffect1 == IH::Instance()->players[player]->playerArmy.checkStatus(specialUnit)) ||
+			(requisiteEffect2 != no || requisiteEffect2 == IH::Instance()->players[player]->playerArmy.checkStatus(specialUnit)) ||
+			(requisiteEffect3 != no || requisiteEffect3 == IH::Instance()->players[player]->playerArmy.checkStatus(specialUnit)))
 			return pointValue;
 	}
 	return 0;
@@ -818,7 +818,7 @@ int areaControlRule::calculateRule(int player)
 	bool holdAll = true;
 	for(int i = 0; i < numNodes; ++i)
 	{
-		if(!IH::Instance()->players[player].playerArmy.haveLiveUnitAt(nodesToControl[i]->col, nodesToControl[i]->row))
+		if(!IH::Instance()->players[player]->playerArmy.haveLiveUnitAt(nodesToControl[i]->col, nodesToControl[i]->row))
 			holdAll = false;
 	}
 	if(holdAll)
@@ -897,26 +897,26 @@ int roadExitRule::calculateRule(int player)
 		return 0;
 	bool foundAPath;
 	bool endNodeSelected;
-	for(int i = 0; i < IH::Instance()->players[player].playerArmy.currentSize; ++i)
+	for(int i = 0; i < IH::Instance()->players[player]->playerArmy.currentSize; ++i)
 	{
 		foundAPath = false;
 		for(int j = 0; j < howManyEntryPoints; ++j)
 		{
 			endNodeSelected = false;
 			cancelClick(IH::Instance()->map);
-			roadScore(entryNodes[j], IH::Instance()->players[!player].playerArmy);
+			roadScore(entryNodes[j], IH::Instance()->players[!player]->playerArmy);
 			for(int k = 0; k < IH::Instance()->gameRules->numExitNodes; ++k)
 			{
 				if(IH::Instance()->gameRules->exitNodes[k]->movement == 1)
 					endNodeSelected = true;
 			}
-			if(endNodeSelected && closeToRoad(&IH::Instance()->map->getMap()[IH::Instance()->players[player].playerArmy.armyArray[i]->getY() - 1][IH::Instance()->players[player].playerArmy.armyArray[i]->getX() - 1], howManySpacesToRoad))
+			if(endNodeSelected && closeToRoad(&IH::Instance()->map->getMap()[IH::Instance()->players[player]->playerArmy.armyArray[i]->getY() - 1][IH::Instance()->players[player]->playerArmy.armyArray[i]->getX() - 1], howManySpacesToRoad))
 				foundAPath = true;
 		}
 		if(!foundAPath)
 		{
-			cout << "I had to kill unit " << IH::Instance()->players[player].playerArmy.armyArray[i]->getName() << " cause he wasn't close enough to a road.\n";
-			IH::Instance()->players[player].playerArmy.moveUnit(IH::Instance()->players[player].playerArmy.armyArray[i], MUFField, MUTKilled);
+			cout << "I had to kill unit " << IH::Instance()->players[player]->playerArmy.armyArray[i]->getName() << " cause he wasn't close enough to a road.\n";
+			IH::Instance()->players[player]->playerArmy.moveUnit(IH::Instance()->players[player]->playerArmy.armyArray[i], MUFField, MUTKilled);
 			i--;
 		}
 	}
@@ -973,8 +973,8 @@ void rules::calcAllRules()
 				points[i] += NCR[j].calculateRule(i);
 		}
 	}
-	IH::Instance()->players[0].pointsEarned = points[0];
-	IH::Instance()->players[1].pointsEarned = points[1];
+	IH::Instance()->players[0]->pointsEarned = points[0];
+	IH::Instance()->players[1]->pointsEarned = points[1];
 	//loop through each rule, check if it's a dependant rule and if it's applicable
 	//to player one, accumulate totals
 	//do the same for player 2
