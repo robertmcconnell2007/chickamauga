@@ -482,16 +482,16 @@ int battle::calcBattle()
 
 //push the unit clarified in the message into the defender buffer so they 
 //can be retreated
-void networkRetreat(string unitName)
+void IH::networkRetreat(string unitName)
 {
-	for(int i=0; i<IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.currentSize; i++)
+	for(int i=0; i < players[playerIam]->playerArmy.currentSize; i++)
 	{
-		if(IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->getName()==unitName)
+		if(players[playerIam]->playerArmy.armyArray[i]->getName()==unitName)
 		{
 			cout << unitName << " added to retreat buffer.\n";
-			IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->retreat = true;
-			IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->needCombat();
-			IH::Instance()->currentBattle.defenders.push_back(IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]);
+			players[playerIam]->playerArmy.armyArray[i]->retreat = true;
+			players[playerIam]->playerArmy.armyArray[i]->needCombat();
+			currentBattle.defenders.push_back(players[playerIam]->playerArmy.armyArray[i]);
 		}
 	}
 }
