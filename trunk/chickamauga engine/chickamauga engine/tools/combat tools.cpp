@@ -300,18 +300,18 @@ int battle::calcBattle()
 		node=&IH::Instance()->map->getMap()[defenders.at(i)->getY()-1][defenders.at(i)->getX()-1];
 		if(node->type==rough||node->type==roughForest||node->town)
 		{
-			defenderPower+=(defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus);
+			defenderPower += (defenders.at(i)->getPower()*IH::Instance()->gameRules->roughDefBonus);
 		}
 		else
 		{
-			defenderPower+=defenders.at(i)->getPower();
+			defenderPower += defenders.at(i)->getPower();
 		}
 	}
 	result = IH::Instance()->gameRules->calculator.doBattle(attackerPower,defenderPower);
 	//in results, if attack results in unit losses, vector will be
 	//cleared. if attack results in a retreat, then vector of victorious will be cleared, retreater will be
 	//cleared after all retreats have gone through
-	defenderPower = 0;
+	//defenderPower = 0;
 	switch(result)
 	{
 	case attackRetreat:

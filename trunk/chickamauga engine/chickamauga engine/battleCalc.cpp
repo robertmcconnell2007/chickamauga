@@ -39,6 +39,8 @@ int battleCalculator::doBattle(int attackerPower,int defenderPower)
 	bool attackerAdvantage;
 	int odds;
 	int roll;
+	if(defenderPower == 0 || attackerPower == 0)
+		return 5;
 	if(attackerPower==defenderPower)
 	{
 		odds=1;

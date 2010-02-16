@@ -67,6 +67,7 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	gameStart = 0;
 	attackerTotalPower=0;
 	defenderTotalPower=0;
 	prevSong = 0;
@@ -289,6 +290,7 @@ IH* IH::Instance()
 
 void IH::createMatch()
 {
+	gameStart = SDL_GetTicks();
 	gameRules = new rules;
 	//map object = new map(mapName)
 	map = new mapSuperClass(fileNames.map.c_str());
