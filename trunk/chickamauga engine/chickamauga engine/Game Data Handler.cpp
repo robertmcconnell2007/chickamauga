@@ -4,8 +4,10 @@
 #include <fstream>
 #include <string>
 #include "infoLog.h"
-#define DEBUG
+//#define DEBUG
 //#define ENDGAMEDEBUG
+
+
 
 gameFileHandler::gameFileHandler(string name)
 {

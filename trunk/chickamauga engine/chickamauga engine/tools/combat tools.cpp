@@ -2,6 +2,8 @@
 #include "draw tools.h"
 #include "../messageHandler.h"
 
+
+
 bool foundDistantCombat(map_node * currentNode, int distance, armyClass * otherArmy)
 {
 	//if found a unit not in combat return true, with combatPrep true
@@ -359,7 +361,7 @@ int battle::calcBattle()
 	case defendRetreat:
 		{
 			cout << "Defender Retreat\n";
-			if(!IH::Instance()->playingLAN)
+			//if(!IH::Instance()->playingLAN)
 				IH::Instance()->retreatCalled = true;
 			if(IH::Instance()->playingLAN)
 			{
