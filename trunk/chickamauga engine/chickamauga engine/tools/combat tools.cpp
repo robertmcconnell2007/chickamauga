@@ -167,8 +167,8 @@ int battle::calcBattle()
 	unitClass * unit = NULL;
 	unitClass * otherUnit1 = NULL, *otherUnit2 = NULL;
 	map_node * node = NULL;
-	armyClass * attkr = &IH::Instance()->players[IH::Instance()->playersTurn].playerArmy;
-	armyClass * dfndr = &IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy;
+	armyClass * attkr = &IH::Instance()->players[IH::Instance()->playersTurn]->playerArmy;
+	armyClass * dfndr = &IH::Instance()->players[!IH::Instance()->playersTurn]->playerArmy;
 	bool usableUnit = false;
 	if(!(attackers.size()>0))
 	{
@@ -479,14 +479,14 @@ int battle::calcBattle()
 //can be retreated
 void networkRetreat(string unitName)
 {
-	for(int i=0; i<IH::Instance()->players[IH::Instance()->playerIam].playerArmy.currentSize; i++)
+	for(int i=0; i<IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.currentSize; i++)
 	{
-		if(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->getName()==unitName)
+		if(IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->getName()==unitName)
 		{
 			cout << unitName << " added to retreat buffer.\n";
-			IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->retreat = true;
-			IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]->needCombat();
-			IH::Instance()->currentBattle.defenders.push_back(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.armyArray[i]);
+			IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->retreat = true;
+			IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]->needCombat();
+			IH::Instance()->currentBattle.defenders.push_back(IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.armyArray[i]);
 		}
 	}
 }

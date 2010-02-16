@@ -15,7 +15,7 @@ void reinforceDialog(SDL_Event event)
 				IH::Instance()->canReinforce = false;
 			else
 			{
-				IH::Instance()->players[IH::Instance()->playersTurn].playerArmy.moveUnit(IH::Instance()->currentUnits[0], MUFReinforce, MUTField);
+				IH::Instance()->players[IH::Instance()->playersTurn]->playerArmy.moveUnit(IH::Instance()->currentUnits[0], MUFReinforce, MUTField);
 				moveUnit(IH::Instance()->currentUnits[0],IH::Instance()->map, IH::Instance()->selectedNode->row-1, IH::Instance()->selectedNode->col-1);
 				//firstClick(IH::Instance()->map, IH::Instance()->selectedNode, IH::Instance()->players[IH::Instance()->playersTurn].playerArmy, IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
 				IH::Instance()->currentUnits[0]->resetMove();
@@ -28,18 +28,18 @@ void reinforceDialog(SDL_Event event)
 		{
 			int x = event.motion.x - IH::Instance()->reinforceBox.x - 25;
 			int y = event.motion.y - IH::Instance()->reinforceBox.y - 100;
-			x = x/IH::Instance()->players[0].playerArmy.armyArray[0]->getUnitRect()->w;
-			y = y/IH::Instance()->players[0].playerArmy.armyArray[0]->getUnitRect()->h;
+			x = x/IH::Instance()->players[0]->playerArmy.armyArray[0]->getUnitRect()->w;
+			y = y/IH::Instance()->players[0]->playerArmy.armyArray[0]->getUnitRect()->h;
 			int j = 0;
-			for(int i = 0; i < IH::Instance()->players[IH::Instance()->playerIam].playerArmy.reinforcementSize;i++)
+			for(int i = 0; i < IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.reinforcementSize;i++)
 			{
-				if(IH::Instance()->players[IH::Instance()->playerIam].playerArmy.reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
+				if(IH::Instance()->players[IH::Instance()->playerIam]->playerArmy.reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())
 				{
 					j++;
 				}
 			}
 			if(x+(y*10) < j)
-				IH::Instance()->currentUnits[0] = IH::Instance()->players[IH::Instance()->playersTurn].playerArmy.reinforcements[x+(y*10)];
+				IH::Instance()->currentUnits[0] = IH::Instance()->players[IH::Instance()->playersTurn]->playerArmy.reinforcements[x+(y*10)];
 		}
 	}
 }
@@ -127,7 +127,7 @@ bool firstClick(mapSuperClass* map, map_node* node, armyClass currentArmy, armyC
 
 void moveUnit(unitClass * unitToMove, mapSuperClass * map, int newX, int newY)
 {
-	setEnemyNodes(IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy, map);
+	setEnemyNodes(IH::Instance()->players[!IH::Instance()->playersTurn]->playerArmy, map);
 	unitToMove->setPosition(newY+1,newX+1);
 	if(map->getMap()[newX][newY].enemy)
 		unitToMove->setNeedCombat();
@@ -446,7 +446,7 @@ void doRetreat(mapSuperClass *map , map_node *node, armyClass *attkrs,armyClass 
 		IH::Instance()->retreatCalled = false;
 	}
 	map->clearMovement();
-	showRetreater(map,&IH::Instance()->players[IH::Instance()->playersTurn].playerArmy,&IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
+	showRetreater(map,&IH::Instance()->players[IH::Instance()->playersTurn]->playerArmy,&IH::Instance()->players[!IH::Instance()->playersTurn]->playerArmy);
 	map->clearEnemy();
 }
 

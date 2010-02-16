@@ -42,7 +42,7 @@ void drawBasicRules()
 void drawReinforce(SDL_Surface* screen)
 {
 	int j = 0;
-	armyClass* currentArmy = &IH::Instance()->players[IH::Instance()->playerIam].playerArmy;
+	armyClass* currentArmy = &IH::Instance()->players[IH::Instance()->playerIam]->playerArmy;
 	for(int i = 0; i < currentArmy->reinforcementSize;i++)
 	{
 		if(currentArmy->reinforcements[i]->getReinforceTurn() <= IH::Instance()->getCurrentTurn())

@@ -578,16 +578,16 @@ void IH::handlePrimaryInput()
 							if(playerIam == 0 && playersTurn == 0)
 							{
 								if(unit1Selected)
-									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[0]);
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0]->playerArmy, players[1]->playerArmy, currentUnits[0]);
 								if(unit2Selected)
-									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0].playerArmy, players[1].playerArmy, currentUnits[1]);
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[0]->playerArmy, players[1]->playerArmy, currentUnits[1]);
 							}
 							else if (playerIam == 1 && playersTurn == 1)
 							{
 								if(unit1Selected)
-									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[0]);
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1]->playerArmy, players[0]->playerArmy, currentUnits[0]);
 								if(unit2Selected)
-									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1].playerArmy, players[0].playerArmy, currentUnits[1]);
+									secondClick(map, &map->getMap()[selectedX][selectedY],actualX,actualY, players[1]->playerArmy, players[0]->playerArmy, currentUnits[1]);
 							}
 							if(!canExit)
 							{
@@ -596,13 +596,13 @@ void IH::handlePrimaryInput()
 								cancelClick(map);
 							}
 						}
-						else if(isUnits(&map->getMap()[firstX][firstY],&players[0].playerArmy,&players[1].playerArmy) && !menuUp)
+						else if(isUnits(&map->getMap()[firstX][firstY],&players[0]->playerArmy,&players[1]->playerArmy) && !menuUp)
 						{
 							nodeGui = true;
 							if(playerIam == 0)
-								firstClick(map, &map->getMap()[actualX][actualY], players[0].playerArmy, players[1].playerArmy);
+								firstClick(map, &map->getMap()[actualX][actualY], players[0]->playerArmy, players[1]->playerArmy);
 							else
-								firstClick(map, &map->getMap()[actualX][actualY], players[1].playerArmy, players[0].playerArmy);
+								firstClick(map, &map->getMap()[actualX][actualY], players[1]->playerArmy, players[0]->playerArmy);
 							selectedX = actualX;
 							selectedY = actualY;
 						}
@@ -779,12 +779,12 @@ void IH::handlePrimaryInput()
 						if(retreatCalled)
 						{
 							//if((playingLAN && playersTurn != playerIam) || !playingLAN)
-							doRetreat(map,selectedNode,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+							doRetreat(map,selectedNode,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
 						}
 						else if(playersTurn == playerIam && !keysOff)
 						{
-							clickAttacker(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
-							clickDefender(selectedNode, &players[playersTurn].playerArmy, &players[!playersTurn].playerArmy);
+							clickAttacker(selectedNode, &players[playersTurn]->playerArmy, &players[!playersTurn]->playerArmy);
+							clickDefender(selectedNode, &players[playersTurn]->playerArmy, &players[!playersTurn]->playerArmy);
 							updatePowers();
 						}
 					}
@@ -878,9 +878,9 @@ void IH::update(int mspassed)
 			if(menuOption == 0)
 			{
 				if(currentUnits[0] != NULL)
-					players[playersTurn].playerArmy.moveUnit(currentUnits[0],MUFField, MUTExited);
+					players[playersTurn]->playerArmy.moveUnit(currentUnits[0],MUFField, MUTExited);
 				if(currentUnits[1] != NULL)
-					players[playersTurn].playerArmy.moveUnit(currentUnits[1],MUFField, MUTExited);
+					players[playersTurn]->playerArmy.moveUnit(currentUnits[1],MUFField, MUTExited);
 			}
 			if(menuOption == 1)
 			{
@@ -891,7 +891,7 @@ void IH::update(int mspassed)
 			canExit = false;
 			menuOption = -1;
 		}
-		if(players[0].playerArmy.currentSize == 0 || players[1].playerArmy.currentSize == 0 || currentTurn > gameRules->numGameTurns)
+		if(players[0]->playerArmy.currentSize == 0 || players[1]->playerArmy.currentSize == 0 || currentTurn > gameRules->numGameTurns)
 		{
 			//TEMPTEMP flash the screen to a wait message
 			//this is a temp version
@@ -910,9 +910,9 @@ void IH::update(int mspassed)
 		if(playerIam == playersTurn)
 		{
 			switchState = true;
-			for(int i = 0; i < players[playerIam].playerArmy.currentSize; ++i)
+			for(int i = 0; i < players[playerIam]->playerArmy.currentSize; ++i)
 			{
-				if(players[playerIam].playerArmy.armyArray[i]->needCombat() && !(players[playerIam].playerArmy.armyArray[i]->completedCombat()))
+				if(players[playerIam]->playerArmy.armyArray[i]->needCombat() && !(players[playerIam]->playerArmy.armyArray[i]->completedCombat()))
 				{
 					switchState = false;
 					break;
@@ -926,8 +926,8 @@ void IH::update(int mspassed)
 			if(playersTurn == 1)
 				currentTurn++;
 			playersTurn = !playersTurn;
-			players[0].startTurn();
-			players[1].startTurn();
+			players[0]->startTurn();
+			players[1]->startTurn();
 			keysOff = false;
 			gameState = matchMainPhase;
 			if(!playingLAN)
@@ -956,7 +956,7 @@ void IH::update(int mspassed)
 		{
 			if(retreatCalled && !playingLAN)
 			{
-				showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+				showRetreater(map,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
 			}
 		}
 		break;
@@ -1052,12 +1052,12 @@ void IH::drawAll()
 	case matchCombatPhase:
 		//drawATile(utilityTiles5050, &u5050, 6, GUIGameFrame, 0,0);
 		map->drawMap(screenShiftX, screenShiftY, screen);
-		players[0].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
-		players[1].playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
+		players[0]->playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
+		players[1]->playerArmy.drawArmy(screenShiftX,screenShiftY,map->width,map->height,screen);
 		showCombat();
 		if(gameState==matchMainPhase)
 		{
-			drawGui(selectedNode,&players[0].playerArmy,&players[1].playerArmy, currentUnits, screen);
+			drawGui(selectedNode,&players[0]->playerArmy,&players[1]->playerArmy, currentUnits, screen);
 			drawATile(utilityTiles5050, &u5050, 14, screen, GUIEndTurnBox.x, GUIEndTurnBox.y);
 			//creates a black rec
 			SDL_FillRect(screen,&turnRect,0x000000);
@@ -1102,14 +1102,14 @@ void IH::drawAll()
 	case reviewingMatch:
 		ostringstream oss;
 		oss << "Blue player scored ";
-		oss << players[0].pointsEarned;
+		oss << players[0]->pointsEarned;
 		oss << " points\n\n";
 		oss << "Gray player scored ";
-		oss << players[1].pointsEarned;
+		oss << players[1]->pointsEarned;
 		oss << " points\n\n";
-		if(players[0].pointsEarned == players[1].pointsEarned)
+		if(players[0]->pointsEarned == players[1]->pointsEarned)
 			oss << "The game was a tie\n\n";
-		else if(players[0].pointsEarned > players[1].pointsEarned)
+		else if(players[0]->pointsEarned > players[1]->pointsEarned)
 			oss << "Blue player has won\n\n";
 		else
 			oss << "Gray player has won\n\n";
@@ -1213,7 +1213,7 @@ bool IH::handleMessage()
 		stringY = currentMessage;
 		newX = stringToInt(stringX);
 		newY = stringToInt(stringY);
-		if(unitToHandle = players[!playerIam].playerArmy.findUnit(unitName))
+		if(unitToHandle = players[!playerIam]->playerArmy.findUnit(unitName))
 		{
 			moveUnit(unitToHandle, map, newX, newY);
 			temp = unitName + " has moved to (" + stringX + ", " + stringY + ")";
@@ -1224,15 +1224,15 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case KILLUNIT:
-		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		if(unitToHandle = players[!playerIam]->playerArmy.findUnit(currentMessage))
 		{
-			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
+			players[!playerIam]->playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
 			temp = "Enemy unit, " + currentMessage + " has been killed.";
 			chatBox->addString(temp);
 		}
-		else if(unitToHandle = players[playerIam].playerArmy.findUnit(currentMessage))
+		else if(unitToHandle = players[playerIam]->playerArmy.findUnit(currentMessage))
 		{
-			players[playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
+			players[playerIam]->playerArmy.moveUnit(unitToHandle, MUFField, MUTKilled);
 			temp = "Your unit, " + currentMessage + " has been killed.";
 			chatBox->addString(temp);
 		}
@@ -1241,9 +1241,9 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case REINFORCEUNIT:
-		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		if(unitToHandle = players[!playerIam]->playerArmy.findUnit(currentMessage))
 		{
-			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFReinforce, MUTField);
+			players[!playerIam]->playerArmy.moveUnit(unitToHandle, MUFReinforce, MUTField);
 			temp = currentMessage + " has entered the battlefield.";
 			chatBox->addString(temp);
 		}
@@ -1252,9 +1252,9 @@ bool IH::handleMessage()
 		return true;
 		break;
 	case EXITUNIT:
-		if(unitToHandle = players[!playerIam].playerArmy.findUnit(currentMessage))
+		if(unitToHandle = players[!playerIam]->playerArmy.findUnit(currentMessage))
 		{
-			players[!playerIam].playerArmy.moveUnit(unitToHandle, MUFField, MUTExited);
+			players[!playerIam]->playerArmy.moveUnit(unitToHandle, MUFField, MUTExited);
 			temp = currentMessage + " has left the battlefield.";
 			chatBox->addString(temp);
 		}
@@ -1272,8 +1272,8 @@ bool IH::handleMessage()
 			currentTurn++;
 		playersTurn = !playersTurn;
 		keysOff = false;
-		players[0].startTurn();
-		players[1].startTurn();
+		players[0]->startTurn();
+		players[1]->startTurn();
 		chatBox->addString(currentMessage);
 		gameState = matchMainPhase;
 		keysOff = false;
@@ -1294,7 +1294,7 @@ bool IH::handleMessage()
 		{
 			retreatCalled = true;
 			chatBox->addString("Your units lost a battle and need to retreat!");
-			showRetreater(map,&players[playersTurn].playerArmy,&players[!playersTurn].playerArmy);
+			showRetreater(map,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
 		}
 		else
 		{

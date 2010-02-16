@@ -67,6 +67,8 @@ void gameFileHandler::setFiles()
 
 IH::IH()
 {
+	players[0] = NULL;
+	players[1] = NULL;
 	gameStart = 0;
 	attackerTotalPower=0;
 	defenderTotalPower=0;
@@ -276,8 +278,8 @@ IH::~IH()
 		gameRules->deleteRules();
 		//delete gameRules;
 	}
-	players[0].deletePlayer();
-	players[1].deletePlayer();
+	players[0]->deletePlayer();
+	players[1]->deletePlayer();
 	MessageHandler::Instance()->sendMessage("OMG OMG OMG I CRASHEDED!",QUIT);
 	MessageHandler::Instance()->sendNextMessage();
 }
@@ -295,8 +297,10 @@ void IH::createMatch()
 	//map object = new map(mapName)
 	map = new mapSuperClass(fileNames.map.c_str());
 	//set up the players ip address, and any other neccessary data for them
-	players[0].playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
-	players[1].playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
+	players[0] = new player;
+	players[1] = new player;
+	players[0]->playerArmy.loadArmy((char*)fileNames.army1.c_str(),(char*)fileNames.army1colors.c_str());
+	players[1]->playerArmy.loadArmy((char*)fileNames.army2.c_str(),(char*)fileNames.army2colors.c_str());
 	gameRules->loadRules(fileNames.rules);
 	gameRules->coutRules();
 	currentTurn = 1;
@@ -386,10 +390,10 @@ void IH::_resetAll()
 		currentBattle.attackers.clear();
 	if(currentBattle.defenders.size() > 0)
 		currentBattle.defenders.clear();
-	players[0].playerArmy._deleteAll();
-	players[1].playerArmy._deleteAll();
-	players[0].pointsEarned = 0;
-	players[1].pointsEarned = 0;
+	players[0]->playerArmy._deleteAll();
+	players[1]->playerArmy._deleteAll();
+	players[0] = NULL;
+	players[1] = NULL;
 	canReinforce = false;
 	canExit = false;
 	menuUp = false;
