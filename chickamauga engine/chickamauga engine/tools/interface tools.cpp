@@ -24,7 +24,7 @@ void reinforceDialog(SDL_Event event)
 				IH::Instance()->selectedNode->reinforce += 1;
 				MessageHandler::Instance()->sendMessage(IH::Instance()->currentUnits[0]->getName(),REINFORCEUNIT);
 				ostringstream oss;
-				oss << IH::Instance()->currentUnits[0]->getName() << "#" << IH::Instance()->currentUnits[0]->getX()-1 << "#" << IH::Instance()->currentUnits[0]->getY()-1;
+				oss << IH::Instance()->currentUnits[0]->getName() << "#" << IH::Instance()->currentUnits[0]->getY()-1 << "#" << IH::Instance()->currentUnits[0]->getX()-1;
 				MessageHandler::Instance()->sendMessage(oss.str(),MOVEUNIT);
 				cancelClick(IH::Instance()->map);
 				IH::Instance()->canReinforce = false;
