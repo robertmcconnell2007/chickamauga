@@ -22,10 +22,8 @@ void reinforceDialog(SDL_Event event)
 				//firstClick(IH::Instance()->map, IH::Instance()->selectedNode, IH::Instance()->players[IH::Instance()->playersTurn].playerArmy, IH::Instance()->players[!IH::Instance()->playersTurn].playerArmy);
 				IH::Instance()->currentUnits[0]->resetMove();
 				IH::Instance()->selectedNode->reinforce += 1;
-				string tempo = IH::Instance()->currentUnits[0]->getName();
 				MessageHandler::Instance()->sendMessage(IH::Instance()->currentUnits[0]->getName(),REINFORCEUNIT);
 				ostringstream oss;
-				oss << IH::Instance()->currentUnits[0]->getName() << "#" << IH::Instance()->currentUnits[0]->getY() - 1 << "#" << IH::Instance()->currentUnits[0]->getX() - 1;
 				MessageHandler::Instance()->sendMessage(oss.str(),MOVEUNIT);
 				cancelClick(IH::Instance()->map);
 				IH::Instance()->canReinforce = false;
