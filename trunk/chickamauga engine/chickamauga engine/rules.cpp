@@ -923,9 +923,6 @@ int roadExitRule::calculateRule(int player)
 	return 0;
 }
 
-
-
-
 void rules::calcAllRules()
 {
 	int points[2];

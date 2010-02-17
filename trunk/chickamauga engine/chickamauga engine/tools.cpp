@@ -783,7 +783,7 @@ void IH::handlePrimaryInput()
 						{
 							selectedNode = &map->getMap()[firstX][firstY];
 						}
-						if(retreatCalled)
+						if(retreatCalled && !keysOff)
 						{
 							//if((playingLAN && playersTurn != playerIam) || !playingLAN)
 							doRetreat(map,selectedNode,&players[playersTurn]->playerArmy,&players[!playersTurn]->playerArmy);
@@ -816,6 +816,7 @@ void IH::handlePrimaryInput()
 				if(clickedIn(event, ReturnToMenuBox))
 				{
 					_resetAll();
+					gameSound->stopMusic(prevSong);
 				}
 				break;
 			}
