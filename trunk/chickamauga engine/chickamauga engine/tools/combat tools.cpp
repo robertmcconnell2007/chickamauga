@@ -449,7 +449,15 @@ int battle::calcBattle()
 					}
 					else if(attackers.at(i)->getPower()>defenderPower)
 					{
-						attackers.at(i)->setPower(attackers.at(i)->getPower() - defenderPower);
+						for(int k=0; k<attkr->currentSize; k++)
+						{
+							if(attkr->armyArray[k]==attackers.at(i))
+							{
+								if(IH::Instance()->playingLAN)
+									MessageHandler::Instance()->sendMessage(attkr->armyArray[k]->getName(),KILLUNIT);
+								attkr->moveUnit(attkr->armyArray[k],MUFField,MUTKilled);
+							}
+						}
 						defenderPower=0;
 						break;
 					}
